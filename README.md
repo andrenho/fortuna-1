@@ -13,3 +13,5 @@ See the links below for documentation and schematics on each of the boards:
 |**I/O**        | Handle USB keyboard, provide audio and VGA output. | [Wiki](https://github.com/andrenho/fortuna-1/wiki/IO-board)
 
 See also the [Programmer's Guide](https://github.com/andrenho/fortuna-1/wiki/Programmers's-Guide) on how the computer operates from the programmer standpoint.
+
+The [Protocol](https://github.com/andrenho/fortuna-1/wiki/Protocol) describe the communication protocol between Fortuna-1 and the debugger, among others.
