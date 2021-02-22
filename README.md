@@ -1,5 +1,5 @@
 # Fortuna-1
-**Fortuna-1** is custom Z80 computer that can be fully debugger from a PC.
+**Fortuna-1** is custom Z80 computer that can be fully debugged from a PC.
 
 ![Fortuna-1](fortuna-1.jpg)
 
