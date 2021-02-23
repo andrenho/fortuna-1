@@ -45,6 +45,8 @@ Serial::Serial(const char* port)
     if (tcsetattr(fd, TCSANOW, &tty) != 0) {
         throw std::runtime_error("Could not get terminal attributes: "s + strerror(errno));
     }
+    
+    std::cout << "Serial port connected.\n";
 }
 
 Serial::~Serial()
