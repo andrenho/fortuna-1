@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.17)
+cmake_minimum_required(VERSION 3.13)
 project(libfortuna1)
 
 find_package(Protobuf REQUIRED)
