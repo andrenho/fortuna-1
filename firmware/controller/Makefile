@@ -1,13 +1,15 @@
 PROJECT=controller
-OBJECTS=main.o
+OBJECTS=main.o repl.o serial.o
 AVRDUDE_FLAGS=-p m328p -C ./avrdude_gpio.conf -c pi_1 -B 0.5 -V
-#FUSES=-U lfuse:w:0xe4:m -U hfuse:w:0xd9:m   # internal 8 Mhz
-FUSES=-U lfuse:w:0xff:m -U hfuse:w:0xd9:m    # external crystal
-MCU=m328p
-F_CPU=16000000UL   # running at 16.5 Mhz
+FUSES=-U lfuse:w:0xDE:m	-U hfuse:w:0xD9:m -U efuse:w:0xFF:m -U lock:w:0xFF:m
+MCU=atmega328p
+F_CPU=16000000UL   # running at 16 Mhz
 
 CC=avr-gcc
-CPPFLAGS=-std=c11 -Wall -Wextra -Os -DF_CPU=${F_CPU} -mmcu=${MCU} -ffunction-sections -fdata-sections
+CXX=avr-g++
+CFLAGS=-std=c11
+CXXFLAGS=-std=c++17
+CPPFLAGS=-Wall -Wextra -Os -DF_CPU=${F_CPU} -mmcu=${MCU} -ffunction-sections -fdata-sections
 
 all: ${PROJECT}.hex
 
@@ -18,15 +20,6 @@ ${PROJECT}.hex: ${PROJECT}.elf
 ${PROJECT}.elf: ${OBJECTS}
 	$(CC) -mmcu=${MCU} -o $@ $^ -Wl,--gc-sections
 	avr-size -C --mcu=${MCU} ${PROJECT}.elf	
-
-test-disasm: test_disasm.c disassembler.c
-	gcc -ggdb3 -O0 -Wall -Wextra -std=c11 -o $@ $^ -DTEST=1
-
-test-simulator: programatic.c test_simulator.c
-	gcc -ggdb3 -O0 -Wall -Wextra -std=c11 -o $@ $^ -DSIMULATOR=1 -lutil
-
-test: test-disasm
-	./$^
 
 test-connection:
 	sudo avrdude ${AVRDUDE_FLAGS}
