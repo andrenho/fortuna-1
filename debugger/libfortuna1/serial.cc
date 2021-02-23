@@ -10,9 +10,12 @@
 
 #include <stdexcept>
 #include <string>
+#include <iostream>
+
 using namespace std::string_literals;
 
 #include "protocol.h"
+#include "replyexception.hh"
 
 Serial::Serial(const char* port)
 {
@@ -53,7 +56,20 @@ Reply
 Serial::request(Request const& request) const
 {
     send_request(request);
-    return receive_reply();
+wait_new_reply:
+    Reply reply = receive_reply();
+    if (reply.type() != request.type())
+        throw ReplyException("The reply type (" + std::to_string(reply.type()) + ") does not match with the request type (" + std::to_string(request.type()) + ")");
+    if (reply.result() == Result::DEBUG) {
+        std::cout << reply.debug_message() << "\n";
+        goto wait_new_reply;
+    } else if (reply.result() != reply.result()) {
+        if (reply.additionalinfo().empty())
+            throw ReplyException(reply.result(), reply.additionalinfo());
+        else
+            throw ReplyException(reply.result());
+    }
+    return reply;
 }
 
 void
@@ -110,14 +126,14 @@ Reply Serial::receive_reply() const
     if (log_bytes_)
         printf("%02X ", resp);
     if (resp == Z_CHECKSUM_NO_MATCH)
-        throw std::runtime_error("Controller informed that checksum sent does not match.");
+        throw ReplyException("Controller informed that checksum sent does not match.");
     else if (resp == Z_REQUEST_TOO_LARGE)
-        throw std::runtime_error("Controller informed that message sent is too large.");
+        throw ReplyException("Controller informed that message sent is too large.");
     else if (resp == Z_RESPONSE_TOO_LARGE)
-        throw std::runtime_error("Controller informed that the response would be too large to create.");
+        throw ReplyException("Controller informed that the response would be too large to create.");
     else if (resp != Z_FOLLOWS_PROTOBUF_RESP) {
         char buf[3]; sprintf(buf, "%02X", resp);
-        throw std::runtime_error("Unexpected response from controller: "s + buf);
+        throw ReplyException("Unexpected response from controller: "s + buf);
     }
     
     // get message size

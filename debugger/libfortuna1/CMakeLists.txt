@@ -11,7 +11,7 @@ protobuf_generate_cpp(PROTO_SRCS PROTO_HDRS "${PROJECT_SOURCE_DIR}/../../common/
 add_custom_target(proto_dep DEPENDS ${PROTO_SRCS} ${PROTO_HDRS})
 
 add_library(libfortuna1
-            fortuna1.hh fortuna1realhardware.cc fortuna1realhardware.hh serial.cc serial.hh fortuna1emulator.cc fortuna1emulator.hh ${PROTO_SRCS} ${PROTO_HDRS})
+            fortuna1.hh fortuna1realhardware.cc fortuna1realhardware.hh serial.cc serial.hh fortuna1emulator.cc fortuna1emulator.hh ${PROTO_SRCS} ${PROTO_HDRS} replyexception.hh)
 add_dependencies(libfortuna1 proto_dep)
 
 add_executable(test-basic EXCLUDE_FROM_ALL tests/test-basic.cc tests/tsupport.cc tests/tsupport.hh)

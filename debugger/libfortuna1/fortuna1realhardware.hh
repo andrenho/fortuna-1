@@ -8,6 +8,7 @@
 class Fortuna1RealHardware : public Fortuna1 {
 public:
     explicit Fortuna1RealHardware(std::string const& serial_port);
+    ~Fortuna1RealHardware() override;
     
     size_t free_mem() const override;
 
