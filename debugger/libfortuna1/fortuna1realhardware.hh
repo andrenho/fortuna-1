@@ -10,6 +10,9 @@ public:
     explicit Fortuna1RealHardware(std::string const& serial_port);
     ~Fortuna1RealHardware() override;
     
+    void set_log_bytes(bool b) override { serial_.set_log_bytes(b); }
+    void set_log_messages(bool b) override { serial_.set_log_message(b); }
+    
     size_t free_mem() const override;
 
 private:
