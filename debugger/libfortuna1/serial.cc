@@ -12,7 +12,7 @@
 #include <string>
 using namespace std::string_literals;
 
-// #include "../common/protocol.h"
+#include "protocol.h"
 
 Serial::Serial(const char* port)
 {
@@ -49,7 +49,6 @@ Serial::~Serial()
     close(fd);
 }
 
-/*
 Reply
 Serial::request(Request const& request) const
 {
@@ -154,7 +153,6 @@ Reply Serial::receive_reply() const
         printf("\e[0m");
     return reply;
 }
- */
 
 std::string Serial::length_string_16(std::string const& data)
 {

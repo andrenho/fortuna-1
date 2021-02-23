@@ -1,7 +1,7 @@
 #ifndef SERIAL_HH_
 #define SERIAL_HH_
 
-// #include "proto/messages.pb.h"
+#include "messages.pb.h"
 
 #include <string>
 
@@ -10,9 +10,7 @@ public:
     explicit Serial(const char* port);
     ~Serial();
 
-    /*
     Reply request(Request const& request) const;
-     */
 
     void set_log_bytes(bool v) { log_bytes_ = v; }
     void set_log_message(bool v) { log_message_ = v; }
@@ -22,10 +20,8 @@ private:
     bool log_bytes_ = false;
     bool log_message_ = false;
     
-    /*
     void send_request(Request const& request) const;
     Reply receive_reply() const;
-     */
     
     static std::string length_string_16(std::string const& data);
     static std::string checksum_string(std::string const& data);
