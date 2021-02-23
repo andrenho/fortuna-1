@@ -2,9 +2,13 @@
 
 #include <iostream>
 
-int main()
+#include "tsupport.hh"
+
+int main(int argc, char* argv[])
 {
-    Fortuna1RealHardware f("/dev/ttyUSB0");
-    std::cout << f.free_mem() << "\n";
+    TestArgs test_args(argc, argv);
+    auto f = test_args.create_fortuna();
+    
+    ASSERT_GT("Test memory amount", f->free_mem(), 0);
 }
 
