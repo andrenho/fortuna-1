@@ -145,9 +145,7 @@ static void repl_do_protobuf()
 
 void repl_do()
 {
-    uint8_t cmd;
-    if (scanf("%c", &cmd) == 0)
-        return;
+    uint8_t cmd = getchar();
     switch (cmd) {
         case 'f':
             printf_P(PSTR("%d bytes free.\n"), free_ram());
