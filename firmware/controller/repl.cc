@@ -14,7 +14,32 @@
 
 extern Serial serial;
 
-static Reply parse_repl_request(Request const& request);
+static void repl_do_terminal(char cmd)
+{
+    switch (cmd) {
+        case 'f':
+            printf_P(PSTR("%d bytes free.\n"), free_ram());
+            break;
+        default:
+            printf_P(PSTR("Syntax error.\n"));
+    }
+}
+
+static Reply parse_repl_request(Request const& request)
+{
+    Reply reply;
+    reply.type = request.type;
+    reply.result = Result_OK;
+    switch (request.type) {
+        case MessageType_FREE_MEM:
+            reply.which_payload = Reply_free_mem_tag;
+            reply.payload.free_mem = free_ram();
+            break;
+        default:
+            reply.result = Result_INVALID_REQUEST;
+    }
+    return reply;
+}
 
 static Request repl_recv_request(bool* status)
 {
@@ -70,7 +95,7 @@ static Request repl_recv_request(bool* status)
 
 static size_t repl_size(Reply const& reply)
 {
-    pb_ostream_t szstream = {0};
+    pb_ostream_t szstream = {0, nullptr, 0, 0, nullptr};
     pb_encode(&szstream, Reply_fields, &reply);
     return szstream.bytes_written;
 }
@@ -131,29 +156,10 @@ static void repl_do_protobuf()
 void repl_do()
 {
     uint8_t cmd = getchar();
-    Request request;
-    switch (cmd) {
-        case 'f':
-            printf_P(PSTR("%d bytes free.\n"), free_ram());
-            break;
-        case Z_FOLLOWS_PROTOBUF_REQ:
-            repl_do_protobuf();
-            break;
-    }
-}
-
-static Reply parse_repl_request(Request const& request)
-{
-    Reply reply;
-    reply.type = request.type;
-    reply.result = Result_OK;
-    switch (request.type) {
-        case MessageType_FREE_MEM:
-            reply.which_payload = Reply_free_mem_tag;
-            reply.payload.free_mem = free_ram();
-            break;
-        default:
-            reply.result = Result_INVALID_REQUEST;
-    }
-    return reply;
+    if (cmd == Z_FOLLOWS_PROTOBUF_REQ)
+        repl_do_protobuf();
+    else if (cmd < 127 && cmd >= 32)
+        repl_do_terminal(cmd);
+    else
+        serial.send(Z_INVALID_COMMAND);
 }

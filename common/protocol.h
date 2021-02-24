@@ -15,6 +15,7 @@
 #define Z_REQUEST_NOT_OVER        0xf5
 #define Z_ERROR_DECODING_REQUEST  0xf6
 #define Z_ERROR_ENCODING_REPLY    0xf7
+#define Z_INVALID_COMMAND         0xf8
 
 /*
 
