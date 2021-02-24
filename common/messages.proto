@@ -1,7 +1,8 @@
 syntax = "proto3";
 
 enum MessageType {
-    FREE_MEM = 0;
+    NOP = 0;
+    FREE_MEM = 1;
 }
 
 enum Result {
