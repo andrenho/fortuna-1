@@ -125,8 +125,11 @@ Reply Serial::receive_reply() const
     // get response
     uint8_t resp;
     check(read(fd, &resp, 1));
-    if (log_bytes_)
+    if (log_bytes_) {
         printf("%02X ", resp);
+        fflush(stdout);
+    }
+    /*
     if (resp == Z_CHECKSUM_NO_MATCH)
         throw ReplyException("Controller informed that checksum sent does not match.");
     else if (resp == Z_REQUEST_TOO_LARGE)
@@ -137,12 +140,15 @@ Reply Serial::receive_reply() const
         char buf[3]; sprintf(buf, "%02X", resp);
         throw ReplyException("Unexpected response from controller: "s + buf);
     }
+     */
     
     // get message size
     char ssz[2];
     check(read(fd, ssz, 2));
-    if (log_bytes_)
+    if (log_bytes_) {
         printf("%02X %02X ", ssz[0], ssz[1]);
+        fflush(stdout);
+    }
     uint16_t msg_sz = (ssz[0] << 8) | ssz[1];
     
     // receive message
@@ -150,14 +156,19 @@ Reply Serial::receive_reply() const
     size_t received = 0;
     while (received < msg_sz)
         received -= check(read(fd, &buffer[received], msg_sz - received));
-    if (log_bytes_)
-        for (uint8_t c: buffer)
+    if (log_bytes_) {
+        for (uint8_t c: buffer) {
             printf("%02X ", c);
+            fflush(stdout);
+        }
+    }
     
     // get checksum and calculate it
     check(read(fd, ssz, 2));
-    if (log_bytes_)
+    if (log_bytes_) {
         printf("%02X %02X ", ssz[0], ssz[1]);
+        fflush(stdout);
+    }
     auto [sum1, sum2] = checksum(buffer);
     if (ssz[0] != sum2 || ssz[1] != sum1)
         throw std::runtime_error("Invalid checksum in message sent by controller.");
