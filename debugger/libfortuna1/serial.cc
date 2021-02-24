@@ -138,6 +138,10 @@ Reply Serial::receive_reply() const
         throw ReplyException("Controller informed that the response would be too large to create.");
     else if (resp == Z_REQUEST_NOT_OVER)
         throw ReplyException("Expected request over but received a different byte.");
+    else if (resp == Z_ERROR_DECODING_REQUEST)
+        throw ReplyException("Controller informed error decoding the request.");
+    else if (resp == Z_ERROR_ENCODING_REPLY)
+        throw ReplyException("Controller informed error encoding the reply.");
     else if (resp != Z_FOLLOWS_PROTOBUF_RESP) {
         char buf[3]; sprintf(buf, "%02X", resp);
         throw ReplyException("Unexpected response from controller: "s + buf);
