@@ -3,28 +3,29 @@ syntax = "proto3";
 import "nanopb.proto";
 
 enum MessageType {
-    NOP = 0;
+    NOP      = 0;
     FREE_MEM = 1;
 }
 
 enum Result {
-    OK = 0;
-    DEBUG = 1;
+    OK              = 0;
+    DEBUG           = 1;
+    INVALID_REQUEST = 2;
 }
 
 message Request {
     MessageType type = 1;
     oneof payload {
-        bytes buffer = 2 [(nanopb).max_size = 512];
+        bytes buffer = 2;
     }
 }
 
 message Reply {
-    MessageType type = 1;
-    Result      result = 2;
-    string      additionalInfo = 3 [(nanopb).max_length = 60];
+    MessageType type           = 1;
+    Result      result         = 2;
+    string      additionalInfo = 3;
     oneof payload {
-        string  debug_message = 4 [(nanopb).max_length = 512];
-        uint32  free_mem = 5;
+        string  debug_message = 4;
+        uint32  free_mem      = 5;
     }
 }

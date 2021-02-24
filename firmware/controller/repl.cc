@@ -8,18 +8,13 @@
 #include "messages.pb.h"
 #include "common/protocol.h"
 #include "serial.hh"
+#include "command.hh"
 
 #define MAX_MSG_SZ 768
 
 extern Serial serial;
 
-static unsigned int free_ram()
-{
-    extern int __heap_start, *__brkval;
-    volatile int v;
-    int free = (int) &v - (__brkval == 0 ? (int) &__heap_start : (int) __brkval);
-    return free;
-}
+static Reply parse_repl_request(Request const& request);
 
 static Request repl_recv_request(bool* status)
 {
@@ -71,16 +66,6 @@ static Request repl_recv_request(bool* status)
     }
 
     return request;
-}
-
-static Reply parse_repl_request(Request const& request)
-{
-    Reply reply;
-    reply.type = MessageType_FREE_MEM;
-    reply.result = Result_OK;
-    reply.which_payload = Reply_free_mem_tag;
-    reply.payload.free_mem = 1234;
-    return reply;
 }
 
 static size_t repl_size(Reply const& reply)
@@ -146,6 +131,7 @@ static void repl_do_protobuf()
 void repl_do()
 {
     uint8_t cmd = getchar();
+    Request request;
     switch (cmd) {
         case 'f':
             printf_P(PSTR("%d bytes free.\n"), free_ram());
@@ -154,4 +140,20 @@ void repl_do()
             repl_do_protobuf();
             break;
     }
+}
+
+static Reply parse_repl_request(Request const& request)
+{
+    Reply reply;
+    reply.type = request.type;
+    reply.result = Result_OK;
+    switch (request.type) {
+        case MessageType_FREE_MEM:
+            reply.which_payload = Reply_free_mem_tag;
+            reply.payload.free_mem = free_ram();
+            break;
+        default:
+            reply.result = Result_INVALID_REQUEST;
+    }
+    return reply;
 }
