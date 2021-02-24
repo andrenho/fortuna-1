@@ -49,13 +49,22 @@ static Request repl_recv_request(bool* status)
         msg_sz,
         nullptr
     };
-    pb_decode(&istream, Request_fields, &request);
+    if (!pb_decode(&istream, Request_fields, &request)) {
+        serial.send(Z_ERROR_DECODING_REQUEST);
+        *status = false;
+    }
 
     // calculate checksum (TODO)
     uint16_t sum2 = serial.recv();
     uint16_t sum1 = serial.recv();
     if (!serial.compare_checksum(sum1, sum2)) {
         serial.send(Z_CHECKSUM_NO_MATCH);
+        *status = false;
+    }
+
+    // get request over
+    if (serial.recv() != Z_REQUEST_OVER) {
+        serial.send(Z_REQUEST_NOT_OVER);
         *status = false;
     }
 
@@ -107,14 +116,18 @@ static void repl_send_reply(Reply const& reply)
         0,
         nullptr
     };
-    pb_encode(&ostream, Reply_fields, &reply);
+    if (!pb_encode(&ostream, Reply_fields, &reply)) {
+        serial.send(Z_ERROR_ENCODING_REPLY);
+        return;
+    }
 
     // send checksum
     auto chk = serial.checksum();
     serial.send(chk.sum2);
-    // serial.send(0xff);
     serial.send(chk.sum1);
-    // serial.send(0xff);
+
+    // send reply over
+    serial.send(Z_REPLY_OVER);
 }
 
 static void repl_do_protobuf()

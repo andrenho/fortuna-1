@@ -13,6 +13,8 @@
 #define Z_REQUEST_TOO_LARGE       0xf3
 #define Z_RESPONSE_TOO_LARGE      0xf4
 #define Z_REQUEST_NOT_OVER        0xf5
+#define Z_ERROR_DECODING_REQUEST  0xf6
+#define Z_ERROR_ENCODING_REPLY    0xf7
 
 /*
 
