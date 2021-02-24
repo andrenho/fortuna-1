@@ -91,11 +91,15 @@ static void repl_send_reply(Reply const& reply)
     serial.send((sz >> 8) & 0xff);
     serial.send(sz & 0xff);
 
+    serial.reset_checksum();
+
     pb_ostream_t ostream = {
         [](pb_ostream_t* stream, const uint8_t* buf, size_t count) -> bool {
             Serial* serial = static_cast<Serial*>(stream->state);
-            for (size_t i = 0; i < count; ++i)
+            for (size_t i = 0; i < count; ++i) {
                 serial->send(buf[i]);
+                serial->add_to_checksum(buf[i]);
+            }
             return true;
         },
         &serial,
@@ -105,9 +109,12 @@ static void repl_send_reply(Reply const& reply)
     };
     pb_encode(&ostream, Reply_fields, &reply);
 
-    // send checksum (TODO)
-    serial.send(0xff);
-    serial.send(0xff);
+    // send checksum
+    auto chk = serial.checksum();
+    serial.send(chk.sum2);
+    // serial.send(0xff);
+    serial.send(chk.sum1);
+    // serial.send(0xff);
 }
 
 static void repl_do_protobuf()

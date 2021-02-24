@@ -168,10 +168,8 @@ Reply Serial::receive_reply() const
         fflush(stdout);
     }
     auto [sum1, sum2] = checksum(buffer);
-    /* TODO
     if (ssz[0] != sum2 || ssz[1] != sum1)
         throw std::runtime_error("Invalid checksum in message sent by controller.");
-    */
     
     Reply reply;
     reply.ParseFromString(buffer);

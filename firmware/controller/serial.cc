@@ -80,15 +80,24 @@ Serial::clrscr() const
 void
 Serial::reset_checksum()
 {
+    sum1_ = sum2_ = 0;
 }
 
 void
 Serial::add_to_checksum(uint8_t data)
 {
+    sum1_ = (sum1_ + data) % 0xff;
+    sum2_ = (sum2_ + sum1_) % 0xff;
 }
 
 bool
 Serial::compare_checksum(uint8_t sum1, uint8_t sum2) const
 {
-    return true;
+    return sum1 == sum1_ && sum2 == sum2_;
+}
+
+Serial::Checksum
+Serial::checksum() const
+{
+    return { sum1_, sum2_ };
 }

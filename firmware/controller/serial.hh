@@ -5,6 +5,10 @@
 
 class Serial {
 public:
+    struct Checksum {
+        uint16_t sum1, sum2;
+    };
+
     static Serial init();
 
     void     send(uint8_t byte) const;
@@ -15,8 +19,13 @@ public:
     void     reset_checksum();
     void     add_to_checksum(uint8_t data);
     bool     compare_checksum(uint8_t sum1, uint8_t sum2) const;
+    Checksum checksum() const;
 
     void     clrscr() const;
+
+private:
+    uint16_t sum1_ = 0,
+             sum2_ = 0;
 };
 
 #endif
