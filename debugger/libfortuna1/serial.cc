@@ -129,7 +129,6 @@ Reply Serial::receive_reply() const
         printf("%02X ", resp);
         fflush(stdout);
     }
-    /*
     if (resp == Z_CHECKSUM_NO_MATCH)
         throw ReplyException("Controller informed that checksum sent does not match.");
     else if (resp == Z_REQUEST_TOO_LARGE)
@@ -140,7 +139,6 @@ Reply Serial::receive_reply() const
         char buf[3]; sprintf(buf, "%02X", resp);
         throw ReplyException("Unexpected response from controller: "s + buf);
     }
-     */
     
     // get message size
     char ssz[2];
@@ -170,8 +168,10 @@ Reply Serial::receive_reply() const
         fflush(stdout);
     }
     auto [sum1, sum2] = checksum(buffer);
+    /* TODO
     if (ssz[0] != sum2 || ssz[1] != sum1)
         throw std::runtime_error("Invalid checksum in message sent by controller.");
+    */
     
     Reply reply;
     reply.ParseFromString(buffer);
