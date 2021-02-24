@@ -75,7 +75,7 @@ static Request repl_recv_request(bool* status)
         return request;
     }
 
-    // calculate checksum (TODO)
+    // calculate checksum
     uint16_t sum2 = serial.recv();
     uint16_t sum1 = serial.recv();
     if (!serial.compare_checksum(sum1, sum2)) {
