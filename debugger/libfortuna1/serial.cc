@@ -80,7 +80,8 @@ Serial::send_request(Request const& request) const
     std::string data;
     request.SerializeToString(&data);
     
-    std::string req_str = std::string(1, Z_FOLLOWS_PROTOBUF_REQ) + length_string_16(data) + data + checksum_string(data);
+    std::string req_str = std::string(1, Z_FOLLOWS_PROTOBUF_REQ) + length_string_16(data) + data
+            + checksum_string(data) + std::string(1, Z_REQUEST_OVER);
     
     if (log_message_ || log_bytes_)
         printf("\e[0;32m");
@@ -135,6 +136,8 @@ Reply Serial::receive_reply() const
         throw ReplyException("Controller informed that message sent is too large.");
     else if (resp == Z_RESPONSE_TOO_LARGE)
         throw ReplyException("Controller informed that the response would be too large to create.");
+    else if (resp == Z_REQUEST_NOT_OVER)
+        throw ReplyException("Expected request over but received a different byte.");
     else if (resp != Z_FOLLOWS_PROTOBUF_RESP) {
         char buf[3]; sprintf(buf, "%02X", resp);
         throw ReplyException("Unexpected response from controller: "s + buf);
@@ -170,6 +173,15 @@ Reply Serial::receive_reply() const
     auto [sum1, sum2] = checksum(buffer);
     if (ssz[0] != sum2 || ssz[1] != sum1)
         throw std::runtime_error("Invalid checksum in message sent by controller.");
+    
+    // get reply over
+    check(read(fd, &resp, 1));
+    if (log_bytes_) {
+        printf("%02X ", resp);
+        fflush(stdout);
+    }
+    if (resp != Z_REPLY_OVER)
+        throw ReplyException("Expected reply over but received a different byte.");
     
     Reply reply;
     reply.ParseFromString(buffer);
