@@ -1,5 +1,6 @@
 PROJECT=controller
-OBJECTS=main.o repl.o serial.o pb_common.o pb_encode.o pb_decode.o messages.pb.o
+OBJECTS=main.o repl.o serial.o command.o \
+	pb_common.o pb_encode.o pb_decode.o messages.pb.o
 AVRDUDE_FLAGS=-p m328p -C ./avrdude_gpio.conf -c pi_1 -B 0.5 -V
 FUSES=-U lfuse:w:0xDE:m	-U hfuse:w:0xD9:m -U efuse:w:0xFF:m -U lock:w:0xFF:m
 MCU=atmega328p
@@ -10,6 +11,7 @@ CXX=avr-g++
 CFLAGS=-std=c11
 CXXFLAGS=-std=c++17
 CPPFLAGS=-Wall -Wextra -Os -DF_CPU=${F_CPU} -mmcu=${MCU} -ffunction-sections -fdata-sections -I.
+LDFLAGS=-Wl,--gc-sections 
 
 all: ${PROJECT}.hex
 
@@ -18,7 +20,7 @@ ${PROJECT}.hex: ${PROJECT}.elf
 	arm-linux-gnueabihf-size ${PROJECT}.hex
 
 ${PROJECT}.elf: ${OBJECTS}
-	$(CC) -mmcu=${MCU} -o $@ $^ -Wl,--gc-sections
+	$(CXX) -mmcu=${MCU} -o $@ $^ ${LDFLAGS}
 	avr-size -C --mcu=${MCU} ${PROJECT}.elf	
 
 repl.o: messages.pb.h

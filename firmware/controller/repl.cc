@@ -21,46 +21,28 @@ static unsigned int free_ram()
     return free;
 }
 
-static Reply parse_response(Request* request)
+static Request repl_recv_request(bool* status)
 {
-    Reply reply;
-    reply.type = MessageType_FREE_MEM;
-    reply.result = Result_OK;
-    reply.payload.free_mem = 1234;
-    return reply;
-}
+    Request request = Request_init_zero;
 
-static void repl_do_protobuf()
-{
     // get message size
     uint16_t msg_sz = serial.recv16();
     if (msg_sz > MAX_MSG_SZ) {
         serial.send(Z_REQUEST_TOO_LARGE);
-        return;
+        *status = false;
+        return request;
     }
 
-    struct Data {
-        Serial* serial;
-        int     bytes;
-    };
-
     // receive message
-    Request request = Request_init_zero;
-    Data data = { &serial, msg_sz };
     pb_istream_t istream = {
         [](pb_istream_t* stream, uint8_t *buf, size_t count) -> bool {
-            Data* data = static_cast<Data*>(stream->state);
-            for (size_t i = 0; i < count; ++i) {
-                buf[i] = data->serial->recv();
-                --data->bytes;
-                if (data->bytes == 0) {
-                    return false;
-                }
-            }
+            Serial* serial = static_cast<Serial*>(stream->state);
+            for (size_t i = 0; i < count; ++i)
+                buf[i] = serial->recv();
             return true;
         },
         &serial,
-        MAX_MSG_SZ,
+        msg_sz,
         nullptr
     };
     pb_decode(&istream, Request_fields, &request);
@@ -68,10 +50,39 @@ static void repl_do_protobuf()
     // calculate checksum (TODO)
     serial.recv();
     serial.recv();
-    
-    // reply
-    Reply reply = parse_response(&request);
+
+    return request;
+}
+
+static Reply parse_repl_request(Request const& request)
+{
+    Reply reply;
+    reply.type = MessageType_FREE_MEM;
+    reply.result = Result_OK;
+    reply.which_payload = Reply_free_mem_tag;
+    reply.payload.free_mem = 1234;
+    return reply;
+}
+
+static size_t repl_size(Reply const& reply)
+{
+    pb_ostream_t szstream = {0};
+    pb_encode(&szstream, Reply_fields, &reply);
+    return szstream.bytes_written;
+}
+
+static void repl_send_reply(Reply const& reply)
+{
+    size_t sz = repl_size(reply);
+    if (sz > MAX_MSG_SZ) {
+        serial.send(Z_RESPONSE_TOO_LARGE);
+        return;
+    }
+
     serial.send(Z_FOLLOWS_PROTOBUF_RESP);
+    serial.send((sz >> 8) & 0xff);
+    serial.send(sz & 0xff);
+
     pb_ostream_t ostream = {
         [](pb_ostream_t* stream, const uint8_t* buf, size_t count) -> bool {
             Serial* serial = static_cast<Serial*>(stream->state);
@@ -89,6 +100,17 @@ static void repl_do_protobuf()
     // send checksum (TODO)
     serial.send(0xff);
     serial.send(0xff);
+}
+
+static void repl_do_protobuf()
+{
+    bool status = true;
+    Request request = repl_recv_request(&status);
+    if (!status)
+        return;
+
+    Reply reply = parse_repl_request(request);
+    repl_send_reply(reply);
 }
 
 void repl_do()
