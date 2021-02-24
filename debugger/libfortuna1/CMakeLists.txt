@@ -15,6 +15,8 @@ add_library(libfortuna1
             fortuna1.hh fortuna1realhardware.cc fortuna1realhardware.hh serial.cc serial.hh fortuna1emulator.cc fortuna1emulator.hh ${PROTO_SRCS} ${PROTO_HDRS} ${NANO_SRCS} ${NANO_HDRS} replyexception.hh)
 add_dependencies(libfortuna1 proto_dep)
 
-add_executable(test-basic EXCLUDE_FROM_ALL tests/test-basic.cc tests/tsupport.cc tests/tsupport.hh)
-target_compile_options(test-basic PUBLIC -I ..)
-target_link_libraries(test-basic libfortuna1 ${Protobuf_LIBRARIES})
+foreach(F IN ITEMS test-basic test-load)
+    add_executable(${F} EXCLUDE_FROM_ALL tests/${F}.cc tests/tsupport.cc tests/tsupport.hh)
+    target_compile_options(${F} PUBLIC -I ..)
+    target_link_libraries(${F} libfortuna1 ${Protobuf_LIBRARIES})
+endforeach()

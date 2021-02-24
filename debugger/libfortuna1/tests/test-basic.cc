@@ -11,4 +11,3 @@ int main(int argc, char* argv[])
     
     ASSERT_GT("Test memory amount", f->free_mem(), 0);
 }
-

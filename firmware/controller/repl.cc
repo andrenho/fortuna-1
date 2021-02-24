@@ -52,6 +52,7 @@ static Request repl_recv_request(bool* status)
     if (!pb_decode(&istream, Request_fields, &request)) {
         serial.send(Z_ERROR_DECODING_REQUEST);
         *status = false;
+        return request;
     }
 
     // calculate checksum (TODO)
@@ -60,6 +61,7 @@ static Request repl_recv_request(bool* status)
     if (!serial.compare_checksum(sum1, sum2)) {
         serial.send(Z_CHECKSUM_NO_MATCH);
         *status = false;
+        return request;
     }
 
     // get request over
