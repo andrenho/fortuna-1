@@ -3,8 +3,8 @@
 #include <avr/pgmspace.h>
 #include <stdio.h>
 
-// #include <pb_decode.h>
-// #include "messages.pb.h"
+#include <pb_decode.h>
+#include "messages.pb.h"
 #include "common/protocol.h"
 #include "serial.hh"
 
@@ -20,7 +20,6 @@ static unsigned int free_ram()
     return free;
 }
 
-/*
 static void repl_do_protobuf()
 {
     // get message size
@@ -40,13 +39,16 @@ static void repl_do_protobuf()
         },
         &serial,
         MAX_MSG_SZ,
+        NULL
     };
     pb_decode(&stream, Request_fields, &request);
 
     // calculate checksum
-    serial.send(Z_CHECKSUM_NO_MATCH);
+    serial.recv();  // TODO
+    serial.recv();
+    
+    serial.send(Z_FOLLOWS_PROTOBUF_RESP);
 }
-*/
 
 void repl_do()
 {
@@ -57,10 +59,8 @@ void repl_do()
         case 'f':
             printf_P(PSTR("%d bytes free.\n"), free_ram());
             break;
-        /*
         case Z_FOLLOWS_PROTOBUF_REQ:
             repl_do_protobuf();
             break;
-        */
     }
 }

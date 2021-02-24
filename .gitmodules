@@ -1,0 +1,3 @@
+[submodule "contrib/nanopb"]
+	path = contrib/nanopb
+	url = https://github.com/nanopb/nanopb.git
