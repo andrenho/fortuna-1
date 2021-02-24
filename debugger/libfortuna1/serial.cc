@@ -142,13 +142,15 @@ Reply Serial::receive_reply() const
         throw ReplyException("Controller informed error decoding the request.");
     else if (resp == Z_ERROR_ENCODING_REPLY)
         throw ReplyException("Controller informed error encoding the reply.");
+    else if (resp == Z_INVALID_COMMAND)
+        throw ReplyException("Controller reported invalid command.");
     else if (resp != Z_FOLLOWS_PROTOBUF_RESP) {
         char buf[3]; sprintf(buf, "%02X", resp);
         throw ReplyException("Unexpected response from controller: "s + buf);
     }
     
     // get message size
-    char ssz[2];
+    uint8_t ssz[2];
     check(read(fd, ssz, 2));
     if (log_bytes_) {
         printf("%02X %02X ", ssz[0], ssz[1]);
