@@ -9,7 +9,7 @@
 #include "common/protocol.h"
 #include "serial.hh"
 
-#define MAX_MSG_SZ 256
+#define MAX_MSG_SZ 768
 
 extern Serial serial;
 

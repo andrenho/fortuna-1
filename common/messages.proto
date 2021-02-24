@@ -1,5 +1,7 @@
 syntax = "proto3";
 
+import "nanopb.proto";
+
 enum MessageType {
     NOP = 0;
     FREE_MEM = 1;
@@ -12,14 +14,17 @@ enum Result {
 
 message Request {
     MessageType type = 1;
+    oneof payload {
+        bytes buffer = 2 [(nanopb).max_size = 512];
+    }
 }
 
 message Reply {
     MessageType type = 1;
     Result      result = 2;
-    string      additionalInfo = 3;
+    string      additionalInfo = 3 [(nanopb).max_length = 60];
     oneof payload {
-        string  debug_message = 4;
+        string  debug_message = 4 [(nanopb).max_length = 512];
         uint32  free_mem = 5;
     }
 }
