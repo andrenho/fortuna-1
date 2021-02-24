@@ -12,6 +12,10 @@ public:
     uint16_t recv16() const;
     uint8_t  recv_noblock() const;
 
+    void     reset_checksum();
+    void     add_to_checksum(uint8_t data);
+    bool     compare_checksum(uint8_t sum1, uint8_t sum2) const;
+
     void     clrscr() const;
 };
 

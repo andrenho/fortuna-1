@@ -76,3 +76,19 @@ Serial::clrscr() const
 {
     printf_P(PSTR("\e[1;1H\e[2J"));  // clear screen
 }
+
+void
+Serial::reset_checksum()
+{
+}
+
+void
+Serial::add_to_checksum(uint8_t data)
+{
+}
+
+bool
+Serial::compare_checksum(uint8_t sum1, uint8_t sum2) const
+{
+    return true;
+}

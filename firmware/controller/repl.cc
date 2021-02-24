@@ -33,12 +33,16 @@ static Request repl_recv_request(bool* status)
         return request;
     }
 
+    serial.reset_checksum();
+
     // receive message
     pb_istream_t istream = {
         [](pb_istream_t* stream, uint8_t *buf, size_t count) -> bool {
             Serial* serial = static_cast<Serial*>(stream->state);
-            for (size_t i = 0; i < count; ++i)
+            for (size_t i = 0; i < count; ++i) {
                 buf[i] = serial->recv();
+                serial->add_to_checksum(buf[i]);
+            }
             return true;
         },
         &serial,
@@ -48,8 +52,12 @@ static Request repl_recv_request(bool* status)
     pb_decode(&istream, Request_fields, &request);
 
     // calculate checksum (TODO)
-    serial.recv();
-    serial.recv();
+    uint16_t sum2 = serial.recv();
+    uint16_t sum1 = serial.recv();
+    if (!serial.compare_checksum(sum1, sum2)) {
+        serial.send(Z_CHECKSUM_NO_MATCH);
+        *status = false;
+    }
 
     return request;
 }
