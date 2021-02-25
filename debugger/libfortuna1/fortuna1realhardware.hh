@@ -14,7 +14,9 @@ public:
     void set_log_messages(bool b) override { serial_.set_log_message(b); }
     
     size_t free_mem() const override;
-    void test_debug_messages() const override;
+    
+    void        test_debug_messages() const override;
+    std::string test_dma() const override;
 
 private:
     Serial serial_;

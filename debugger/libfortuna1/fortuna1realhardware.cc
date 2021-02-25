@@ -25,3 +25,10 @@ void Fortuna1RealHardware::test_debug_messages() const
     req.set_type(MessageType::TEST_DEBUG);
     serial_.request(req);
 }
+
+std::string Fortuna1RealHardware::test_dma() const
+{
+    Request req;
+    req.set_type(MessageType::TEST_DMA);
+    return serial_.request(req).buffer();
+}

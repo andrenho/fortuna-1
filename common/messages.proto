@@ -4,8 +4,9 @@ import "nanopb.proto";
 
 enum MessageType {
     NOP        = 0;
-    FREE_MEM   = 1;
-    TEST_DEBUG = 2;
+    TEST_DEBUG = 1;
+    TEST_DMA   = 2;
+    FREE_MEM   = 3;
 }
 
 enum Result {
@@ -25,7 +26,7 @@ message Reply {
     Result      result         = 2;
     string      additionalInfo = 3;
     oneof payload {
-        string  debug_message = 4;
-        uint32  free_mem      = 5;
+        uint32  free_mem       = 4;
+        bytes   buffer         = 5;
     }
 }
