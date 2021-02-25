@@ -60,11 +60,11 @@ Serial::request(Request const& request) const
     send_request(request);
 wait_new_reply:
     Reply reply = receive_reply();
-    if (reply.type() != request.type())
-        throw ReplyException("The reply type (" + std::to_string(reply.type()) + ") does not match with the request type (" + std::to_string(request.type()) + ")");
     if (reply.result() == Result::DEBUG) {
         std::cout << reply.debug_message() << "\n";
         goto wait_new_reply;
+    } else if (reply.type() != request.type()) {
+        throw ReplyException("The reply type (" + std::to_string(reply.type()) + ") does not match with the request type (" + std::to_string(request.type()) + ")");
     } else if (reply.result() != reply.result()) {
         if (reply.additionalinfo().empty())
             throw ReplyException(reply.result(), reply.additionalinfo());
