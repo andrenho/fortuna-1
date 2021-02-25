@@ -23,4 +23,5 @@ void Fortuna1RealHardware::test_debug_messages() const
 {
     Request req;
     req.set_type(MessageType::TEST_DEBUG);
+    serial_.request(req);
 }

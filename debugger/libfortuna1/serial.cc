@@ -58,12 +58,8 @@ Reply
 Serial::request(Request const& request) const
 {
     send_request(request);
-wait_new_reply:
     Reply reply = receive_reply();
-    if (reply.result() == Result::DEBUG) {
-        std::cout << reply.debug_message() << "\n";
-        goto wait_new_reply;
-    } else if (reply.type() != request.type()) {
+    if (reply.type() != request.type()) {
         throw ReplyException("The reply type (" + std::to_string(reply.type()) + ") does not match with the request type (" + std::to_string(request.type()) + ")");
     } else if (reply.result() != reply.result()) {
         if (reply.additionalinfo().empty())
@@ -125,26 +121,43 @@ Reply Serial::receive_reply() const
     
     // get response
     uint8_t resp;
+get_new_response:
     check(read(fd, &resp, 1));
     if (log_bytes_) {
         printf("%02X ", resp);
         fflush(stdout);
     }
-    if (resp == Z_CHECKSUM_NO_MATCH)
+    
+    // print debug message?
+    if (resp == Z_FOLLOWS_DEBUG_MSG) {
+        uint8_t c;
+        while (true) {
+            check(read(fd, &c, 1));
+            if (c == 0)
+                break;
+            putchar(c);
+        }
+        printf("\n");
+        fflush(stdout);
+        goto get_new_response;
+    }
+    
+    // check for errors
+    if (resp == Z_CHECKSUM_NO_MATCH) {
         throw ReplyException("Controller informed that checksum sent does not match.");
-    else if (resp == Z_REQUEST_TOO_LARGE)
+    } else if (resp == Z_REQUEST_TOO_LARGE) {
         throw ReplyException("Controller informed that message sent is too large.");
-    else if (resp == Z_RESPONSE_TOO_LARGE)
+    } else if (resp == Z_RESPONSE_TOO_LARGE) {
         throw ReplyException("Controller informed that the response would be too large to create.");
-    else if (resp == Z_REQUEST_NOT_OVER)
+    } else if (resp == Z_REQUEST_NOT_OVER) {
         throw ReplyException("Expected request over but received a different byte.");
-    else if (resp == Z_ERROR_DECODING_REQUEST)
+    } else if (resp == Z_ERROR_DECODING_REQUEST) {
         throw ReplyException("Controller informed error decoding the request.");
-    else if (resp == Z_ERROR_ENCODING_REPLY)
+    } else if (resp == Z_ERROR_ENCODING_REPLY) {
         throw ReplyException("Controller informed error encoding the reply.");
-    else if (resp == Z_INVALID_COMMAND)
+    } else if (resp == Z_INVALID_COMMAND) {
         throw ReplyException("Controller reported invalid command.");
-    else if (resp != Z_FOLLOWS_PROTOBUF_RESP) {
+    } else if (resp != Z_FOLLOWS_PROTOBUF_RESP) {
         char buf[3]; sprintf(buf, "%02X", resp);
         throw ReplyException("Unexpected response from controller: "s + buf);
     }
