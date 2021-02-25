@@ -1,9 +1,14 @@
 #include "serial.hh"
 
 #include <stdio.h>
+#include <stdarg.h>
 
 #include <avr/io.h>
 #include <avr/pgmspace.h>
+
+#include "repl.hh"
+
+#define BUF_SZ 256
 
 Serial
 Serial::init()
@@ -103,4 +108,15 @@ Serial::checksum() const
 void
 Serial::debug(const char* fmt, ...) const
 {
+    char buf[BUF_SZ];
+    va_list ap;
+    va_start(ap, fmt);
+    vsnprintf(buf, BUF_SZ, fmt, ap);
+    va_end(ap);
+
+    Reply reply;
+    reply.result = Result_DEBUG;
+    reply.which_payload = 0;
+    // TODO...
+    repl_send_reply(reply);
 }

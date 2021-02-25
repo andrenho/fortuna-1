@@ -5,12 +5,11 @@
 
 #include <pb_decode.h>
 #include <pb_encode.h>
-#include "messages.pb.h"
 #include "common/protocol.h"
 #include "serial.hh"
 #include "command.hh"
 
-#define MAX_MSG_SZ 768
+#define MAX_MSG_SZ 1024
 
 extern Serial serial;
 
@@ -30,6 +29,7 @@ static Reply parse_repl_request(Request const& request)
     Reply reply;
     reply.type = request.type;
     reply.result = Result_OK;
+    reply.which_payload = 0;
     switch (request.type) {
         case MessageType_FREE_MEM:
             reply.which_payload = Reply_free_mem_tag;
@@ -99,21 +99,25 @@ static Request repl_recv_request(bool* status)
 static size_t repl_size(Reply const& reply)
 {
     pb_ostream_t szstream = {0, nullptr, 0, 0, nullptr};
-    pb_encode(&szstream, Reply_fields, &reply);
+    if (!pb_encode(&szstream, Reply_fields, &reply))
+        return 0xffff;
     return szstream.bytes_written;
 }
 
-static void repl_send_reply(Reply const& reply)
+void repl_send_reply(Reply const& reply)
 {
     size_t sz = repl_size(reply);
+    /*
     if (sz > MAX_MSG_SZ) {
         serial.send(Z_RESPONSE_TOO_LARGE);
         return;
     }
+    */
 
     serial.send(Z_FOLLOWS_PROTOBUF_RESP);
     serial.send((sz >> 8) & 0xff);
     serial.send(sz & 0xff);
+    for (;;);
 
     serial.reset_checksum();
 
