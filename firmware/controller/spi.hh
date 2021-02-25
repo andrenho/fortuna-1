@@ -12,8 +12,8 @@ public:
     void activate(Slave slave);
     void deactivate();
 
-    void    send(uint8_t byte);
-    uint8_t recv() const;
+    uint8_t send(uint8_t byte);
+    uint8_t recv();
 };
 
 #endif

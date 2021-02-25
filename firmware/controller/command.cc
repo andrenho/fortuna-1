@@ -23,5 +23,5 @@ void Command::test_debug_messages() const
 
 const char* Command::test_dma() const
 {
-    return "Andre";   // TODO
+    return ram_.test();
 }

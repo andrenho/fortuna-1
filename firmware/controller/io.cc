@@ -34,10 +34,10 @@ IO_PORTS
     {                                                      \
         return PIN ## port & _BV(PIN ## port ## pin);      \
     }                                                      \
-    static void set_ ## name ## _as_input()                \
+    static void set_ ## name ## _as_pullup()               \
     {                                                      \
+        DDR ## port &= _BV(PIN ## port ## pin);            \
         PORT ## port &= ~_BV(PORT ## port ## pin);         \
-        DDR ## port &= ~_BV(PIN ## port ## pin);           \
     }
 INPUT_PORTS
 IO_PORTS
@@ -52,7 +52,7 @@ void io_init()
 #define P(name, port, pin) set_ ## name ## _as_output();
     OUTPUT_PORTS
 #undef P
-#define P(name, port, pin) set_ ## name ## _as_input();
+#define P(name, port, pin) set_ ## name ## _as_pullup();
     INPUT_PORTS
     IO_PORTS
 #undef P

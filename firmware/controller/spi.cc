@@ -1,26 +1,42 @@
 #include "spi.hh"
 
+#include <avr/io.h>
+
+#include "io.hh"
+
 SPI::SPI()
 {
-    // TODO
+    set_MOSI(0);
+    set_SCLK(0);
+
+    // enable SPI, set as MASTER, clock to fosc/128
+    SPCR = (1 << SPE) | (1 << MSTR) | (1 << SPR1) | (1 << SPR0);
 }
 
 void SPI::activate(Slave slave)
 {
-    // TODO
+    switch (slave) {
+        case AV:  set_AVCS(0);  break;
+        case SD:  set_SDCS(0);  break;
+        case DMA: set_DMACS(0); break;
+    }
 }
 
 void SPI::deactivate()
 {
-    // TODO
+    set_AVCS(1);
+    set_SDCS(1);
+    set_DMACS(1);
 }
 
-void SPI::send(uint8_t byte)
+uint8_t SPI::send(uint8_t byte)
 {
-    // TODO
+    SPDR = byte;
+    while (!(SPSR & (1 << SPIF)));
+    return SPDR;
 }
 
-uint8_t SPI::recv() const
+uint8_t SPI::recv()
 {
-    return 0; // TODO
+    return send(0xff);
 }
