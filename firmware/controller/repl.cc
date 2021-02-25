@@ -6,28 +6,24 @@
 #include <pb_decode.h>
 #include <pb_encode.h>
 #include "common/protocol.h"
-#include "serial.hh"
-#include "command.hh"
 
 #define MAX_MSG_SZ 1024
 
-extern Serial serial;
-
-static void repl_do_terminal(char cmd)
+void Repl::do_terminal(char cmd)
 {
     switch (cmd) {
         case 'f':
-            printf_P(PSTR("%d bytes free.\n"), free_ram());
+            printf_P(PSTR("%d bytes free.\n"), command_.free_ram());
             break;
         case 'D':
-            printf_P(PSTR("- %s\n"), test_dma());
+            printf_P(PSTR("- %s\n"), command_.test_dma());
             break;
         default:
             printf_P(PSTR("Syntax error.\n"));
     }
 }
 
-static Reply parse_repl_request(Request const& request)
+Reply Repl::parse_request(Request const& request)
 {
     Reply reply;
     reply.type = request.type;
@@ -36,14 +32,14 @@ static Reply parse_repl_request(Request const& request)
     switch (request.type) {
         case MessageType_FREE_MEM:
             reply.which_payload = Reply_free_mem_tag;
-            reply.payload.free_mem = free_ram();
+            reply.payload.free_mem = command_.free_ram();
             break;
         case MessageType_TEST_DEBUG:
-            test_debug_messages();
+            command_.test_debug_messages();
             break;
         case MessageType_TEST_DMA:
             reply.which_payload = Reply_buffer_tag;
-            reply.payload.buffer.arg = (void*) test_dma();
+            reply.payload.buffer.arg = (void*) command_.test_dma();
             reply.payload.buffer.funcs.encode = [](pb_ostream_t* stream, const pb_field_t* field, void* const* arg) {
                 const char* buf = (const char*) (*arg);
                 if (!pb_encode_tag_for_field(stream, field))
@@ -57,59 +53,59 @@ static Reply parse_repl_request(Request const& request)
     return reply;
 }
 
-static Request repl_recv_request(bool* status)
+Request Repl::recv_request(bool* status)
 {
     Request request = Request_init_zero;
 
     // get message size
-    uint16_t msg_sz = serial.recv16();
+    uint16_t msg_sz = serial_.recv16();
     if (msg_sz > MAX_MSG_SZ) {
-        serial.send(Z_REQUEST_TOO_LARGE);
+        serial_.send(Z_REQUEST_TOO_LARGE);
         *status = false;
         return request;
     }
 
-    serial.reset_checksum();
+    serial_.reset_checksum();
 
     // receive message
     pb_istream_t istream = {
         [](pb_istream_t* stream, uint8_t *buf, size_t count) -> bool {
-            Serial* serial = static_cast<Serial*>(stream->state);
+            Serial* serial_ = static_cast<Serial*>(stream->state);
             for (size_t i = 0; i < count; ++i) {
-                buf[i] = serial->recv();
-                serial->add_to_checksum(buf[i]);
+                buf[i] = serial_->recv();
+                serial_->add_to_checksum(buf[i]);
             }
             return true;
         },
-        &serial,
+        &serial_,
         msg_sz,
         nullptr
     };
     if (!pb_decode(&istream, Request_fields, &request)) {
-        serial.send(Z_ERROR_DECODING_REQUEST);
+        serial_.send(Z_ERROR_DECODING_REQUEST);
         *status = false;
         return request;
     }
 
     // calculate checksum
-    uint16_t sum2 = serial.recv();
-    uint16_t sum1 = serial.recv();
-    if (!serial.compare_checksum(sum1, sum2)) {
-        serial.send(Z_CHECKSUM_NO_MATCH);
+    uint16_t sum2 = serial_.recv();
+    uint16_t sum1 = serial_.recv();
+    if (!serial_.compare_checksum(sum1, sum2)) {
+        serial_.send(Z_CHECKSUM_NO_MATCH);
         *status = false;
         return request;
     }
 
     // get request over
-    if (serial.recv() != Z_REQUEST_OVER) {
-        serial.send(Z_REQUEST_NOT_OVER);
+    if (serial_.recv() != Z_REQUEST_OVER) {
+        serial_.send(Z_REQUEST_NOT_OVER);
         *status = false;
     }
 
     return request;
 }
 
-static size_t repl_size(Reply const& reply)
+size_t Repl::message_size(Reply const& reply)
 {
     pb_ostream_t szstream = {0, nullptr, 0, 0, nullptr};
     if (!pb_encode(&szstream, Reply_fields, &reply))
@@ -117,66 +113,66 @@ static size_t repl_size(Reply const& reply)
     return szstream.bytes_written;
 }
 
-void repl_send_reply(Reply const& reply)
+void Repl::send_reply(Reply const& reply)
 {
-    size_t sz = repl_size(reply);
+    size_t sz = message_size(reply);
     if (sz > MAX_MSG_SZ) {
-        serial.send(Z_RESPONSE_TOO_LARGE);
+        serial_.send(Z_RESPONSE_TOO_LARGE);
         return;
     }
 
-    serial.send(Z_FOLLOWS_PROTOBUF_RESP);
-    serial.send((sz >> 8) & 0xff);
-    serial.send(sz & 0xff);
+    serial_.send(Z_FOLLOWS_PROTOBUF_RESP);
+    serial_.send((sz >> 8) & 0xff);
+    serial_.send(sz & 0xff);
 
-    serial.reset_checksum();
+    serial_.reset_checksum();
 
     pb_ostream_t ostream = {
         [](pb_ostream_t* stream, const uint8_t* buf, size_t count) -> bool {
-            Serial* serial = static_cast<Serial*>(stream->state);
+            Serial* serial_ = static_cast<Serial*>(stream->state);
             for (size_t i = 0; i < count; ++i) {
-                serial->send(buf[i]);
-                serial->add_to_checksum(buf[i]);
+                serial_->send(buf[i]);
+                serial_->add_to_checksum(buf[i]);
             }
             return true;
         },
-        &serial,
+        &serial_,
         MAX_MSG_SZ,
         0,
         nullptr
     };
     if (!pb_encode(&ostream, Reply_fields, &reply)) {
-        serial.send(Z_ERROR_ENCODING_REPLY);
+        serial_.send(Z_ERROR_ENCODING_REPLY);
         return;
     }
 
     // send checksum
-    auto chk = serial.checksum();
-    serial.send(chk.sum2);
-    serial.send(chk.sum1);
+    auto chk = serial_.checksum();
+    serial_.send(chk.sum2);
+    serial_.send(chk.sum1);
 
     // send reply over
-    serial.send(Z_REPLY_OVER);
+    serial_.send(Z_REPLY_OVER);
 }
 
-static void repl_do_protobuf()
+void Repl::do_protobuf()
 {
     bool status = true;
-    Request request = repl_recv_request(&status);
+    Request request = recv_request(&status);
     if (!status)
         return;
 
-    Reply reply = parse_repl_request(request);
-    repl_send_reply(reply);
+    Reply reply = parse_request(request);
+    send_reply(reply);
 }
 
-void repl_do()
+void Repl::execute()
 {
     uint8_t cmd = getchar();
     if (cmd == Z_FOLLOWS_PROTOBUF_REQ)
-        repl_do_protobuf();
+        do_protobuf();
     else if (cmd >= ' ' && cmd <= '~')
-        repl_do_terminal(cmd);
+        do_terminal(cmd);
     else
-        serial.send(Z_INVALID_COMMAND);
+        serial_.send(Z_INVALID_COMMAND);
 }

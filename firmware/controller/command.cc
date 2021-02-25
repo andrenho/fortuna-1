@@ -7,11 +7,7 @@
 
 #include <avr/pgmspace.h>
 
-#include "serial.hh"
-
-extern Serial serial;
-
-int free_ram()
+int Command::free_ram() const
 {
     extern int __heap_start, *__brkval;
     volatile int v;
@@ -19,13 +15,13 @@ int free_ram()
     return free_;
 }
 
-void test_debug_messages()
+void Command::test_debug_messages() const
 {
     for (int i = 0; i < 3; ++i)
-        serial.debug_P(PSTR("Debug message %d..."), i);
+        serial_.debug_P(PSTR("Debug message %d..."), i);
 }
 
-const char* test_dma()
+const char* Command::test_dma() const
 {
     return "Andre";   // TODO
 }

@@ -1,5 +1,5 @@
 PROJECT=controller
-OBJECTS=main.o repl.o serial.o command.o \
+OBJECTS=main.o repl.o serial.o command.o io.o spi.o ram.o \
 	pb_common.o pb_encode.o pb_decode.o messages.pb.o
 AVRDUDE_FLAGS=-p m328p -C ./avrdude_gpio.conf -c pi_1 -V
 FUSES=-U lfuse:w:0xDE:m	-U hfuse:w:0xD9:m -U efuse:w:0xFF:m -U lock:w:0xFF:m
@@ -23,7 +23,7 @@ ${PROJECT}.elf: ${OBJECTS}
 	$(CXX) -mmcu=${MCU} -o $@ $^ ${LDFLAGS}
 	avr-size -C --mcu=${MCU} ${PROJECT}.elf	
 
-repl.o: messages.pb.h
+${OBJECTS}: messages.pb.h
 
 messsages.pb.o: messages.pb.c
 
@@ -34,7 +34,7 @@ test-connection:
 	sudo avrdude ${AVRDUDE_FLAGS}
 
 clean:
-	rm -f *.elf *.o *.hex test-disasm test-simulator
+	rm -f *.elf *.o *.hex test-disasm test-simulator *.pb.*
 
 upload: ${PROJECT}.hex
 	sudo avrdude ${AVRDUDE_FLAGS} -U flash:w:$<:i

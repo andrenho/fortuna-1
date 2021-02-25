@@ -26,6 +26,8 @@ public:
     void     debug_P(const char* fmt, ...) const;
 
 private:
+    Serial() = default;
+
     uint16_t sum1_ = 0,
              sum2_ = 0;
 };
