@@ -18,3 +18,9 @@ size_t Fortuna1RealHardware::free_mem() const
     req.set_type(MessageType::FREE_MEM);
     return serial_.request(req).free_mem();
 }
+
+void Fortuna1RealHardware::test_debug_messages() const
+{
+    Request req;
+    req.set_type(MessageType::TEST_DEBUG);
+}
