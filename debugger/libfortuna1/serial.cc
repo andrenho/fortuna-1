@@ -131,13 +131,18 @@ get_new_response:
     // print debug message?
     if (resp == Z_FOLLOWS_DEBUG_MSG) {
         uint8_t c;
+        std::string dbg;
         while (true) {
             check(read(fd, &c, 1));
+            if (log_bytes_) {
+                printf("%02X ", c);
+                fflush(stdout);
+            }
             if (c == 0)
                 break;
-            putchar(c);
+            dbg += c;
         }
-        printf("\n");
+        std::cout << dbg << "\n";
         fflush(stdout);
         goto get_new_response;
     }
