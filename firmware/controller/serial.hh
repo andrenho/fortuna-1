@@ -23,7 +23,7 @@ public:
 
     void     clrscr() const;
 
-    void     debug(const char* fmt, ...) const;
+    void     debug_P(const char* fmt, ...) const;
 
 private:
     uint16_t sum1_ = 0,

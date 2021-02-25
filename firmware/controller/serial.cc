@@ -107,17 +107,17 @@ Serial::checksum() const
 }
 
 void
-Serial::debug(const char* fmt, ...) const
+Serial::debug_P(const char* fmt, ...) const
 {
     char buf[BUF_SZ];
     va_list ap;
     va_start(ap, fmt);
-    vsnprintf(buf, BUF_SZ, fmt, ap);
+    vsnprintf_P(buf, BUF_SZ, fmt, ap);
     va_end(ap);
 
     send(Z_FOLLOWS_DEBUG_MSG);
     char* b = buf;
     while (*b != 0)
-        send(*b);
+        send(*b++);
     send(0);
 }
