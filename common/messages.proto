@@ -10,8 +10,7 @@ enum MessageType {
 
 enum Result {
     OK              = 0;
-    DEBUG           = 1;
-    INVALID_REQUEST = 2;
+    INVALID_REQUEST = 1;
 }
 
 message Request {
