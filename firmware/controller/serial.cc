@@ -6,6 +6,7 @@
 #include <avr/io.h>
 #include <avr/pgmspace.h>
 
+#include "common/protocol.h"
 #include "repl.hh"
 
 #define BUF_SZ 256
@@ -114,9 +115,9 @@ Serial::debug(const char* fmt, ...) const
     vsnprintf(buf, BUF_SZ, fmt, ap);
     va_end(ap);
 
-    Reply reply;
-    reply.result = Result_DEBUG;
-    reply.which_payload = 0;
-    // TODO...
-    repl_send_reply(reply);
+    send(Z_FOLLOWS_DEBUG_MSG);
+    char* b = buf;
+    while (*b != 0)
+        send(*b);
+    send(0);
 }

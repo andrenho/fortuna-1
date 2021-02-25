@@ -6,6 +6,7 @@
 //
 #define Z_FOLLOWS_PROTOBUF_REQ    0xf0  // [this] [szB] [szA] [contents...] [chksumA] [chksumB]
 #define Z_FOLLOWS_PROTOBUF_RESP   0xf1  // [this] [szB] [szA] [contents...] [chksumA] [chksumB]
+#define Z_FOLLOWS_DEBUG_MSG       0xf2
 
 #define Z_REQUEST_OVER            0xfd
 #define Z_REPLY_OVER              0xfe
@@ -13,13 +14,13 @@
 //
 // errors
 //
-#define Z_CHECKSUM_NO_MATCH       0xf2
-#define Z_REQUEST_TOO_LARGE       0xf3
-#define Z_RESPONSE_TOO_LARGE      0xf4
-#define Z_REQUEST_NOT_OVER        0xf5
-#define Z_ERROR_DECODING_REQUEST  0xf6
-#define Z_ERROR_ENCODING_REPLY    0xf7
-#define Z_INVALID_COMMAND         0xf8
+#define Z_CHECKSUM_NO_MATCH       0xf3
+#define Z_REQUEST_TOO_LARGE       0xf4
+#define Z_RESPONSE_TOO_LARGE      0xf5
+#define Z_REQUEST_NOT_OVER        0xf6
+#define Z_ERROR_DECODING_REQUEST  0xf7
+#define Z_ERROR_ENCODING_REPLY    0xf8
+#define Z_INVALID_COMMAND         0xf9
 
 /*
 
