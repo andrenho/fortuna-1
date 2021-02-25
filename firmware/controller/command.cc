@@ -24,3 +24,8 @@ void test_debug_messages()
     for (int i = 0; i < 3; ++i)
         serial.debug_P(PSTR("Debug message %d..."), i);
 }
+
+const char* test_dma()
+{
+    return "Andre";   // TODO
+}

@@ -19,6 +19,9 @@ static void repl_do_terminal(char cmd)
         case 'f':
             printf_P(PSTR("%d bytes free.\n"), free_ram());
             break;
+        case 'D':
+            printf_P(PSTR("- %s\n"), test_dma());
+            break;
         default:
             printf_P(PSTR("Syntax error.\n"));
     }
@@ -37,6 +40,16 @@ static Reply parse_repl_request(Request const& request)
             break;
         case MessageType_TEST_DEBUG:
             test_debug_messages();
+            break;
+        case MessageType_TEST_DMA:
+            reply.which_payload = Reply_buffer_tag;
+            reply.payload.buffer.arg = (void*) test_dma();
+            reply.payload.buffer.funcs.encode = [](pb_ostream_t* stream, const pb_field_t* field, void* const* arg) {
+                const char* buf = (const char*) (*arg);
+                if (!pb_encode_tag_for_field(stream, field))
+                    return false;
+                return pb_encode_string(stream, (uint8_t*) buf, strlen(buf));
+            };
             break;
         default:
             reply.result = Result_INVALID_REQUEST;
@@ -162,7 +175,7 @@ void repl_do()
     uint8_t cmd = getchar();
     if (cmd == Z_FOLLOWS_PROTOBUF_REQ)
         repl_do_protobuf();
-    else if (cmd < 127 && cmd >= 32)
+    else if (cmd >= ' ' && cmd <= '~')
         repl_do_terminal(cmd);
     else
         serial.send(Z_INVALID_COMMAND);
