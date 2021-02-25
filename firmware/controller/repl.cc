@@ -107,17 +107,14 @@ static size_t repl_size(Reply const& reply)
 void repl_send_reply(Reply const& reply)
 {
     size_t sz = repl_size(reply);
-    /*
     if (sz > MAX_MSG_SZ) {
         serial.send(Z_RESPONSE_TOO_LARGE);
         return;
     }
-    */
 
     serial.send(Z_FOLLOWS_PROTOBUF_RESP);
     serial.send((sz >> 8) & 0xff);
     serial.send(sz & 0xff);
-    for (;;);
 
     serial.reset_checksum();
 
