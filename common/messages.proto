@@ -3,8 +3,9 @@ syntax = "proto3";
 import "nanopb.proto";
 
 enum MessageType {
-    NOP      = 0;
-    FREE_MEM = 1;
+    NOP        = 0;
+    FREE_MEM   = 1;
+    TEST_DEBUG = 2;
 }
 
 enum Result {

@@ -23,6 +23,8 @@ public:
 
     void     clrscr() const;
 
+    void     debug(const char* fmt, ...) const;
+
 private:
     uint16_t sum1_ = 0,
              sum2_ = 0;

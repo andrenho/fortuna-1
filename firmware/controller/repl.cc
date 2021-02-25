@@ -35,6 +35,9 @@ static Reply parse_repl_request(Request const& request)
             reply.which_payload = Reply_free_mem_tag;
             reply.payload.free_mem = free_ram();
             break;
+        case MessageType_TEST_DEBUG:
+            test_debug_messages();
+            break;
         default:
             reply.result = Result_INVALID_REQUEST;
     }

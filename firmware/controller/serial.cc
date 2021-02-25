@@ -99,3 +99,8 @@ Serial::checksum() const
 {
     return { sum1_, sum2_ };
 }
+
+void
+Serial::debug(const char* fmt, ...) const
+{
+}
