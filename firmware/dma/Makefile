@@ -1,12 +1,12 @@
 PROJECT=dma
-OBJECTS=main.o serial.o spi.o
+OBJECTS=main.o serial.o spi.o ram.o test.o
 AVRDUDE_FLAGS=-p atmega16 -C ./avrdude_gpio.conf -c pi_1 -B 0.5 -V
 FUSES=-U lfuse:w:0xff:m -U hfuse:w:0xd9:m    # external crystal
 MCU=atmega16
 F_CPU=16000000UL
 
 CC=avr-gcc
-CPPFLAGS=-std=c11 -Wall -Wextra -Os -DF_CPU=${F_CPU} -mmcu=${MCU} -ffunction-sections -fdata-sections -I../common
+CPPFLAGS=-std=c11 -Wall -Wextra -Os -DF_CPU=${F_CPU} -mmcu=${MCU} -ffunction-sections -fdata-sections -I../common -DRUN_TESTS
 
 all: ${PROJECT}.hex
 
