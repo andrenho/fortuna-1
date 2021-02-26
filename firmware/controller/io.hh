@@ -11,6 +11,7 @@ void io_init();
     P(SCLK,   B, 5)     \
     P(AVCS,   C, 4)     \
     P(DMACS,  C, 2)     \
+    P(BUSREQ, B, 2)     \
     P(SDCS,   C, 1)
 
 // ports only read by the microcontroller (get_XXX)
