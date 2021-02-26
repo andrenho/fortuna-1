@@ -11,6 +11,8 @@ SPI::SPI()
 
     // enable SPI, set as MASTER, clock to fosc/128
     SPCR = (1 << SPE) | (1 << MSTR) | (1 << SPR1) | (1 << SPR0);
+
+    deactivate();
 }
 
 void SPI::activate(Slave slave)
