@@ -21,14 +21,10 @@ int main()
     SPI spi;
 
     RAM ram(spi);
-    const char* s = ram.test();
-    printf("%s\n", s);
 
-    /*
     Repl repl(serial, ram);
 
     serial.clrscr();
     while (true)
         repl.execute();
-    */
 }
