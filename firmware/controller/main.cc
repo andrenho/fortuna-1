@@ -21,7 +21,13 @@ int main()
     SPI spi;
 
     RAM ram(spi);
-    ram.test();
+    const char* s = ram.test();
+
+    putchar(s[0]);
+    putchar(s[1]);
+    putchar(s[2]);
+    putchar(s[3]);
+    putchar(s[4]);
 
     /*
     Repl repl(serial, ram);

@@ -6,6 +6,8 @@
 
 SPI::SPI()
 {
+    set_MOSI_as_output();
+    set_SCLK_as_output();
     set_MOSI(0);
     set_SCLK(0);
 
@@ -17,10 +19,20 @@ SPI::SPI()
 
 void SPI::activate(Slave slave)
 {
+    set_MOSI_as_output();
+    set_SCLK_as_output();
+    set_MOSI(0);
+    set_SCLK(0);
     switch (slave) {
-        case AV:  set_AVCS(0);  break;
-        case SD:  set_SDCS(0);  break;
-        case DMA: set_DMACS(0); break;
+        case AV:
+            set_AVCS(0);
+            break;
+        case SD:
+            set_SDCS(0);
+            break;
+        case DMA:
+            set_DMACS(0);
+            break;
     }
 }
 
@@ -29,6 +41,8 @@ void SPI::deactivate()
     set_AVCS(1);
     set_SDCS(1);
     set_DMACS(1);
+    set_MOSI_as_input();  // release SPI lines if they need to be used to program the DMA
+    set_SCLK_as_input();
 }
 
 uint8_t SPI::send(uint8_t byte)

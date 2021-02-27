@@ -23,12 +23,12 @@ int main()
     while (1) {
         uint8_t r = spi_read();
         if (r != 0xff) {
-            spi_send(1);
-            spi_send(2);
-            spi_send(3);
-            spi_send(4);
-            spi_send(5);
-            spi_send(6);
+            spi_send('A');
+            spi_send('B');
+            spi_send('C');
+            spi_send('D');
+            spi_send('E');
+            spi_send('F');
         }
     }
 }
