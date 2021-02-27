@@ -1,5 +1,7 @@
 #include "ram.h"
 
+#include <stddef.h>
+
 #include <avr/io.h>
 #include <avr/cpufunc.h>
 #include <util/delay.h>
@@ -91,11 +93,31 @@ uint8_t ram_read_byte(uint16_t addr)
 void
 ram_write_buffer(uint16_t addr, uint16_t sz)
 {
-    (void) addr; (void) sz;
+    for (size_t i = 0; i < sz; ++i) {
+        ram_set_addr(addr + i);
+        ram_set_data(buffer[i]);
+        PORT_RAM &= ~(1 << MREQ);
+        PORT_RAM &= ~(1 << WE);
+        WAIT;
+        PORT_RAM |= (1 << WE) | (1 << MREQ);
+        WAIT;
+    }
+    PORTC = 0;
+    ram_reset();
 }
 
 void
 ram_read_buffer(uint16_t addr, uint16_t sz)
 {
-    (void) addr; (void) sz;
+    DDRC = 0;
+    for (size_t i = 0; i < sz; ++i) {
+        ram_set_addr(addr + i);
+        PORT_RAM &= ~(1 << MREQ);
+        PORT_RAM &= ~(1 << RD);
+        WAIT;
+        buffer[i] = ram_get_data();
+        PORT_RAM |= (1 << RD) | (1 << MREQ);
+        WAIT;
+    }
+    ram_reset();
 }
