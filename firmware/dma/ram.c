@@ -14,7 +14,7 @@ uint8_t buffer[512] = {0};
 #define WE       PINB1
 #define RD       PINB2
 
-#define WAIT     _NOP(); _NOP(); _NOP();
+#define WAIT     _delay_us(1)
 
 void ram_init()
 {
@@ -42,7 +42,7 @@ void ram_set_addr(uint16_t addr)
     PORTA = addr & 0xff;         // A0..A7
     PORTD &= ~0b11111101;        // A8, A10..15
     PORTD |= (addr >> 8) & 0b11111101;
-    if (addr & (1 << 8))
+    if ((addr >> 9) & 1)
         PORTB |= (1 << PINB3);
     else
         PORTB &= ~(1 << PINB3);
