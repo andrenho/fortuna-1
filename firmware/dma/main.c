@@ -22,14 +22,16 @@ int main()
 
     while (1) {
         uint8_t r = spi_read();
-        if (r != 0xff) {
-            spi_send('A');
-            spi_send('B');
-            spi_send('C');
-            spi_send('D');
-            spi_send('E');
-            spi_send('F');
+        spi_activate();
+        if (r == 0x1) {
+            spi_send('H');
+            spi_send('e');
+            spi_send('l');
+            spi_send('l');
+            spi_send('o');
+            spi_send('\n');
         }
+        spi_deactivate();
     }
 }
 

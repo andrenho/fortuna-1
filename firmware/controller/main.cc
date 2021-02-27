@@ -22,12 +22,7 @@ int main()
 
     RAM ram(spi);
     const char* s = ram.test();
-
-    putchar(s[0]);
-    putchar(s[1]);
-    putchar(s[2]);
-    putchar(s[3]);
-    putchar(s[4]);
+    printf("%s\n", s);
 
     /*
     Repl repl(serial, ram);
