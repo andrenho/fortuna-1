@@ -67,7 +67,7 @@ ram_write_byte(uint16_t addr, uint8_t data)
     ram_set_data(data);
     PORT_RAM &= ~(1 << MREQ);
     PORT_RAM &= ~(1 << WE);
-    _delay_us(1);
+    _NOP();
     PORT_RAM |= (1 << WE) | (1 << MREQ);
     PORTC = 0;
     ram_reset();
@@ -79,7 +79,7 @@ uint8_t ram_read_byte(uint16_t addr)
     DDRC = 0;
     PORT_RAM &= ~(1 << MREQ);
     PORT_RAM &= ~(1 << RD);
-    _delay_us(1);
+    _NOP();
     volatile uint8_t data = ram_get_data();
     PORT_RAM |= (1 << RD) | (1 << MREQ);
     ram_reset();

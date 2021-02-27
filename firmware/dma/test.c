@@ -6,7 +6,7 @@
 
 #ifdef RUN_TESTS
 
-#define WR_BYTE 0xf2
+#define WR_BYTE 0xea
 
 void run_tests()
 {
