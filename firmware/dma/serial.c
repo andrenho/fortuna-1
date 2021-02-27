@@ -32,7 +32,7 @@ void serial_init()
 
     // set config
     UCSRC = (1<<URSEL) | (1<<UCSZ1) | (1<<UCSZ0);   // Async-mode 
-    UCSRB = (1<<RXEN) | (1<<TXEN);     // Enable Receiver and Transmitter
+    UCSRB = /* (1<<RXEN) | */ (1<<TXEN);     // Enable Receiver and Transmitter
 
     static FILE uart = FDEV_SETUP_STREAM(uart_putchar, uart_getchar, _FDEV_SETUP_RW);
     stdout = &uart;

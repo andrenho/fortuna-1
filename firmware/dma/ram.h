@@ -6,6 +6,7 @@
 extern uint8_t buffer[];
 
 void     ram_init();
+void     ram_reset();
 
 void     ram_set_addr(uint16_t addr);
 uint16_t ram_get_addr();

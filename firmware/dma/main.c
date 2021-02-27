@@ -10,9 +10,7 @@ int main()
 {
     serial_init();
     spi_init();
-    /*
-    sei();
-    */
+    ram_init();
 
     printf_P(PSTR("\e[1;1H\e[2J"));
 #ifdef RUN_TESTS
@@ -34,9 +32,3 @@ int main()
         spi_deactivate();
     }
 }
-
-/*
-ISR (SPI_STC_vect) {
-    putchar('x');
-}
-*/
