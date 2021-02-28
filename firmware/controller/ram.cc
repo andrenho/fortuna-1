@@ -9,7 +9,7 @@ const char* RAM::test()
     spi_.activate(SPI::DMA);
     spi_.send(CMD_TEST);
     for (int i = 0; i < 6; ++i)
-        test_buf_[i] = spi_.recv();
+        test_buf_[i] = spi_.recv_ignore_ff(10);
     spi_.deactivate();
     test_buf_[5] = 0;  // ensures no issues with end of string
     return test_buf_;
