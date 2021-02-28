@@ -34,7 +34,7 @@ void Repl::do_terminal(char cmd)
                 printf_P(PSTR("Addr? "));
                 int n = scanf("%i", &addr);
                 if (n == 1)
-                    printf_P(PSTR("0x%02X\n"), addr);
+                    printf_P(PSTR("\n0x%02X\n"), addr);
                 else
                     error();
             }
