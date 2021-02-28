@@ -1,5 +1,8 @@
 #include "ram.hh"
 
+#include <avr/pgmspace.h>
+#include <stdio.h>
+
 #include <util/delay.h>
 
 #define CMD_TEST        0x1
@@ -63,6 +66,7 @@ bool RAM::read_block(uint16_t addr, uint16_t sz, RAM::ReadFunc read_func, void* 
     uint8_t csum2 = spi_.recv();
     uint8_t csum1 = spi_.recv();
     spi_.deactivate();
+    printf_P(PSTR("%02X %02X %02X %02X\n", csum1, csum2, sum1, sum2));
     return sum1 == csum1 && sum2 == csum2;
 }
 
