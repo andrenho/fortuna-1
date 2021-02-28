@@ -85,10 +85,6 @@ void Repl::do_terminal(char cmd)
         case 'd': {
                 int page = ask_value_P(PSTR("Page (0x100)"));
                 if (page != ERROR) {
-                    if (!ram_.write_block(page * 0x100, 0x100, [](uint16_t addr, void*) -> uint8_t {
-                        return addr + 1;
-                    }))
-                        printf_P(PSTR("Write checksum error\n"));
                     if (!ram_.read_block(page * 0x100, 0x100, [](uint16_t addr, uint8_t byte, void*) {
                         if (addr % 0x10 == 0)
                             printf_P(PSTR("%04X : "), addr);
