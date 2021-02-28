@@ -1,24 +1,57 @@
 syntax = "proto3";
 
-import "nanopb.proto";
+import "nanopb.proto";  // TODO - remove?
+
+//
+// MESSAGE TYPES
+//
 
 enum MessageType {
     NOP        = 0;
+
+    // tests
     TEST_DEBUG = 1;
     TEST_DMA   = 2;
-    FREE_MEM   = 3;
+
+    // internal
+    FREE_MEM   = 9;
+
+    // RAM
+    RAM_READ_BYTE   = 10;
+    RAM_WRITE_BYTE  = 11;
+    RAM_READ_BLOCK  = 12;
+    RAM_WRITE_BLOCK = 13;
+    DATA_BUS_READ   = 14;
+    DATA_BUS_WRITE  = 15;
 }
+
+//
+// PAYLOADS
+//
+
+message TestDMA {
+    string response = 1;
+}
+
+message FreeMem {
+    int32 amount = 1;
+}
+
+//
+// REQUEST
+//
+
+message Request {
+    MessageType type = 1;
+}
+
+//
+// RESPONSE
+//
 
 enum Result {
     OK              = 0;
     INVALID_REQUEST = 1;
-}
-
-message Request {
-    MessageType type = 1;
-    oneof payload {
-        bytes buffer = 2;
-    }
 }
 
 message Reply {
@@ -26,7 +59,7 @@ message Reply {
     Result      result         = 2;
     string      additionalInfo = 3;
     oneof payload {
-        uint32  free_mem       = 4;
-        bytes   buffer         = 5;
+        TestDMA testDMA        = 4;
+        FreeMem freeMem        = 5;
     }
 }
