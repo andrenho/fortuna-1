@@ -53,7 +53,7 @@ void Repl::do_terminal(char cmd)
         }
     };
     
-    printf_P("%c\n", cmd);
+    printf_P(PSTR("%c\n"), cmd);
     switch (cmd) {
         case 'h':
         case '?':
