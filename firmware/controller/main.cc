@@ -24,7 +24,7 @@ int main()
 
     Repl repl(serial, ram);
 
-    serial.clrscr();
+    // serial.clrscr();
     while (true)
         repl.execute();
 }
