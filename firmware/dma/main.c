@@ -56,44 +56,44 @@ int main()
                     spi_swap(data);
                 }
                 break;
-            /*
             case 0x4: {
-                    uint16_t addr = spi_read();
-                    addr |= ((uint16_t) spi_read()) << 8;
-                    uint16_t sz = spi_read();
-                    sz |= ((uint16_t) spi_read()) << 8;
+                    uint16_t addr = spi_swap(0xff);
+                    addr |= ((uint16_t) spi_swap(0xff)) << 8;
+                    uint16_t sz = spi_swap(0xff);
+                    sz |= ((uint16_t) spi_swap(0xff)) << 8;
                     ram_read_buffer(addr, sz);
                     for (size_t i = 0; i < sz; ++i)
-                        spi_send(buffer[i]);
+                        spi_swap(buffer[i]);
                     uint16_t chk = checksum(sz);
-                    spi_send(chk & 0xff);
-                    spi_send(chk >> 8);
+                    spi_swap(chk & 0xff);
+                    spi_swap(chk >> 8);
                 }
                 break;
             case 0x5: {
-                    uint16_t addr = spi_read();
-                    addr |= ((uint16_t) spi_read()) << 8;
-                    uint16_t sz = spi_read();
-                    sz |= ((uint16_t) spi_read()) << 8;
+                    uint16_t addr = spi_swap(0xff);
+                    addr |= ((uint16_t) spi_swap(0xff)) << 8;
+                    uint16_t sz = spi_swap(0xff);
+                    sz |= ((uint16_t) spi_swap(0xff)) << 8;
                     for (size_t i = 0; i < sz; ++i)
-                        buffer[i] = spi_read();
+                        buffer[i] = spi_swap(0xff);
                     ram_write_buffer(addr, sz);
                     uint16_t chk = checksum(sz);
-                    spi_send(chk & 0xff);
-                    spi_send(chk >> 8);
+                    spi_swap(chk & 0xff);
+                    spi_swap(chk >> 8);
                 }
                 break;
+            /*
             case 0x6:
-                spi_send(ram_get_data());
+                spi_swap(ram_get_data());
                 break;
             case 0x7: {
-                    uint8_t data = spi_read();
+                    uint8_t data = spi_swap(0xff);
                     ram_set_data(data);
-                    spi_send(data);
+                    spi_swap(data);
                 }
                 break;
             default:
-                spi_send(0xfe);
+                spi_swap(0xfe);
                 */
         }
         spi_deactivate();

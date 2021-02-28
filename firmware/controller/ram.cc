@@ -63,7 +63,7 @@ bool RAM::read_block(uint16_t addr, uint16_t sz, RAM::ReadFunc read_func, void* 
         sum1 = (sum1 + byte) % 255;
         sum2 = (sum2 + sum1) % 255;
     }
-    _delay_ms(1);
+    _delay_ms(10);
     uint8_t csum2 = spi_.recv();
     uint8_t csum1 = spi_.recv();
     spi_.deactivate();
