@@ -22,3 +22,18 @@ uint8_t Fortuna1Emulator::ram_read_byte(uint16_t addr) const
 {
     return ram_[addr];
 }
+
+void Fortuna1Emulator::ram_write_buffer(uint16_t addr, std::vector<uint8_t> const& bytes)
+{
+    size_t i = 0;
+    for (uint16_t a = addr; a < (uint16_t) (addr + bytes.size()); ++a)
+        ram_[a] = bytes[i++];
+}
+
+std::vector<uint8_t> Fortuna1Emulator::ram_read_buffer(uint16_t addr, uint16_t sz) const
+{
+    std::vector<uint8_t> r;
+    for (uint16_t a = addr; a < (uint16_t) (addr + sz); ++a)
+        r.push_back(ram_[a]);
+    return r;
+}

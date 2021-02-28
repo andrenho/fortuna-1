@@ -18,6 +18,8 @@ private:
     static void show_help(const char* program) ;
 };
 
+std::ostream& operator<<(std::ostream& os, std::vector<uint8_t> const& bytes);
+
 #define ASSERT_GT(msg, value, greater_than) { \
     std::cout << msg << "... "; \
     auto __v = value;                       \

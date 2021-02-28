@@ -5,6 +5,15 @@
 #include <fortuna1realhardware.hh>
 #include <fortuna1emulator.hh>
 #include <iostream>
+#include <iomanip>
+
+std::ostream& operator<<(std::ostream& os, std::vector<uint8_t> const& bytes)
+{
+    os << std::hex << std::setw(2) << std::setfill('0');
+    for (uint8_t byte: bytes)
+        os << (int) byte << ' ';
+    return os;
+}
 
 TestArgs::TestArgs(int argc, char** argv)
 {

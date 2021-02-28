@@ -56,3 +56,28 @@ uint8_t Fortuna1RealHardware::ram_read_byte(uint16_t addr) const
     req.set_allocated_ramrequest(ram_request);
     return serial_.request(req).ramresponse().byte();
 }
+
+void Fortuna1RealHardware::ram_write_buffer(uint16_t addr, std::vector<uint8_t> const& bytes)
+{
+    Request req;
+    req.set_type(MessageType::RAM_WRITE_BLOCK);
+    auto ram_request = new RamRequest();
+    ram_request->set_address(addr);
+    auto buffer = new std::string();
+    for (uint8_t b: bytes)
+        *buffer += b;
+    ram_request->set_allocated_buffer(buffer);
+    req.set_allocated_ramrequest(ram_request);
+    serial_.request(req);
+}
+
+std::vector<uint8_t> Fortuna1RealHardware::ram_read_buffer(uint16_t addr, uint16_t sz) const
+{
+    Request req;
+    req.set_type(MessageType::RAM_READ_BLOCK);
+    auto ram_request = new RamRequest();
+    ram_request->set_address(addr);
+    ram_request->set_size(sz);
+    auto& str = serial_.request(req).ramresponse().buffer();
+    return std::vector<uint8_t>(str.begin(), str.end());
+}
