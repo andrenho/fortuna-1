@@ -7,6 +7,16 @@
 #include "serial.h"
 #include "spi.h"
 
+static uint16_t checksum(uint16_t sz)
+{
+    uint16_t sum1 = 0, sum2 = 0;
+    for (size_t i = 0; i < sz; ++i) {
+        sum1 = (sum1 + buffer[i]) % 255;
+        sum2 = (sum2 + sum1) % 255;
+    }
+    return (sum2 << 8) | sum1;
+}
+
 int main()
 {
     serial_init();
@@ -45,7 +55,43 @@ int main()
                     spi_send(data);
                 }
                 break;
-
+            case 0x4: {
+                    uint16_t addr = spi_read();
+                    addr |= ((uint16_t) spi_read()) << 8;
+                    uint16_t sz = spi_read();
+                    sz |= ((uint16_t) spi_read()) << 8;
+                    ram_read_buffer(addr, sz);
+                    for (size_t i = 0; i < sz; ++i)
+                        spi_send(buffer[i]);
+                    uint16_t chk = checksum(sz);
+                    spi_send(chk & 0xff);
+                    spi_send(chk >> 8);
+                }
+                break;
+            case 0x5: {
+                    uint16_t addr = spi_read();
+                    addr |= ((uint16_t) spi_read()) << 8;
+                    uint16_t sz = spi_read();
+                    sz |= ((uint16_t) spi_read()) << 8;
+                    for (size_t i = 0; i < sz; ++i)
+                        buffer[i] = spi_read();
+                    ram_write_buffer(addr, sz);
+                    uint16_t chk = checksum(sz);
+                    spi_send(chk & 0xff);
+                    spi_send(chk >> 8);
+                }
+                break;
+            case 0x6:
+                spi_send(ram_get_data());
+                break;
+            case 0x7: {
+                    uint8_t data = spi_read();
+                    ram_set_data(data);
+                    spi_send(data);
+                }
+                break;
+            default:
+                spi_send(0xfe);
         }
         spi_deactivate();
     }

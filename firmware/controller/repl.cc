@@ -9,6 +9,11 @@
 
 #define MAX_MSG_SZ 1024
 
+// for every new command, include:
+//   - Command
+//   - Repl::do_terminal
+//   - Repl::parse_request
+
 void Repl::do_terminal(char cmd)
 {
     switch (cmd) {
@@ -31,16 +36,16 @@ Reply Repl::parse_request(Request const& request)
     reply.which_payload = 0;
     switch (request.type) {
         case MessageType_FREE_MEM:
-            reply.which_payload = Reply_free_mem_tag;
-            reply.payload.free_mem = command_.free_ram();
+            reply.which_payload = Reply_freeMem_tag;
+            reply.payload.freeMem.amount = command_.free_ram();
             break;
         case MessageType_TEST_DEBUG:
             command_.test_debug_messages();
             break;
         case MessageType_TEST_DMA:
-            reply.which_payload = Reply_buffer_tag;
-            reply.payload.buffer.arg = (void*) command_.test_dma();
-            reply.payload.buffer.funcs.encode = [](pb_ostream_t* stream, const pb_field_t* field, void* const* arg) {
+            reply.which_payload = Reply_testDMA_tag;
+            reply.payload.testDMA.response.arg = (void*) command_.test_dma();
+            reply.payload.testDMA.response.funcs.encode = [](pb_ostream_t* stream, const pb_field_t* field, void* const* arg) {
                 const char* buf = (const char*) (*arg);
                 if (!pb_encode_tag_for_field(stream, field))
                     return false;

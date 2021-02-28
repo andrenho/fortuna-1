@@ -1,9 +1,9 @@
 #include "command.hh"
 
 // for every new command, include:
-//   - here
-//   - repl_do
-//   - parse_repl_request
+//   - Command
+//   - Repl::do_terminal
+//   - Repl::parse_request
 
 #include <avr/pgmspace.h>
 
