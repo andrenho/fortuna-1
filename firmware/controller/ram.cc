@@ -73,7 +73,7 @@ bool RAM::read_block(uint16_t addr, uint16_t sz, RAM::ReadFunc read_func, void* 
 bool RAM::write_block(uint16_t addr, uint16_t sz, RAM::WriteFunc write_func, void* data)
 {
     spi_.activate(SPI::DMA);
-    spi_.send(CMD_READ_BLOCK);
+    spi_.send(CMD_WRITE_BLOCK);
     spi_.send(addr & 0xff);
     spi_.send(addr >> 8);
     spi_.send(sz & 0xff);
