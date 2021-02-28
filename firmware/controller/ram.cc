@@ -36,8 +36,8 @@ uint8_t RAM::read_byte(uint16_t addr) const
     spi_.send(CMD_READ_BYTE);
     spi_.send(addr & 0xff);
     spi_.send(addr >> 8);
-    uint8_t r = spi_.recv();
     _delay_us(100);
+    uint8_t r = spi_.recv();
     spi_.deactivate();
     return r;
 }
