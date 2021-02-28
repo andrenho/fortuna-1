@@ -32,7 +32,9 @@ void Repl::do_terminal(char cmd)
         case 'r': {
                 uint16_t addr;
                 printf_P(PSTR("Addr? "));
+                serial_.set_echo(true);
                 int n = scanf("%i", &addr);
+                serial_.set_echo(true);
                 if (n == 1)
                     printf_P(PSTR("\n0x%02X\n"), addr);
                 else

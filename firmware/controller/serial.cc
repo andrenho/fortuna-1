@@ -11,6 +11,18 @@
 
 #define BUF_SZ 256
 
+static bool echo_ = false;
+
+static void write_char(uint8_t c)
+{
+    while (!( UCSR0A & (1<<UDRE0))); // Wait for empty transmit buffer
+    UDR0 = c;
+    if (c == '\n') {
+        while (!( UCSR0A & (1<<UDRE0)));
+        UDR0 = '\r';
+    }
+}
+
 Serial
 Serial::init()
 {
@@ -29,17 +41,15 @@ Serial::init()
     // static FILE uart = FDEV_SETUP_STREAM(uart_putchar, uart_getchar, _FDEV_SETUP_RW);
     static FILE uart;
     uart.put = [](char c, FILE*) {
-        while (!( UCSR0A & (1<<UDRE0))); // Wait for empty transmit buffer
-        UDR0 = c;
-        if (c == '\n') {
-            while (!( UCSR0A & (1<<UDRE0)));
-            UDR0 = '\r';
-        }
+        write_char(c);
         return 0;
     };
     uart.get = [](FILE*) -> int {
         while (!( UCSR0A & (1<<RXC0)));  // wait for empty receive buffer
-        return UDR0;
+        uint8_t data = UDR0;
+        if (echo_)
+            write_char(data);
+        return data;
     };
     uart.flags = _FDEV_SETUP_RW;
     stdout = stdin = &uart;
@@ -122,4 +132,9 @@ Serial::debug_P(const char* fmt, ...) const
     while (*b != 0)
         send(*b++);
     send(0);
+}
+
+void Serial::set_echo(bool v)
+{
+    echo_ = v;
 }

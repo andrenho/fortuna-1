@@ -22,6 +22,7 @@ public:
     Checksum checksum() const;
 
     void     clrscr() const;
+    void     set_echo(bool v);
 
     void     debug_P(const char* fmt, ...) const;
 
