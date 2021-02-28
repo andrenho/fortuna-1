@@ -82,7 +82,7 @@ Serial::send_request(Request const& request) const
     if (log_message_ || log_bytes_)
         printf("\e[0;32m");
     if (log_message_)
-        printf("%s", request.DebugString().c_str());
+        printf("\n%s", request.DebugString().c_str());
     if (log_bytes_) {
         for (uint8_t c: req_str)
             printf("%02X ", c);
@@ -211,7 +211,7 @@ get_new_response:
     Reply reply;
     reply.ParseFromString(buffer);
     if (log_message_)
-        printf("%s", reply.DebugString().c_str());
+        printf("\n%s", reply.DebugString().c_str());
     
     if (log_message_ || log_bytes_)
         printf("\e[0m");
