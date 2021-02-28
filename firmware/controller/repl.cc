@@ -61,7 +61,7 @@ void Repl::do_terminal(char cmd)
         case 'h':
         case '?':
             printf_P(PSTR("[f] bytes free  [D] test DMA\n"));
-            printf_P(PSTR("[r] read byte  [w] write byte\n"));
+            printf_P(PSTR("[r] read byte  [w] write byte  [d] dump memory\n"));
             break;
         case 'f':
             printf_P(PSTR("%d bytes free.\n"), command_.free_ram());
@@ -79,6 +79,19 @@ void Repl::do_terminal(char cmd)
                 Values vv = ask_two_values_P(PSTR("Addr Data"));
                 if (vv.v1 != ERROR) {
                     printf_P(PSTR("0x%02X\n"), ram_.write_byte(vv.v1, vv.v2));
+                }
+            }
+            break;
+        case 'd': {
+                int page = ask_value_P(PSTR("Page (0x100)"));
+                if (page != ERROR) {
+                    ram_.read_block(page * 0x100, 0x100, [](uint16_t addr, uint8_t byte, void*) {
+                        if (addr % 0x10 == 0)
+                            printf_P(PSTR("%04X : "), addr);
+                        printf_P(PSTR("%02X "), byte);
+                        if (addr % 0x10 == 0xf)
+                            putchar('\n');
+                    });
                 }
             }
             break;
