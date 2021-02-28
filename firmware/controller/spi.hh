@@ -15,7 +15,7 @@ public:
 
     uint8_t send(uint8_t byte);
     uint8_t recv();
-    uint8_t recv_ignore_ff(size_t wait_us);
+    uint8_t recv_ignore_ff(int wait_us);
 };
 
 #endif
