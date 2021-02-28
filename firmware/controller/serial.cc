@@ -14,7 +14,7 @@
 Serial
 Serial::init()
 {
-    UCSR0A = 0x0;  // clear UART status register
+    //UCSR0A = 0x0;  // clear UART status register
     
     // set config
     UCSR0B = (1<<RXEN0) | (1<<TXEN0);     // Enable Receiver and Transmitter
