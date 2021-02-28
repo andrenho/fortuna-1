@@ -16,10 +16,29 @@
 
 void Repl::do_terminal(char cmd)
 {
+    const int ERROR = INT_MIN;
+    
     auto error = [](){ printf_P(PSTR("Syntax error.\n")); };
+    
+    auto ask_value_P = [&](const char* question) -> int {
+        int value = 0;
+        printf_P(question);
+        putchar('?');
+        putchar(' ');
+        serial_.set_echo(true);
+        int n = scanf("%i", &value);
+        serial_.set_echo(true);
+        if (n != 1) {
+            error();
+            return ERROR;
+        } else {
+            return value;
+        }
+    };
     
     switch (cmd) {
         case 'h':
+        case '?':
             printf_P(PSTR("[f] bytes free  [D] test DMA\n"));
             printf_P(PSTR("[r] read byte  [w] write byte\n"));
             break;
@@ -30,15 +49,9 @@ void Repl::do_terminal(char cmd)
             printf_P(PSTR("- %s\n"), command_.test_dma());
             break;
         case 'r': {
-                uint16_t addr;
-                printf_P(PSTR("Addr? "));
-                serial_.set_echo(true);
-                int n = scanf("%i", &addr);
-                serial_.set_echo(true);
-                if (n == 1)
+                int addr = ask_value_P(PSTR("Addr"));
+                if (addr != ERROR)
                     printf_P(PSTR("\n0x%02X\n"), addr);
-                else
-                    error();
             }
             break;
         default:
