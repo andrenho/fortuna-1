@@ -45,7 +45,7 @@ uint8_t RAM::read_byte(uint16_t addr) const
 void RAM::read_block(uint16_t addr, uint16_t sz, RAM::ReadFunc read_func, void* data) const
 {
     for (uint16_t a = addr; a < (addr + sz); ++a)
-        read_func(addr, 0, data);
+        read_func(a, 0, data);
 }
 
 void RAM::write_block(uint16_t addr, uint16_t sz, RAM::WriteFunc write_func, void* data)
