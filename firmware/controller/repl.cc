@@ -111,6 +111,18 @@ Reply Repl::parse_request(Request const& request)
                 return pb_encode_string(stream, (uint8_t*) buf, strlen(buf));
             };
             break;
+        case MessageType_RAM_READ_BYTE: {
+                uint8_t data = ram_.read_byte(request.payload.ramRequest.address);
+                reply.which_payload = Reply_ramResponse_tag;
+                reply.payload.ramResponse.byte = data;
+            }
+            break;
+        case MessageType_RAM_WRITE_BYTE: {
+                uint8_t data = ram_.write_byte(request.payload.ramRequest.address, request.payload.ramRequest.byte);
+                reply.which_payload = Reply_ramResponse_tag;
+                reply.payload.ramResponse.byte = data;
+            }
+            break;
         default:
             reply.result = Result_INVALID_REQUEST;
     }
