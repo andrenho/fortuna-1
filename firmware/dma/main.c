@@ -39,25 +39,24 @@ int main()
                 spi_swap('e');
                 spi_swap('l');
                 spi_swap('l');
-                _delay_us(100);
                 spi_swap('o');
                 spi_swap('\n');
                 break;
-            /*
             case 0x2: {
-                    uint16_t addr = spi_read();
-                    addr |= ((uint16_t) spi_read()) << 8;
-                    spi_send(ram_read_byte(addr));
+                    uint16_t addr = spi_swap(0xff);
+                    addr |= ((uint16_t) spi_swap(0xff)) << 8;
+                    spi_swap(ram_read_byte(addr));
                 }
                 break;
             case 0x3: {
-                    uint16_t addr = spi_read();
-                    addr |= ((uint16_t) spi_read()) << 8;
-                    uint8_t data = spi_read();
+                    uint16_t addr = spi_swap(0xff);
+                    addr |= ((uint16_t) spi_swap(0xff)) << 8;
+                    uint8_t data = spi_swap(0xff);
                     ram_write_byte(addr, data);
-                    spi_send(data);
+                    spi_swap(data);
                 }
                 break;
+            /*
             case 0x4: {
                     uint16_t addr = spi_read();
                     addr |= ((uint16_t) spi_read()) << 8;
