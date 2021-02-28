@@ -77,8 +77,7 @@ void Repl::do_terminal(char cmd)
         case 'w': {
                 Values vv = ask_two_values_P(PSTR("Addr Data"));
                 if (vv.v1 != ERROR) {
-                    ram_.write_byte(vv.v1, vv.v2);
-                    printf_P(PSTR("Ok.\n"));
+                    printf_P(PSTR("0x%02X\n"), ram_.write_byte(vv.v1, vv.v2));
                 }
             }
             break;
