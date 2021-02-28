@@ -17,6 +17,10 @@
 void Repl::do_terminal(char cmd)
 {
     switch (cmd) {
+        case 'h':
+            printf_P(PSTR("[f] bytes free  [D] test DMA\n"));
+            printf_P(PSTR("[r] read byte  [w] write byte\n"));
+            break;
         case 'f':
             printf_P(PSTR("%d bytes free.\n"), command_.free_ram());
             break;

@@ -26,7 +26,18 @@ enum MessageType {
 }
 
 //
-// PAYLOADS
+// PAYLOADS - REQUESTS
+//
+
+message RamRequest {
+    uint32 address = 1;
+    uint32 size    = 2;
+    uint32 byte    = 3;
+    bytes  buffer  = 4;
+};
+
+//
+// PAYLOADS - RESPONSES
 //
 
 message TestDMA {
@@ -37,12 +48,21 @@ message FreeMem {
     int32 amount = 1;
 }
 
+message RamResponse {
+    uint32 byte     = 1;
+    uint32 checksum = 2;
+    bytes  buffer   = 3;
+};
+
 //
 // REQUEST
 //
 
 message Request {
     MessageType type = 1;
+    oneof payload {
+        RamRequest ramRequest = 2;
+    }
 }
 
 //
@@ -55,11 +75,12 @@ enum Result {
 }
 
 message Reply {
-    MessageType type           = 1;
-    Result      result         = 2;
-    string      additionalInfo = 3;
+    MessageType type               = 1;
+    Result      result             = 2;
+    string      additionalInfo     = 3;
     oneof payload {
-        TestDMA testDMA        = 4;
-        FreeMem freeMem        = 5;
+        TestDMA     testDMA        = 4;
+        FreeMem     freeMem        = 5;
+        RamResponse ramResponse    = 6;
     }
 }

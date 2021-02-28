@@ -155,7 +155,7 @@ get_new_response:
     } else if (resp == Z_RESPONSE_TOO_LARGE) {
         throw ReplyException("Controller informed that the response would be too large to create.");
     } else if (resp == Z_REQUEST_NOT_OVER) {
-        throw ReplyException("Expected request over but received a different byte.");
+        throw ReplyException("Expected request to be over over but received a different byte.");
     } else if (resp == Z_ERROR_DECODING_REQUEST) {
         throw ReplyException("Controller informed error decoding the request.");
     } else if (resp == Z_ERROR_ENCODING_REPLY) {

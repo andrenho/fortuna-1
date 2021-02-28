@@ -8,8 +8,14 @@ class Fortuna1Emulator : public Fortuna1 {
 public:
     size_t free_mem() const override { return 1000; }
     
-    void test_debug_messages() const override;
+    void        test_debug_messages() const override;
     std::string test_dma() const override;
+    
+    void    ram_write_byte(uint16_t addr, uint8_t data) override;
+    uint8_t ram_read_byte(uint16_t addr) const override;
+
+private:
+    uint8_t ram_[64 * 1024] = {0};
 };
 
 #endif

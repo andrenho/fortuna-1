@@ -12,3 +12,13 @@ std::string Fortuna1Emulator::test_dma() const
 {
     return "Hello";
 }
+
+void Fortuna1Emulator::ram_write_byte(uint16_t addr, uint8_t data)
+{
+    ram_[addr] = data;
+}
+
+uint8_t Fortuna1Emulator::ram_read_byte(uint16_t addr) const
+{
+    return ram_[addr];
+}
