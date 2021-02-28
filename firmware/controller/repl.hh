@@ -8,7 +8,7 @@
 
 class Repl {
 public:
-    Repl(Serial& serial, RAM& ram) : serial_(serial), command_(serial, ram) {}
+    Repl(Serial& serial, RAM& ram) : serial_(serial), command_(serial, ram), ram_(ram) {}
 
     void execute();
 
@@ -22,6 +22,7 @@ private:
 
     Serial& serial_;
     Command command_;
+    RAM     ram_;
 };
 
 #endif

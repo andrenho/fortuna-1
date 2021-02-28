@@ -12,3 +12,13 @@ const char* RAM::test()
     test_buf_[5] = 0;  // ensures no issues with end of string
     return test_buf_;
 }
+
+void RAM::write_byte(uint16_t addr, uint8_t data)
+{
+
+}
+
+uint8_t RAM::read_byte(uint16_t addr) const
+{
+    return 0;
+}

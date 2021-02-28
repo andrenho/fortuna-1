@@ -15,12 +15,12 @@ static bool echo_ = false;
 
 static void write_char(uint8_t c)
 {
+    while (!( UCSR0A & (1<<UDRE0))); // Wait for empty transmit buffer
+    UDR0 = c;
     if (c == '\n') {
         while (!( UCSR0A & (1<<UDRE0)));
         UDR0 = '\r';
     }
-    while (!( UCSR0A & (1<<UDRE0))); // Wait for empty transmit buffer
-    UDR0 = c;
 }
 
 Serial

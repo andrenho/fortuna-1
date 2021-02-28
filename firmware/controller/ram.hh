@@ -5,9 +5,12 @@
 
 class RAM {
 public:
-    RAM(SPI& spi): spi_(spi) {}
+    explicit RAM(SPI& spi): spi_(spi) {}
 
     const char* test();
+    
+    void    write_byte(uint16_t addr, uint8_t data);
+    uint8_t read_byte(uint16_t addr) const;
 
 private:
     SPI& spi_;

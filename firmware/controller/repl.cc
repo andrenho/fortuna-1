@@ -32,6 +32,7 @@ void Repl::do_terminal(char cmd)
             error();
             return ERROR;
         } else {
+            putchar('\n');
             return value;
         }
     };
@@ -49,6 +50,7 @@ void Repl::do_terminal(char cmd)
             error();
             return { ERROR, 0 };
         } else {
+            putchar('\n');
             return values;
         }
     };
@@ -69,13 +71,14 @@ void Repl::do_terminal(char cmd)
         case 'r': {
                 int addr = ask_value_P(PSTR("Addr"));
                 if (addr != ERROR)
-                    printf_P(PSTR("0x%02X\n"), addr);
+                    printf_P(PSTR("0x%02X\n"), ram_.read_byte(addr));
             }
             break;
         case 'w': {
                 Values vv = ask_two_values_P(PSTR("Addr Data"));
                 if (vv.v1 != ERROR) {
-                    printf_P(PSTR("0x%04X 0x%02X"), vv.v1, vv.v2);
+                    ram_.write_byte(vv.v1, vv.v2);
+                    printf_P(PSTR("Ok.\n"));
                 }
             }
             break;
