@@ -22,14 +22,9 @@ void spi_deactivate()
     DDRB &= ~_BV(PORTB6);
 }
 
-uint8_t spi_read()
-{
-    while(!(SPSR & (1<<SPIF)));
-    return SPDR; 
-}
-
-void spi_send(uint8_t byte)
+uint8_t spi_swap(uint8_t byte)
 {
     SPDR = byte;
     while(!(SPSR & (1<<SPIF)));
+    return SPDR;
 }

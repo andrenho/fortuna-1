@@ -2,6 +2,7 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <avr/pgmspace.h>
+#include <util/delay.h>
 
 #include "ram.h"
 #include "serial.h"
@@ -30,17 +31,19 @@ int main()
 #endif
 
     while (1) {
-        uint8_t r = spi_read();
+        uint8_t r = spi_swap(0xff);
         spi_activate();
         switch (r) {
             case 0x1:
-                spi_send('H');
-                spi_send('e');
-                spi_send('l');
-                spi_send('l');
-                spi_send('o');
-                spi_send('\n');
+                spi_swap('H');
+                spi_swap('e');
+                spi_swap('l');
+                spi_swap('l');
+                _delay_us(100);
+                spi_swap('o');
+                spi_swap('\n');
                 break;
+            /*
             case 0x2: {
                     uint16_t addr = spi_read();
                     addr |= ((uint16_t) spi_read()) << 8;
@@ -92,6 +95,7 @@ int main()
                 break;
             default:
                 spi_send(0xfe);
+                */
         }
         spi_deactivate();
     }
