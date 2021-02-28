@@ -36,6 +36,24 @@ void Repl::do_terminal(char cmd)
         }
     };
     
+    struct Values { int v1, v2; };
+    auto ask_two_values_P = [&](const char* question) -> Values {
+        Values values = { 0, 0 };
+        printf_P(question);
+        putchar('?');
+        putchar(' ');
+        serial_.set_echo(true);
+        int n = scanf("%i %i", &values.v1, &values.v2);
+        serial_.set_echo(true);
+        if (n != 2) {
+            error();
+            return { ERROR, 0 };
+        } else {
+            return values;
+        }
+    };
+    
+    printf_P("%c\n", cmd);
     switch (cmd) {
         case 'h':
         case '?':
@@ -51,7 +69,14 @@ void Repl::do_terminal(char cmd)
         case 'r': {
                 int addr = ask_value_P(PSTR("Addr"));
                 if (addr != ERROR)
-                    printf_P(PSTR("\n0x%02X\n"), addr);
+                    printf_P(PSTR("0x%02X\n"), addr);
+            }
+            break;
+        case 'w': {
+                auto [addr, data] = ask_two_values_P(PSTR("Addr Data"));
+                if (addr != ERROR) {
+                    printf_P(PSTR("0x%04X 0x%02X"), addr, data);
+                }
             }
             break;
         default:
