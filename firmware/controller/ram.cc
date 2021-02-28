@@ -72,5 +72,22 @@ bool RAM::read_block(uint16_t addr, uint16_t sz, RAM::ReadFunc read_func, void* 
 
 bool RAM::write_block(uint16_t addr, uint16_t sz, RAM::WriteFunc write_func, void* data)
 {
-    return true;
+    spi_.activate(SPI::DMA);
+    spi_.send(CMD_READ_BLOCK);
+    spi_.send(addr & 0xff);
+    spi_.send(addr >> 8);
+    spi_.send(sz & 0xff);
+    spi_.send(sz >> 8);
+    uint16_t sum1 = 0, sum2 = 0;
+    for (uint16_t a = addr; a < (addr + sz); ++a) {
+        uint8_t byte = write_func(a, data);
+        spi_.send(byte);
+        sum1 = (sum1 + byte) % 255;
+        sum2 = (sum2 + sum1) % 255;
+    }
+    _delay_ms(100);
+    uint8_t csum1 = spi_.recv();
+    uint8_t csum2 = spi_.recv();
+    spi_.deactivate();
+    return sum1 == csum1 && sum2 == csum2;
 }
