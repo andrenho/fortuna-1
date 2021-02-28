@@ -85,6 +85,8 @@ void Repl::do_terminal(char cmd)
         case 'd': {
                 int page = ask_value_P(PSTR("Page (0x100)"));
                 if (page != ERROR) {
+                    for (int i = 0; i < 256; ++i)
+                        ram_.write_byte(i, i);
                     if (!ram_.read_block(page * 0x100, 0x100, [](uint16_t addr, uint8_t byte, void*) {
                         if (addr % 0x10 == 0)
                             printf_P(PSTR("%04X : "), addr);

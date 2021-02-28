@@ -62,6 +62,7 @@ bool RAM::read_block(uint16_t addr, uint16_t sz, RAM::ReadFunc read_func, void* 
     }
     uint8_t csum2 = spi_.recv();
     uint8_t csum1 = spi_.recv();
+    spi_.deactivate();
     return sum1 == csum1 && sum2 == csum2;
 }
 
