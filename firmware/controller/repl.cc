@@ -16,25 +16,31 @@
 
 void Repl::do_terminal(char cmd)
 {
-    if (n == 1) {
-        switch (cmd) {
-            case 'h':
-                printf_P(PSTR("[f] bytes free  [D] test DMA\n"));
-                printf_P(PSTR("[r] read byte  [w] write byte\n"));
-                break;
-            case 'f':
-                printf_P(PSTR("%d bytes free.\n"), command_.free_ram());
-                break;
-            case 'D':
-                printf_P(PSTR("- %s\n"), command_.test_dma());
-                break;
-            case 'r': {
-                    printf_P(PSTR("Addr? "));
-                }
-                break;
-            default:
-                printf_P(PSTR("Syntax error.\n"));
-        }
+    auto error = [](){ printf_P(PSTR("Syntax error.\n")); };
+    
+    switch (cmd) {
+        case 'h':
+            printf_P(PSTR("[f] bytes free  [D] test DMA\n"));
+            printf_P(PSTR("[r] read byte  [w] write byte\n"));
+            break;
+        case 'f':
+            printf_P(PSTR("%d bytes free.\n"), command_.free_ram());
+            break;
+        case 'D':
+            printf_P(PSTR("- %s\n"), command_.test_dma());
+            break;
+        case 'r': {
+                uint16_t addr;
+                printf_P(PSTR("Addr? "));
+                int n = scanf("%i", &addr);
+                if (n == 1)
+                    printf_P(PSTR("0x%02X\n"), addr);
+                else
+                    error();
+            }
+            break;
+        default:
+            error();
     }
 }
 
