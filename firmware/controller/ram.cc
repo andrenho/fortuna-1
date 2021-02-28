@@ -64,10 +64,9 @@ bool RAM::read_block(uint16_t addr, uint16_t sz, RAM::ReadFunc read_func, void* 
         sum2 = (sum2 + sum1) % 255;
     }
     _delay_ms(1);
-    uint8_t csum2 = spi_.recv();
     uint8_t csum1 = spi_.recv();
+    uint8_t csum2 = spi_.recv();
     spi_.deactivate();
-    printf_P(PSTR("%02X %02X %02X %02X\n"), csum1, csum2, sum1, sum2);
     return sum1 == csum1 && sum2 == csum2;
 }
 
