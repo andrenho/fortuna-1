@@ -57,16 +57,3 @@ uint8_t SPI::recv()
 {
     return send(0xff);
 }
-
-uint8_t SPI::recv_ignore_ff(int wait_us)
-{
-    do {
-        uint8_t r = recv();
-        if (r != 0xff)
-            return r;
-        while (wait_us > 0) {
-            _delay_us(5);
-            wait_us -= 5;
-        }
-    } while (true);
-}
