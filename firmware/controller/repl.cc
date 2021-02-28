@@ -73,9 +73,9 @@ void Repl::do_terminal(char cmd)
             }
             break;
         case 'w': {
-                auto [addr, data] = ask_two_values_P(PSTR("Addr Data"));
-                if (addr != ERROR) {
-                    printf_P(PSTR("0x%04X 0x%02X"), addr, data);
+                Values vv = ask_two_values_P(PSTR("Addr Data"));
+                if (vv.v1 != ERROR) {
+                    printf_P(PSTR("0x%04X 0x%02X"), vv.v1, vv.v2);
                 }
             }
             break;
