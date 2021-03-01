@@ -158,6 +158,7 @@ Reply Repl::parse_request(Request const& request)
                 }
             }
             break;
+            */
         case MessageType_RAM_WRITE_BLOCK: {
                 struct S {
                     uint16_t         addr;
@@ -177,7 +178,6 @@ Reply Repl::parse_request(Request const& request)
                 }
             }
             break;
-            */
         default:
             reply.result = Result_INVALID_REQUEST;
     }
