@@ -23,17 +23,17 @@ public:
 #endif
 
 protected:
-    Message() : message_type_(MessageType::Undefined) {}
+             Message()                         : message_type_(MessageType::Undefined) {}
     explicit Message(MessageType message_type) : message_type_(message_type) {}
     
     virtual uint8_t message_class() const = 0;
-    virtual void serialize_detail(SerializationFunction f, void* data) const = 0;
+    virtual void    serialize_detail(SerializationFunction f, void* data) const = 0;
 
 #ifdef TEST
     virtual bool compare(Message const& message) const;
 #endif
     
-    MessageType message_type_;
+    MessageType          message_type_;
     DeserializationError deserialization_error_ = NoErrors;
     
     static void deserialize_header(Message* message, DeserializationFunction f, void* data);
