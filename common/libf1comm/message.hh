@@ -19,7 +19,7 @@ public:
     using SerializationFunction = void(*)(uint8_t byte, void* data);
     using DeserializationFunction = uint8_t(*)(void* data);
     
-    static void deserialize_header(Message* message, DeserializationFunction f, void* data, uint16_t* sum1, uint16_t* sum2);
+    static void deserialize_header(Message* message, DeserializationFunction f, void* data, uint16_t* sum1, uint16_t* sum2, bool skip_first_byte);
     
     virtual ~Message() = default;
     

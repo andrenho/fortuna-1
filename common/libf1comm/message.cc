@@ -82,10 +82,12 @@ void Message::serialize(Message::SerializationFunction f, void* data) const
     f(FinalByte, data);
 }
 
-void Message::deserialize_header(Message* message, Message::DeserializationFunction f, void* data, uint16_t* sum1, uint16_t* sum2)
+void Message::deserialize_header(Message* message, Message::DeserializationFunction f, void* data, uint16_t* sum1, uint16_t* sum2, bool skip_first_byte)
 {
-    if (add_to_checksum(f(data), sum1, sum2) != message->message_class()) {
-        message->deserialization_error_ = DeserializationError::InvalidMessageClass;
+    if (!skip_first_byte) {
+        if (add_to_checksum(f(data), sum1, sum2) != message->message_class()) {
+            message->deserialization_error_ = DeserializationError::InvalidMessageClass;
+        }
     }
     message->message_type_ = static_cast<MessageType>(add_to_checksum(f(data), sum1, sum2));
     

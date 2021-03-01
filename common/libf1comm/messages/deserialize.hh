@@ -2,11 +2,11 @@
 #define LIBF1COMM_DESERIALIZE_HH
 
 template <typename T>
-T deserialize(Buffer& buffer, Message::DeserializationFunction f, void* data)
+T deserialize(Buffer& buffer, Message::DeserializationFunction f, void* data, bool skip_first_byte)
 {
     uint16_t sum1 = 0, sum2 = 0;
     T message(buffer);
-    Message::deserialize_header(&message, f, data, &sum1, &sum2);
+    Message::deserialize_header(&message, f, data, &sum1, &sum2, skip_first_byte);
     
     message.deserialize_detail(f, data, &sum1, &sum2);
     
@@ -31,7 +31,7 @@ T deserialize_from_string(Buffer& buffer, std::string const& serial)
     T t = deserialize<T>(buffer, [](void* data) -> uint8_t {
         S* s = (S*) data;
         return s->serial[s->i++];
-    }, &s);
+    }, &s, false);
     return t;
 }
 #endif
