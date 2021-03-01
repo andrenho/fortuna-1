@@ -8,7 +8,6 @@ bool Request::compare(Message const& message) const
 
 void Request::serialize_detail(Message::SerializationFunction f, void* data) const
 {
-
 }
 
 #endif

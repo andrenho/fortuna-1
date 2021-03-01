@@ -1,6 +1,8 @@
 #include "message.hh"
 
 #ifdef TEST
+#include <cstring>
+
 std::string Message::serialize_to_string() const
 {
     std::string s;
@@ -12,7 +14,20 @@ std::string Message::serialize_to_string() const
 
 bool Message::compare(Message const& other) const
 {
-    return message_type_ == other.message_type_;
+    bool eq = true;
+    if (message_type_ != other.message_type_)
+        eq = false;
+    if (buffer_ != nullptr && buffer_->sz > 0 && other.buffer_ == nullptr)
+        eq = false;
+    if (buffer_ == nullptr && other.buffer_ != nullptr && other.buffer_->sz > 0)
+        eq = false;
+    if (buffer_ != nullptr && other.buffer_ != nullptr) {
+        if (buffer_->sz != other.buffer_->sz)
+            eq = false;
+        if (memcmp(buffer_->data, other.buffer_->data, buffer_->sz) != 0)
+            eq = false;
+    }
+    return eq;
 }
 #endif
 
