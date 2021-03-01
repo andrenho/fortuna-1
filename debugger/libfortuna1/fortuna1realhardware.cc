@@ -31,7 +31,7 @@ std::string Fortuna1RealHardware::test_dma() const
 {
     Request req;
     req.set_type(MessageType::TEST_DMA);
-    return serial_.request(req).testdma().response();
+    return serial_.request(req).buffer();
 }
 
 void Fortuna1RealHardware::ram_write_byte(uint16_t addr, uint8_t data)

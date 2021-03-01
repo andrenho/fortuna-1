@@ -13,11 +13,16 @@ public:
     void execute();
 
 private:
+    struct Buffer {
+        size_t  size;
+        uint8_t buffer[512];
+    };
+    
     void    do_protobuf();
-    void send_reply(Reply const& reply, uint8_t string[512]);
+    void send_reply(Reply const& reply, Buffer& buffer);
     static size_t  message_size(Reply const& reply);
-    Request recv_request(bool* status, uint8_t string[512]);
-    Reply parse_request(Request const& request, uint8_t string[512]);
+    Request recv_request(bool* status, Buffer& buffer);
+    Reply parse_request(Request const& request, Buffer& buffer);
     void    do_terminal(char cmd);
 
     Serial& serial_;

@@ -39,10 +39,6 @@ message RamRequest {
 // PAYLOADS - RESPONSES
 //
 
-message TestDMA {
-    string response = 1;
-}
-
 message FreeMem {
     int32 amount = 1;
 }
@@ -79,8 +75,7 @@ message Reply {
     string      additionalInfo     = 3;
     bytes       buffer             = 4;
     oneof payload {
-        TestDMA     testDMA        = 5;
-        FreeMem     freeMem        = 6;
-        RamResponse ramResponse    = 7;
+        FreeMem     freeMem        = 5;
+        RamResponse ramResponse    = 6;
     }
 }

@@ -101,7 +101,7 @@ void Repl::do_terminal(char cmd)
     }
 }
 
-Reply Repl::parse_request(Request const& request, uint8_t buffer[512])
+Reply Repl::parse_request(Request const& request, Buffer& buffer)
 {
     Reply reply;
     reply.type = request.type;
@@ -116,6 +116,7 @@ Reply Repl::parse_request(Request const& request, uint8_t buffer[512])
             command_.test_debug_messages();
             break;
         case MessageType_TEST_DMA:
+            /*
             reply.which_payload = Reply_testDMA_tag;
             reply.payload.testDMA.response.arg = (void*) command_.test_dma();
             reply.payload.testDMA.response.funcs.encode = [](pb_ostream_t* stream, const pb_field_t* field, void* const* arg) {
@@ -124,6 +125,7 @@ Reply Repl::parse_request(Request const& request, uint8_t buffer[512])
                     return false;
                 return pb_encode_string(stream, (uint8_t*) buf, strlen(buf));
             };
+             */
             break;
         case MessageType_RAM_READ_BYTE: {
                 uint8_t data = ram_.read_byte(request.payload.ramRequest.address);
@@ -184,7 +186,7 @@ Reply Repl::parse_request(Request const& request, uint8_t buffer[512])
     return reply;
 }
 
-Request Repl::recv_request(bool* status, uint8_t buffer[512])
+Request Repl::recv_request(bool* status, Buffer& buffer)
 {
     Request request = Request_init_zero;
 
@@ -244,7 +246,7 @@ size_t Repl::message_size(Reply const& reply)
     return szstream.bytes_written;
 }
 
-void Repl::send_reply(Reply const& reply, uint8_t buffer[512])
+void Repl::send_reply(Reply const& reply, Buffer& buffer)
 {
     size_t sz = message_size(reply);
     if (sz > MAX_MSG_SZ) {
@@ -288,7 +290,7 @@ void Repl::send_reply(Reply const& reply, uint8_t buffer[512])
 
 void Repl::do_protobuf()
 {
-    uint8_t buffer[512];
+    Buffer buffer = { 0, {0} };
     bool status = true;
     Request request = recv_request(&status, buffer);
     if (!status)
