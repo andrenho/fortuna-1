@@ -20,13 +20,14 @@ void Message::serialize(Message::SerializationFunction f, void* data) const
 {
     uint16_t sum1 = 0, sum2 = 0;
     auto add_byte = [&](uint8_t byte) {
-        f(byte, data);
-        sum1 = (sum1 + byte) % 0xff;
-        sum2 = (sum2 + sum1) % 0xff;
+        f(add_to_checksum(byte, &sum1, &sum2), data);
     };
     
     // message class
     add_byte(message_class());
+    
+    // message type
+    add_byte(static_cast<uint8_t>(message_type_));
     
     // message buffer
     add_byte(0);  // TODO - buffer size
@@ -41,22 +42,27 @@ void Message::serialize(Message::SerializationFunction f, void* data) const
     S s { f, &sum1, &sum2, data };
     serialize_detail([](uint8_t byte, void* data) {
         S* s = (S*) data;
-        s->f(byte, s->data);
-        *s->sum1 = (*s->sum1 + byte) % 0xff;
-        *s->sum2 = (*s->sum2 + *s->sum1) % 0xff;
+        s->f(add_to_checksum(byte, s->sum1, s->sum2), s->data);
     }, &s);
     
     // checksum
-    f(sum2, data);
     f(sum1, data);
+    f(sum2, data);
 }
 
-void Message::deserialize_header(Message* message, Message::DeserializationFunction f, void* data)
+void Message::deserialize_header(Message* message, Message::DeserializationFunction f, void* data, uint16_t* sum1, uint16_t* sum2)
 {
-    if (f(data) != message->message_class()) {
+    if (add_to_checksum(f(data), sum1, sum2) != message->message_class()) {
         message->deserialization_error_ = InvalidMessageClass;
     }
-    message->message_type_ = static_cast<MessageType>(f(data));
-    f(data);  // TODO - ignore buffer size for now
-    f(data);
+    message->message_type_ = static_cast<MessageType>(add_to_checksum(f(data), sum1, sum2));
+    add_to_checksum(f(data), sum1, sum2);  // TODO - ignore buffer size for now
+    add_to_checksum(f(data), sum1, sum2);
+}
+
+uint8_t add_to_checksum(uint8_t data, uint16_t* sum1, uint16_t* sum2)
+{
+    *sum1 = (*sum1 + data) % 0xff;
+    *sum2 = (*sum2 + *sum1) % 0xff;
+    return data;
 }

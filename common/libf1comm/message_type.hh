@@ -25,7 +25,7 @@ enum MessageType {
 };
 
 enum DeserializationError {
-    NoErrors, InvalidMessageClass,
+    NoErrors, InvalidMessageClass, ChecksumDoesNotMatch,
 };
 
 #endif //LIBF1COMM_MESSAGE_TYPE_HH

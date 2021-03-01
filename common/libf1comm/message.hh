@@ -36,7 +36,7 @@ protected:
     MessageType          message_type_;
     DeserializationError deserialization_error_ = NoErrors;
     
-    static void deserialize_header(Message* message, DeserializationFunction f, void* data);
+    static void deserialize_header(Message* message, DeserializationFunction f, void* data, uint16_t* sum1, uint16_t* sum2);
 };
 
 template <typename T>
@@ -50,5 +50,7 @@ T deserialize_from_string(std::string const& serial)
     }, &s);
     return t;
 }
+
+uint8_t add_to_checksum(uint8_t data, uint16_t* sum1, uint16_t* sum2);
 
 #endif
