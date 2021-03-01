@@ -1,7 +1,7 @@
 #ifndef LIBF1COMM_REQUEST_HH
 #define LIBF1COMM_REQUEST_HH
 
-#include "message.hh"
+#include "../message.hh"
 
 class Request : public Message {
 public:

@@ -1,7 +1,7 @@
 #ifndef LIBF1COMM_DEBUGINFORMATION_HH
 #define LIBF1COMM_DEBUGINFORMATION_HH
 
-#include "message.hh"
+#include "../message.hh"
 
 class DebugInformation : public Message {
 public:

@@ -2,12 +2,12 @@
 #include <cstring>
 #include <iostream>
 
-#include "request.hh"
+#include "messages/request.hh"
 #include "message_type.hh"
 #include "buffer.hh"
-#include "debuginformation.hh"
-#include "deserialize.hh"
-#include "reply.hh"
+#include "messages/debuginformation.hh"
+#include "messages/deserialize.hh"
+#include "messages/reply.hh"
 
 Buffer buffer {};
 
@@ -64,6 +64,16 @@ int main()
         Reply r = assert_serialization("Reply FreeMem", reply);
         assert_eq("FreeMem conversion", 1234, r.free_mem);
         reply.debug();
+        printf("------------\n");
+    }
+    {
+        Request request(MessageType::RamWriteByte);
+        RamRequest ram_request = { 0xabcd, 1, 0xfe };
+        request.set_ram_request(ram_request);
+        Reply r = assert_serialization("RAM request", request);
+        assert_eq("Address", ram_request.address, r.ram_request.address);
+        assert_eq("Data", ram_request.data, r.data.address);
+        request.debug();
         printf("------------\n");
     }
 }
