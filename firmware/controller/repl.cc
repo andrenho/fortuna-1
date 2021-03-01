@@ -137,6 +137,10 @@ Reply Repl::parse_request(Request const& request)
                 reply.payload.ramResponse.byte = data;
             }
             break;
+        case MessageType_RAM_READ_BLOCK:
+            break;
+        case MessageType_RAM_WRITE_BLOCK:
+            break;
         default:
             reply.result = Result_INVALID_REQUEST;
     }
@@ -247,6 +251,7 @@ void Repl::send_reply(Reply const& reply)
 
 void Repl::do_protobuf()
 {
+    volatile uint8_t buffer[512] = {0};
     bool status = true;
     Request request = recv_request(&status);
     if (!status)
