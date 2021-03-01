@@ -7,11 +7,7 @@
 #include "repl.hh"
 #include "serial.hh"
 
-#define SPI_DDR DDRB
-#define CS      PINB2
-#define MOSI    PINB3
-#define MISO    PINB4
-#define SCK     PINB5
+extern "C" void __cxa_pure_virtual() { while (1); }
 
 int main()
 {

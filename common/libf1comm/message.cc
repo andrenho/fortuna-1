@@ -1,14 +1,14 @@
 #include "message.hh"
 
-#ifdef TEST
-#include <cstring>
-
 uint8_t add_to_checksum(uint8_t data, uint16_t* sum1, uint16_t* sum2)
 {
     *sum1 = (*sum1 + data) % 0xff;
     *sum2 = (*sum2 + *sum1) % 0xff;
     return data;
 }
+
+#ifdef TEST
+#include <cstring>
 
 std::string Message::serialize_to_string() const
 {

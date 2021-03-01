@@ -14,21 +14,17 @@ public:
     void execute();
 
 private:
-    struct Buffer {
-        size_t  size;
-        uint8_t buffer[512];
-    };
-    
     void    do_message();
     void    do_terminal(char cmd);
     
-    void    send_reply(Reply& reply, Buffer& buffer);
-    Request recv_request(bool* status, Buffer& buffer);
-    Reply   parse_request(Request const& request, Buffer& buffer);
+    void send_reply(Reply& reply);
+    Request recv_request(bool* status);
+    Reply parse_request(Request const& request);
 
     Serial& serial_;
     Command command_;
     RAM     ram_;
+    Buffer  buffer_ { {0}, 0 };
 };
 
 #endif

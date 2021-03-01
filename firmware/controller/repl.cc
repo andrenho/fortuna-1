@@ -6,6 +6,7 @@
 #include <libf1comm/defines.hh>
 #include <libf1comm/messages/request.hh>
 #include <libf1comm/messages/reply.hh>
+#include <libf1comm/messages/deserialize.hh>
 
 #define MAX_MSG_SZ 1024
 
@@ -101,8 +102,18 @@ void Repl::do_terminal(char cmd)
     }
 }
 
-Reply Repl::parse_request(Request const& request, Buffer& buffer)
+Reply Repl::parse_request(Request const& request)
 {
+    Reply reply(request.message_type(), buffer_);
+    switch (request.message_type()) {
+        case MessageType::FreeMem:
+            reply.free_mem = command_.free_ram();
+            break;
+        default:
+            // TODO - what to do in invalid command?
+            break;
+    }
+    return reply;
 /*
     Reply reply;
     reply.type = request.type;
@@ -178,126 +189,27 @@ Reply Repl::parse_request(Request const& request, Buffer& buffer)
     */
 }
 
-Request Repl::recv_request(bool* status, Buffer& buffer)
+Request Repl::recv_request(bool* status)
 {
-    /*
-    Request request = Request_init_zero;
-
-    // get message size
-    uint16_t msg_sz = serial_.recv16();
-    if (msg_sz > MAX_MSG_SZ) {
-        serial_.send(Z_REQUEST_TOO_LARGE);
-        *status = false;
-        return request;
-    }
-
-    serial_.reset_checksum();
-
-    // receive message
-    pb_istream_t istream = {
-        [](pb_istream_t* stream, uint8_t *buf, size_t count) -> bool {
-            Serial* serial_ = static_cast<Serial*>(stream->state);
-            for (size_t i = 0; i < count; ++i) {
-                buf[i] = serial_->recv();
-                serial_->add_to_checksum(buf[i]);
-            }
-            return true;
-        },
-        &serial_,
-        msg_sz,
-        nullptr
-    };
-    if (!pb_decode(&istream, Request_fields, &request)) {
-        serial_.send(Z_ERROR_DECODING_REQUEST);
-        *status = false;
-        return request;
-    }
-
-    // calculate checksum
-    uint16_t sum2 = serial_.recv();
-    uint16_t sum1 = serial_.recv();
-    if (!serial_.compare_checksum(sum1, sum2)) {
-        serial_.send(Z_CHECKSUM_NO_MATCH);
-        *status = false;
-        return request;
-    }
-
-    // get request over
-    if (serial_.recv() != Z_REQUEST_OVER) {
-        serial_.send(Z_REQUEST_NOT_OVER);
-        *status = false;
-    }
-
-    return request;
-     */
+    return deserialize<Request>(buffer_, [](void* data) -> uint8_t {
+        return ((Serial*) data)->recv();
+    }, &serial_, true);
 }
 
-void Repl::send_reply(Reply& reply, Buffer& buffer)
+void Repl::send_reply(Reply& reply)
 {
-    /*
-    // add buffer
-    reply.buffer.arg = (void*) &buffer;
-    reply.buffer.funcs.encode = [](pb_ostream_t* stream, const pb_field_t* field, void* const* arg) {
-        Buffer* buffer = (Buffer*) arg;
-        if (!pb_encode_tag_for_field(stream, field))
-            return false;
-        return pb_encode_string(stream, buffer->buffer, buffer->size);
-    };
-    
-    // calculate message size
-    size_t sz = message_size(reply);
-    if (sz > MAX_MSG_SZ) {
-        serial_.send(Z_RESPONSE_TOO_LARGE);
-        return;
-    }
-
-    // message header
-    serial_.send(Z_FOLLOWS_PROTOBUF_RESP);
-    serial_.send((sz >> 8) & 0xff);
-    serial_.send(sz & 0xff);
-
-    // message content
-    serial_.reset_checksum();
-    
-    pb_ostream_t ostream = {
-        [](pb_ostream_t* stream, const uint8_t* buf, size_t count) -> bool {
-            Serial* serial_ = static_cast<Serial*>(stream->state);
-            for (size_t i = 0; i < count; ++i) {
-                serial_->send(buf[i]);
-                serial_->add_to_checksum(buf[i]);
-            }
-            return true;
-        },
-        &serial_,
-        MAX_MSG_SZ,
-        0,
-        nullptr
-    };
-    if (!pb_encode(&ostream, Reply_fields, &reply)) {
-        serial_.send(Z_ERROR_ENCODING_REPLY);
-        return;
-    }
-
-    // send checksum
-    auto chk = serial_.checksum();
-    serial_.send(chk.sum2);
-    serial_.send(chk.sum1);
-
-    // send reply over
-    serial_.send(Z_REPLY_OVER);
-     */
+    reply.serialize([](uint8_t byte, void* data) { ((Serial*) data)->send(byte); }, &serial_);
 }
 
 void Repl::do_message()
 {
-    Buffer buffer = { 0, {0} };
     bool status = true;
-    Request request = recv_request(&status, buffer);
+    Request request = recv_request(&status);
     if (!status)
         return;
 
-    Reply reply = parse_request(request, buffer);
-    send_reply(reply, buffer);
+    Reply reply = parse_request(request);
+    send_reply(reply);
 }
 
 void Repl::execute()
