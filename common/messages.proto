@@ -33,7 +33,6 @@ message RamRequest {
     uint32 address = 1;
     uint32 size    = 2;
     uint32 byte    = 3;
-    bytes  buffer  = 4 [(nanopb).max_size = 256, (nanopb).fixed_length = true];
 };
 
 //
@@ -50,8 +49,6 @@ message FreeMem {
 
 message RamResponse {
     uint32 byte     = 1;
-    uint32 checksum = 2;
-    bytes  buffer   = 3 [(nanopb).max_size = 256, (nanopb).fixed_length = true];
 };
 
 //
@@ -59,9 +56,10 @@ message RamResponse {
 //
 
 message Request {
-    MessageType type = 1;
+    MessageType type          = 1;
+    bytes  buffer             = 2 [(nanopb).max_size = 256, (nanopb).fixed_length = true];
     oneof payload {
-        RamRequest ramRequest = 2;
+        RamRequest ramRequest = 3;
     }
 }
 
@@ -79,9 +77,10 @@ message Reply {
     MessageType type               = 1;
     Result      result             = 2;
     string      additionalInfo     = 3;
+    bytes       buffer             = 4 [(nanopb).max_size = 256, (nanopb).fixed_length = true];
     oneof payload {
-        TestDMA     testDMA        = 4;
-        FreeMem     freeMem        = 5;
-        RamResponse ramResponse    = 6;
+        TestDMA     testDMA        = 5;
+        FreeMem     freeMem        = 6;
+        RamResponse ramResponse    = 7;
     }
 }
