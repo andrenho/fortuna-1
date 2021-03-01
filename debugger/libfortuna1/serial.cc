@@ -117,7 +117,7 @@ Reply Serial::receive_reply() const
     };
     
     if (log_message_ || log_bytes_)
-        printf("\e[0;31m");
+        printf("\e[0;34m");
     
     // get response
     uint8_t resp;
