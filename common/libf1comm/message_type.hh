@@ -33,7 +33,7 @@ enum MessageType : uint8_t {
 };
 
 enum class DeserializationError {
-    NoErrors, InvalidMessageClass, ChecksumDoesNotMatch, FinalByteNotReceived,
+    NoErrors, InvalidMessageClass, ChecksumDoesNotMatch, FinalByteNotReceived, BufferDataTooLarge,
 };
 
 #endif //LIBF1COMM_MESSAGE_TYPE_HH

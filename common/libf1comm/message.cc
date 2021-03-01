@@ -70,9 +70,11 @@ void Message::deserialize_header(Message* message, Message::DeserializationFunct
     message->buffer_->sz = 0;
     message->buffer_->sz |= add_to_checksum(f(data), sum1, sum2);
     message->buffer_->sz |= ((uint16_t) add_to_checksum(f(data), sum1, sum2) << 8);
-    // TODO  - is buffer too large?
-    for (uint16_t i = 0; i < message->buffer_->sz; ++i)
-        message->buffer_->data[i] = add_to_checksum(f(data), sum1, sum2);
+    if (message->buffer_->sz > 512)
+        message->deserialization_error_ = DeserializationError::BufferDataTooLarge;
+    else
+        for (uint16_t i = 0; i < message->buffer_->sz; ++i)
+            message->buffer_->data[i] = add_to_checksum(f(data), sum1, sum2);
 }
 
 uint8_t add_to_checksum(uint8_t data, uint16_t* sum1, uint16_t* sum2)
