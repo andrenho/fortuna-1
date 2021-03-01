@@ -1,6 +1,7 @@
 PROJECT=controller
 OBJECTS=main.o repl.o serial.o command.o io.o spi.o ram.o \
-	pb_common.o pb_encode.o pb_decode.o messages.pb.o
+	libf1comm/message.o libf1comm/serialization.o libf1comm/messages/request.o libf1comm/messages/reply.o \
+	libf1comm/fields/ramrequest.o
 AVRDUDE_FLAGS=-p m328p -C ./avrdude_gpio.conf -c pi_1 -V
 FUSES=-U lfuse:w:0xDE:m	-U hfuse:w:0xD9:m -U efuse:w:0xFF:m -U lock:w:0xFF:m
 MCU=atmega328p
@@ -10,7 +11,7 @@ CC=avr-gcc
 CXX=avr-g++
 CFLAGS=-std=c11
 CXXFLAGS=-std=c++17
-CPPFLAGS=-Wall -Wextra -Os -DF_CPU=${F_CPU} -mmcu=${MCU} -ffunction-sections -fdata-sections -I.
+CPPFLAGS=-Wall -Wextra -Os -DF_CPU=${F_CPU} -mmcu=${MCU} -ffunction-sections -fdata-sections -I. -DEMBEDDED
 LDFLAGS=-Wl,--gc-sections 
 
 all: ${PROJECT}.hex
@@ -22,13 +23,6 @@ ${PROJECT}.hex: ${PROJECT}.elf
 ${PROJECT}.elf: ${OBJECTS}
 	$(CXX) -mmcu=${MCU} -o $@ $^ ${LDFLAGS}
 	avr-size -C --mcu=${MCU} ${PROJECT}.elf	
-
-${OBJECTS}: messages.pb.h
-
-messsages.pb.o: messages.pb.c
-
-messages.pb.h messages.pb.c: messages.proto
-	python3 ../../contrib/nanopb/generator/nanopb_generator.py $^
 
 test-connection:
 	sudo avrdude ${AVRDUDE_FLAGS}

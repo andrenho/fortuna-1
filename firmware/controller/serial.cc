@@ -6,7 +6,6 @@
 #include <avr/io.h>
 #include <avr/pgmspace.h>
 
-#include "common/protocol.h"
 #include "repl.hh"
 
 #define BUF_SZ 256
@@ -121,6 +120,7 @@ Serial::checksum() const
 void
 Serial::debug_P(const char* fmt, ...) const
 {
+    /*
     char buf[BUF_SZ];
     va_list ap;
     va_start(ap, fmt);
@@ -132,6 +132,7 @@ Serial::debug_P(const char* fmt, ...) const
     while (*b != 0)
         send(*b++);
     send(0);
+     */
 }
 
 void Serial::set_echo(bool v)

@@ -2,10 +2,7 @@
 
 #include <avr/pgmspace.h>
 #include <stdio.h>
-
-#include <pb_decode.h>
-#include <pb_encode.h>
-#include "common/protocol.h"
+#include <limits.h>
 
 #define MAX_MSG_SZ 1024
 
@@ -101,6 +98,7 @@ void Repl::do_terminal(char cmd)
     }
 }
 
+/*
 Reply Repl::parse_request(Request const& request, Buffer& buffer)
 {
     Reply reply;
@@ -131,7 +129,6 @@ Reply Repl::parse_request(Request const& request, Buffer& buffer)
                 reply.payload.ramResponse.byte = data;
             }
             break;
-        /*
         case MessageType_RAM_READ_BLOCK: {
                 struct S {
                     uint16_t   addr;
@@ -171,7 +168,6 @@ Reply Repl::parse_request(Request const& request, Buffer& buffer)
                 }
             }
             break;
-            */
         default:
             reply.result = Result_INVALID_REQUEST;
     }
@@ -230,14 +226,6 @@ Request Repl::recv_request(bool* status, Buffer& buffer)
     return request;
 }
 
-size_t Repl::message_size(Reply const& reply)
-{
-    pb_ostream_t szstream = {0, nullptr, 0, 0, nullptr};
-    if (!pb_encode(&szstream, Reply_fields, &reply))
-        return 0xffff;
-    return szstream.bytes_written;
-}
-
 void Repl::send_reply(Reply& reply, Buffer& buffer)
 {
     // add buffer
@@ -248,16 +236,6 @@ void Repl::send_reply(Reply& reply, Buffer& buffer)
             return false;
         return pb_encode_string(stream, buffer->buffer, buffer->size);
     };
-    /*
-    reply.which_payload = Reply_testDMA_tag;
-    reply.payload.testDMA.response.arg = (void*) command_.test_dma();
-    reply.payload.testDMA.response.funcs.encode = [](pb_ostream_t* stream, const pb_field_t* field, void* const* arg) {
-        const char* buf = (const char*) (*arg);
-        if (!pb_encode_tag_for_field(stream, field))
-            return false;
-        return pb_encode_string(stream, (uint8_t*) buf, strlen(buf));
-    };
-     */
     
     // calculate message size
     size_t sz = message_size(reply);
@@ -313,14 +291,17 @@ void Repl::do_protobuf()
     Reply reply = parse_request(request, buffer);
     send_reply(reply, buffer);
 }
+*/
 
 void Repl::execute()
 {
     uint8_t cmd = getchar();
+    /*
     if (cmd == Z_FOLLOWS_PROTOBUF_REQ)
         do_protobuf();
     else if (cmd >= ' ' && cmd <= '~')
         do_terminal(cmd);
     else
         serial_.send(Z_INVALID_COMMAND);
+    */
 }

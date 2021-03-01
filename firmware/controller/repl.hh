@@ -2,7 +2,6 @@
 #define REPL_HH_
 
 #include "command.hh"
-#include "messages.pb.h"
 #include "ram.hh"
 #include "serial.hh"
 
@@ -19,10 +18,11 @@ private:
     };
     
     void    do_protobuf();
+    /*
     void send_reply(Reply& reply, Buffer& buffer);
-    static size_t  message_size(Reply const& reply);
     Request recv_request(bool* status, Buffer& buffer);
     Reply parse_request(Request const& request, Buffer& buffer);
+     */
     void    do_terminal(char cmd);
 
     Serial& serial_;
