@@ -5,7 +5,7 @@
 
 class DebugInformation : public Message {
 public:
-    explicit DebugInformation(Buffer& buffer) : Message(buffer) {}
+    using Message::Message;
     
 protected:
     MessageClass message_class() const override { return MC_DebugInformation; }

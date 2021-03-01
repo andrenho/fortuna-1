@@ -11,6 +11,11 @@
 
 class Message {
 public:
+    Message()                                         : message_type_(MessageType::Undefined) {}
+    explicit Message(MessageType message_type)        : message_type_(message_type) {}
+    explicit Message(Buffer& buffer)                  : message_type_(MessageType::Undefined), buffer_(&buffer) {}
+    Message(MessageType message_type, Buffer& buffer) : message_type_(message_type), buffer_(&buffer) {}
+    
     using SerializationFunction = void(*)(uint8_t byte, void* data);
     using DeserializationFunction = uint8_t(*)(void* data);
     
@@ -30,11 +35,6 @@ public:
 #endif
 
 protected:
-             Message()                                         : message_type_(MessageType::Undefined) {}
-    explicit Message(MessageType message_type)                 : message_type_(message_type) {}
-    explicit Message(Buffer& buffer)                           : message_type_(MessageType::Undefined), buffer_(&buffer) {}
-             Message(MessageType message_type, Buffer& buffer) : message_type_(message_type), buffer_(&buffer) {}
-    
     virtual MessageClass message_class() const = 0;
     virtual void         serialize_detail(SerializationFunction f, void* data) const = 0;
 
