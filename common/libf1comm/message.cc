@@ -30,8 +30,15 @@ void Message::serialize(Message::SerializationFunction f, void* data) const
     add_byte(static_cast<uint8_t>(message_type_));
     
     // message buffer
-    add_byte(0);  // TODO - buffer size
-    add_byte(0);
+    if (buffer_ == nullptr || buffer_->sz == 0) {
+        add_byte(0);
+        add_byte(0);
+    } else {
+        add_byte(buffer_->sz & 0xff);
+        add_byte((buffer_->sz >> 8) & 0xff);
+        for (uint16_t i = 0; i < buffer_->sz; ++i)
+            add_byte(buffer_->data[i]);
+    }
     
     // detail
     struct S {
@@ -59,8 +66,13 @@ void Message::deserialize_header(Message* message, Message::DeserializationFunct
         message->deserialization_error_ = DeserializationError::InvalidMessageClass;
     }
     message->message_type_ = static_cast<MessageType>(add_to_checksum(f(data), sum1, sum2));
-    add_to_checksum(f(data), sum1, sum2);  // TODO - ignore buffer size for now
-    add_to_checksum(f(data), sum1, sum2);
+    
+    message->buffer_->sz = 0;
+    message->buffer_->sz |= add_to_checksum(f(data), sum1, sum2);
+    message->buffer_->sz |= ((uint16_t) add_to_checksum(f(data), sum1, sum2) << 8);
+    // TODO  - is buffer too large?
+    for (uint16_t i = 0; i < message->buffer_->sz; ++i)
+        message->buffer_->data[i] = add_to_checksum(f(data), sum1, sum2);
 }
 
 uint8_t add_to_checksum(uint8_t data, uint16_t* sum1, uint16_t* sum2)

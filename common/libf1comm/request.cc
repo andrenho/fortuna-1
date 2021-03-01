@@ -14,7 +14,7 @@ void Request::serialize_detail(Message::SerializationFunction f, void* data) con
 Request Request::deserialize(Buffer& buffer, Message::DeserializationFunction f, void* data)
 {
     uint16_t sum1 = 0, sum2 = 0;
-    Request request;
+    Request request(buffer);
     Message::deserialize_header(&request, f, data, &sum1, &sum2);
     
     uint16_t csum1 = f(data);
