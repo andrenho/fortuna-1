@@ -1,11 +1,14 @@
 #include "request.hh"
 
-Request::Request(std::string const& serialized)
-{
-
-}
-
+#ifdef TEST
 bool Request::compare(Message const& message) const
 {
     return Message::compare(message);
 }
+
+void Request::serialize_detail(Message::SerializationFunction f, void* data) const
+{
+
+}
+
+#endif
