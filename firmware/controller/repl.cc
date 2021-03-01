@@ -137,6 +137,7 @@ Reply Repl::parse_request(Request const& request)
                 reply.payload.ramResponse.byte = data;
             }
             break;
+        /*
         case MessageType_RAM_READ_BLOCK: {
                 struct S {
                     uint16_t   addr;
@@ -176,6 +177,7 @@ Reply Repl::parse_request(Request const& request)
                 }
             }
             break;
+            */
         default:
             reply.result = Result_INVALID_REQUEST;
     }
