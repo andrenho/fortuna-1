@@ -261,10 +261,12 @@ void Repl::send_reply(Reply& reply, Buffer& buffer)
     
     // calculate message size
     size_t sz = message_size(reply);
+    /*
     if (sz > MAX_MSG_SZ) {
         serial_.send(Z_RESPONSE_TOO_LARGE);
         return;
     }
+     */
 
     // message header
     serial_.send(Z_FOLLOWS_PROTOBUF_RESP);
