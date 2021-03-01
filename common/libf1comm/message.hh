@@ -14,11 +14,14 @@ public:
     using SerializationFunction = void(*)(uint8_t byte, void* data);
     using DeserializationFunction = uint8_t(*)(void* data);
     
+    static void deserialize_header(Message* message, DeserializationFunction f, void* data, uint16_t* sum1, uint16_t* sum2);
+    
     virtual ~Message() = default;
     
     void serialize(SerializationFunction f, void* data = nullptr) const;
     
     DeserializationError deserialization_error() const { return deserialization_error_; }
+    void set_deserialization_error(DeserializationError deserialization_error) { deserialization_error_ = deserialization_error; }
 
 #ifdef TEST
     std::string serialize_to_string() const;
@@ -42,23 +45,7 @@ protected:
     MessageType          message_type_;
     DeserializationError deserialization_error_ = DeserializationError::NoErrors;
     Buffer*              buffer_ = nullptr;
-    
-    static void deserialize_header(Message* message, DeserializationFunction f, void* data, uint16_t* sum1, uint16_t* sum2);
 };
-
-#ifdef TEST
-template <typename T>
-T deserialize_from_string(Buffer& buffer, std::string const& serial)
-{
-    struct S { std::string const& serial; size_t i; };
-    S s { serial, 0 };
-    T t = T::deserialize(buffer, [](void* data) -> uint8_t {
-        S* s = (S*) data;
-        return s->serial[s->i++];
-    }, &s);
-    return t;
-}
-#endif
 
 uint8_t add_to_checksum(uint8_t data, uint16_t* sum1, uint16_t* sum2);
 

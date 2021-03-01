@@ -5,6 +5,7 @@
 #include "message_type.hh"
 #include "buffer.hh"
 #include "debuginformation.hh"
+#include "deserialize.hh"
 
 Buffer buffer {};
 
