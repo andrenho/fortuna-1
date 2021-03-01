@@ -1,6 +1,8 @@
 #ifndef REPL_HH_
 #define REPL_HH_
 
+#include <libf1comm/messages/reply.hh>
+#include <libf1comm/messages/request.hh>
 #include "command.hh"
 #include "ram.hh"
 #include "serial.hh"
@@ -17,13 +19,12 @@ private:
         uint8_t buffer[512];
     };
     
-    void    do_protobuf();
-    /*
-    void send_reply(Reply& reply, Buffer& buffer);
-    Request recv_request(bool* status, Buffer& buffer);
-    Reply parse_request(Request const& request, Buffer& buffer);
-     */
+    void    do_message();
     void    do_terminal(char cmd);
+    
+    void    send_reply(Reply& reply, Buffer& buffer);
+    Request recv_request(bool* status, Buffer& buffer);
+    Reply   parse_request(Request const& request, Buffer& buffer);
 
     Serial& serial_;
     Command command_;

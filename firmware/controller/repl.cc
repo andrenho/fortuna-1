@@ -4,6 +4,8 @@
 #include <stdio.h>
 #include <limits.h>
 #include <libf1comm/defines.hh>
+#include <libf1comm/messages/request.hh>
+#include <libf1comm/messages/reply.hh>
 
 #define MAX_MSG_SZ 1024
 
@@ -99,9 +101,9 @@ void Repl::do_terminal(char cmd)
     }
 }
 
-/*
 Reply Repl::parse_request(Request const& request, Buffer& buffer)
 {
+/*
     Reply reply;
     reply.type = request.type;
     reply.result = Result_OK;
@@ -173,10 +175,12 @@ Reply Repl::parse_request(Request const& request, Buffer& buffer)
             reply.result = Result_INVALID_REQUEST;
     }
     return reply;
+    */
 }
 
 Request Repl::recv_request(bool* status, Buffer& buffer)
 {
+    /*
     Request request = Request_init_zero;
 
     // get message size
@@ -225,10 +229,12 @@ Request Repl::recv_request(bool* status, Buffer& buffer)
     }
 
     return request;
+     */
 }
 
 void Repl::send_reply(Reply& reply, Buffer& buffer)
 {
+    /*
     // add buffer
     reply.buffer.arg = (void*) &buffer;
     reply.buffer.funcs.encode = [](pb_ostream_t* stream, const pb_field_t* field, void* const* arg) {
@@ -279,9 +285,10 @@ void Repl::send_reply(Reply& reply, Buffer& buffer)
 
     // send reply over
     serial_.send(Z_REPLY_OVER);
+     */
 }
 
-void Repl::do_protobuf()
+void Repl::do_message()
 {
     Buffer buffer = { 0, {0} };
     bool status = true;
@@ -292,15 +299,13 @@ void Repl::do_protobuf()
     Reply reply = parse_request(request, buffer);
     send_reply(reply, buffer);
 }
-*/
 
 void Repl::execute()
 {
     uint8_t cmd = getchar();
-    /*
-    if (cmd == Z_FOLLOWS_PROTOBUF_REQ)
-        do_protobuf();
-    else */ if (cmd >= ' ' && cmd <= '~')
+    if (cmd == MessageClass::MC_Request)
+        do_message();
+    else if (cmd >= ' ' && cmd <= '~')
         do_terminal(cmd);
     else
         serial_.send(InvalidCommand);
