@@ -116,16 +116,8 @@ Reply Repl::parse_request(Request const& request, Buffer& buffer)
             command_.test_debug_messages();
             break;
         case MessageType_TEST_DMA:
-            /*
-            reply.which_payload = Reply_testDMA_tag;
-            reply.payload.testDMA.response.arg = (void*) command_.test_dma();
-            reply.payload.testDMA.response.funcs.encode = [](pb_ostream_t* stream, const pb_field_t* field, void* const* arg) {
-                const char* buf = (const char*) (*arg);
-                if (!pb_encode_tag_for_field(stream, field))
-                    return false;
-                return pb_encode_string(stream, (uint8_t*) buf, strlen(buf));
-            };
-             */
+            memcpy(buffer.buffer, command_.test_dma(), 6);
+            buffer.size = 6;
             break;
         case MessageType_RAM_READ_BYTE: {
                 uint8_t data = ram_.read_byte(request.payload.ramRequest.address);
@@ -246,20 +238,42 @@ size_t Repl::message_size(Reply const& reply)
     return szstream.bytes_written;
 }
 
-void Repl::send_reply(Reply const& reply, Buffer& buffer)
+void Repl::send_reply(Reply& reply, Buffer& buffer)
 {
+    // add buffer
+    reply.buffer.arg = (void*) &buffer;
+    reply.buffer.funcs.encode = [](pb_ostream_t* stream, const pb_field_t* field, void* const* arg) {
+        Buffer* buffer = (Buffer*) arg;
+        if (!pb_encode_tag_for_field(stream, field))
+            return false;
+        return pb_encode_string(stream, buffer->buffer, buffer->size);
+    };
+    /*
+    reply.which_payload = Reply_testDMA_tag;
+    reply.payload.testDMA.response.arg = (void*) command_.test_dma();
+    reply.payload.testDMA.response.funcs.encode = [](pb_ostream_t* stream, const pb_field_t* field, void* const* arg) {
+        const char* buf = (const char*) (*arg);
+        if (!pb_encode_tag_for_field(stream, field))
+            return false;
+        return pb_encode_string(stream, (uint8_t*) buf, strlen(buf));
+    };
+     */
+    
+    // calculate message size
     size_t sz = message_size(reply);
     if (sz > MAX_MSG_SZ) {
         serial_.send(Z_RESPONSE_TOO_LARGE);
         return;
     }
 
+    // message header
     serial_.send(Z_FOLLOWS_PROTOBUF_RESP);
     serial_.send((sz >> 8) & 0xff);
     serial_.send(sz & 0xff);
 
+    // message content
     serial_.reset_checksum();
-
+    
     pb_ostream_t ostream = {
         [](pb_ostream_t* stream, const uint8_t* buf, size_t count) -> bool {
             Serial* serial_ = static_cast<Serial*>(stream->state);

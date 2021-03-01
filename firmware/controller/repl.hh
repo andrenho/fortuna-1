@@ -19,7 +19,7 @@ private:
     };
     
     void    do_protobuf();
-    void send_reply(Reply const& reply, Buffer& buffer);
+    void send_reply(Reply& reply, Buffer& buffer);
     static size_t  message_size(Reply const& reply);
     Request recv_request(bool* status, Buffer& buffer);
     Reply parse_request(Request const& request, Buffer& buffer);
