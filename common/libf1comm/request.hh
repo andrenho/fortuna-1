@@ -7,12 +7,12 @@ class Request : public Message {
 public:
     explicit Request(MessageType message_type) : Message(message_type) {}
     
-    static Request deserialize(Message::DeserializationFunction f, void* data);
+    static Request deserialize(Buffer& buffer, Message::DeserializationFunction f, void* data);
 
 protected:
     Request() = default;
     
-    uint8_t message_class() const override { return 0xf0; }
+    MessageClass message_class() const override { return MessageClass::MC_Request; }
     void   serialize_detail(Message::SerializationFunction f, void* data) const override;
 
 #ifdef TEST

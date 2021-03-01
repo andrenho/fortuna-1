@@ -1,7 +1,15 @@
 #ifndef LIBF1COMM_MESSAGE_TYPE_HH
 #define LIBF1COMM_MESSAGE_TYPE_HH
 
-enum MessageType {
+static constexpr uint8_t FinalByte = 0xe4;
+
+enum MessageClass : uint8_t {
+    MC_Request          = 0xf0,
+    MC_Reply            = 0xf1,
+    MC_DebugInformation = 0xf2,
+};
+
+enum MessageType : uint8_t {
     Nop             = 0,
     
     // tests
@@ -21,11 +29,11 @@ enum MessageType {
     
     
     
-    Undefined       = 99999,
+    Undefined       = 0xff,
 };
 
-enum DeserializationError {
-    NoErrors, InvalidMessageClass, ChecksumDoesNotMatch,
+enum class DeserializationError {
+    NoErrors, InvalidMessageClass, ChecksumDoesNotMatch, FinalByteNotReceived,
 };
 
 #endif //LIBF1COMM_MESSAGE_TYPE_HH

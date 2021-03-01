@@ -24,7 +24,7 @@ void Message::serialize(Message::SerializationFunction f, void* data) const
     };
     
     // message class
-    add_byte(message_class());
+    add_byte(static_cast<uint8_t>(message_class()));
     
     // message type
     add_byte(static_cast<uint8_t>(message_type_));
@@ -48,12 +48,15 @@ void Message::serialize(Message::SerializationFunction f, void* data) const
     // checksum
     f(sum1, data);
     f(sum2, data);
+    
+    // final byte
+    f(FinalByte, data);
 }
 
 void Message::deserialize_header(Message* message, Message::DeserializationFunction f, void* data, uint16_t* sum1, uint16_t* sum2)
 {
     if (add_to_checksum(f(data), sum1, sum2) != message->message_class()) {
-        message->deserialization_error_ = InvalidMessageClass;
+        message->deserialization_error_ = DeserializationError::InvalidMessageClass;
     }
     message->message_type_ = static_cast<MessageType>(add_to_checksum(f(data), sum1, sum2));
     add_to_checksum(f(data), sum1, sum2);  // TODO - ignore buffer size for now
