@@ -11,4 +11,15 @@ void Request::serialize_detail(Message::SerializationFunction f, void* data) con
 
 }
 
+Request Request::deserialize(Message::DeserializationFunction f, void* data)
+{
+    Request request;
+    Message::deserialize_header(&request, f, data);
+    
+    f(data);  // TODO - ignore checksum for now
+    f(data);
+    
+    return request;
+}
+
 #endif

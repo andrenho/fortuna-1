@@ -25,8 +25,14 @@ void Message::serialize(Message::SerializationFunction f, void* data) const
         sum2 = (sum2 + sum1) % 0xff;
     };
     
+    // message class
     add_byte(message_class());
     
+    // message buffer
+    add_byte(0);  // TODO - buffer size
+    add_byte(0);
+    
+    // detail
     struct S {
         SerializationFunction f;
         uint16_t *sum1, *sum2;
@@ -40,9 +46,17 @@ void Message::serialize(Message::SerializationFunction f, void* data) const
         *s->sum2 = (*s->sum2 + *s->sum1) % 0xff;
     }, &s);
     
-    add_byte(0);  // TODO - buffer size
-    add_byte(0);
-    
+    // checksum
     f(sum2, data);
     f(sum1, data);
+}
+
+void Message::deserialize_header(Message* message, Message::DeserializationFunction f, void* data)
+{
+    if (f(data) != message->message_class()) {
+        message->deserialization_error_ = InvalidMessageClass;
+    }
+    message->message_type_ = static_cast<MessageType>(f(data));
+    f(data);  // TODO - ignore buffer size for now
+    f(data);
 }

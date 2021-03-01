@@ -18,6 +18,14 @@ enum MessageType {
     RamWriteBlock   = 13,
     DataReadBus     = 14,
     DataWriteBus    = 15,
+    
+    
+    
+    Undefined       = 99999,
+};
+
+enum DeserializationError {
+    NoErrors, InvalidMessageClass,
 };
 
 #endif //LIBF1COMM_MESSAGE_TYPE_HH

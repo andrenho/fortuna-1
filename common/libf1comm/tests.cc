@@ -11,13 +11,15 @@ void assert_serialization(std::string const& description, T const& message)
     for (uint8_t c: serialized)
         printf("\e[0;33m%02X\e[0m ", c);
     printf("\n");
-    /*
-    T from_serialized(serialized);
+    T from_serialized = deserialize_from_string<T>(serialized);
+    if (from_serialized.deserialization_error() != DeserializationError::NoErrors) {
+        printf("\e[0;31mDeseralization error.\e[0m\n");
+        exit(EXIT_FAILURE);
+    }
     if (message != from_serialized) {
         printf("\e[0;31mReserialized description is different from original.\e[0m\n");
         exit(EXIT_FAILURE);
     }
-     */
 }
 
 int main()
