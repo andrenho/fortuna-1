@@ -24,10 +24,11 @@ public:
     virtual ~Message() = default;
     
     void serialize(SerializationFunction f, void* data = nullptr) const;
+    virtual void deserialize_detail(DeserializationFunction f, void* data, uint16_t* sum1, uint16_t* sum2) = 0;
     
     DeserializationError deserialization_error() const { return deserialization_error_; }
     void set_deserialization_error(DeserializationError deserialization_error) { deserialization_error_ = deserialization_error; }
-
+    
 #ifdef TEST
     std::string serialize_to_string() const;
     bool operator==(Message const& rhs) const { return compare(rhs); }
@@ -37,7 +38,7 @@ public:
 protected:
     virtual MessageClass message_class() const = 0;
     virtual void         serialize_detail(SerializationFunction f, void* data) const = 0;
-
+    
 #ifdef TEST
     virtual bool compare(Message const& message) const;
 #endif

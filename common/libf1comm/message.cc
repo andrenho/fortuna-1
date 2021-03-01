@@ -3,6 +3,13 @@
 #ifdef TEST
 #include <cstring>
 
+uint8_t add_to_checksum(uint8_t data, uint16_t* sum1, uint16_t* sum2)
+{
+    *sum1 = (*sum1 + data) % 0xff;
+    *sum2 = (*sum2 + *sum1) % 0xff;
+    return data;
+}
+
 std::string Message::serialize_to_string() const
 {
     std::string s;
@@ -90,11 +97,4 @@ void Message::deserialize_header(Message* message, Message::DeserializationFunct
     else
         for (uint16_t i = 0; i < message->buffer_->sz; ++i)
             message->buffer_->data[i] = add_to_checksum(f(data), sum1, sum2);
-}
-
-uint8_t add_to_checksum(uint8_t data, uint16_t* sum1, uint16_t* sum2)
-{
-    *sum1 = (*sum1 + data) % 0xff;
-    *sum2 = (*sum2 + *sum1) % 0xff;
-    return data;
 }

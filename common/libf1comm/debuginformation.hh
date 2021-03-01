@@ -7,6 +7,8 @@ class DebugInformation : public Message {
 public:
     using Message::Message;
     
+    void deserialize_detail(DeserializationFunction f, void* data, uint16_t* sum1, uint16_t* sum2) override { }
+    
 protected:
     MessageClass message_class() const override { return MC_DebugInformation; }
     void serialize_detail(SerializationFunction f, void* data) const override {}

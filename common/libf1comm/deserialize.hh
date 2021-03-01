@@ -8,6 +8,8 @@ T deserialize(Buffer& buffer, Message::DeserializationFunction f, void* data)
     T message(buffer);
     Message::deserialize_header(&message, f, data, &sum1, &sum2);
     
+    message.deserialize_detail(f, data, &sum1, &sum2);
+    
     uint16_t csum1 = f(data);
     uint16_t csum2 = f(data);
     

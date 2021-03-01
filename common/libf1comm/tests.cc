@@ -1,11 +1,13 @@
 #include <cstdio>
 #include <cstring>
+#include <iostream>
 
 #include "request.hh"
 #include "message_type.hh"
 #include "buffer.hh"
 #include "debuginformation.hh"
 #include "deserialize.hh"
+#include "reply.hh"
 
 Buffer buffer {};
 
@@ -29,6 +31,16 @@ T assert_serialization(std::string const& description, T const& message)
     return from_serialized;
 }
 
+template <typename T, typename U>
+void assert_eq(std::string const& description, T&& expected, U&& received)
+{
+    printf("%s... ", description.c_str());
+    if (expected != received) {
+        std::cout << "\e[0;31mAssertion error, expected " << expected << ", found " << received << ".\e[0m\n";
+        exit(EXIT_FAILURE);
+    }
+}
+
 int main()
 {
     {
@@ -41,5 +53,11 @@ int main()
         strcpy(reinterpret_cast<char*>(buffer.data), s.c_str());
         buffer.sz = s.length();
         assert_serialization("DebugInformation", debug_information);
+    }
+    {
+        Reply reply(MessageType::FreeMem);
+        reply.free_mem = 1234;
+        Reply r = assert_serialization("Reply FreeMem", reply);
+        assert_eq("FreeMem conversion", 1234, r.free_mem);
     }
 }

@@ -10,4 +10,8 @@ void Request::serialize_detail(Message::SerializationFunction f, void* data) con
 {
 }
 
+void Request::deserialize_detail(Message::DeserializationFunction f, void* data, uint16_t* sum1, uint16_t* sum2)
+{
+}
+
 #endif

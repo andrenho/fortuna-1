@@ -9,7 +9,8 @@ public:
     
     MessageClass message_class() const override { return MessageClass::MC_Request; }
     void   serialize_detail(Message::SerializationFunction f, void* data) const override;
-    
+    void   deserialize_detail(DeserializationFunction f, void* data, uint16_t* sum1, uint16_t* sum2) override;
+
 #ifdef TEST
     bool compare(Message const& message) const override;
 #endif
