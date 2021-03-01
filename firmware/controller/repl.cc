@@ -251,7 +251,6 @@ void Repl::send_reply(Reply const& reply)
 
 void Repl::do_protobuf()
 {
-    volatile uint8_t buffer[512] = {0};
     bool status = true;
     Request request = recv_request(&status);
     if (!status)
