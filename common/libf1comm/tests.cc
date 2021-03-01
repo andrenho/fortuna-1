@@ -8,6 +8,7 @@
 #include "messages/debuginformation.hh"
 #include "messages/deserialize.hh"
 #include "messages/reply.hh"
+#include "fields/ramrequest.hh"
 
 Buffer buffer {};
 
@@ -69,10 +70,10 @@ int main()
     {
         Request request(MessageType::RamWriteByte);
         RamRequest ram_request = { 0xabcd, 1, 0xfe };
-        request.set_ram_request(ram_request);
-        Reply r = assert_serialization("RAM request", request);
+        request.ram_request = ram_request;
+        Request r = assert_serialization("RAM request", request);
         assert_eq("Address", ram_request.address, r.ram_request.address);
-        assert_eq("Data", ram_request.data, r.data.address);
+        assert_eq("Data", ram_request.byte, r.ram_request.byte);
         request.debug();
         printf("------------\n");
     }
