@@ -59,6 +59,7 @@ uint8_t Fortuna1RealHardware::ram_read_byte(uint16_t addr) const
 
 void Fortuna1RealHardware::ram_write_buffer(uint16_t addr, std::vector<uint8_t> const& bytes)
 {
+    /*
     if (bytes.size() > 512)
         throw std::runtime_error("There's a 512 byte limit to buffer size when writing to RAM.");
     Request req;
@@ -71,10 +72,12 @@ void Fortuna1RealHardware::ram_write_buffer(uint16_t addr, std::vector<uint8_t> 
     ram_request->set_allocated_buffer(buffer);
     req.set_allocated_ramrequest(ram_request);
     serial_.request(req);
+     */
 }
 
 std::vector<uint8_t> Fortuna1RealHardware::ram_read_buffer(uint16_t addr, uint16_t sz) const
 {
+    /*
     if (sz > 512)
         throw std::runtime_error("There's a 512 byte limit to buffer size when writing to RAM.");
     Request req;
@@ -84,4 +87,5 @@ std::vector<uint8_t> Fortuna1RealHardware::ram_read_buffer(uint16_t addr, uint16
     ram_request->set_size(sz);
     auto& str = serial_.request(req).ramresponse().buffer();
     return std::vector<uint8_t>(str.begin(), str.end());
+     */
 }

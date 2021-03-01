@@ -57,7 +57,7 @@ message RamResponse {
 
 message Request {
     MessageType type          = 1;
-    bytes  buffer             = 2 [(nanopb).max_size = 256, (nanopb).fixed_length = true];
+    bytes  buffer             = 2;
     oneof payload {
         RamRequest ramRequest = 3;
     }
@@ -77,7 +77,7 @@ message Reply {
     MessageType type               = 1;
     Result      result             = 2;
     string      additionalInfo     = 3;
-    bytes       buffer             = 4 [(nanopb).max_size = 256, (nanopb).fixed_length = true];
+    bytes       buffer             = 4;
     oneof payload {
         TestDMA     testDMA        = 5;
         FreeMem     freeMem        = 6;
