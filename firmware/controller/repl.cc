@@ -137,9 +137,44 @@ Reply Repl::parse_request(Request const& request)
                 reply.payload.ramResponse.byte = data;
             }
             break;
-        case MessageType_RAM_READ_BLOCK:
+        case MessageType_RAM_READ_BLOCK: {
+                struct S {
+                    uint16_t   addr;
+                    pb_byte_t* buffer;
+                };
+                S s { (uint16_t) request.payload.ramRequest.address, reply.payload.ramResponse.buffer };
+                reply.which_payload = Reply_ramResponse_tag;
+                if (!ram_.read_block(
+                        request.payload.ramRequest.address,
+                        request.payload.ramRequest.size,
+                        [](uint16_t addr, uint8_t byte, void* ptr_s) {
+                            S* s = reinterpret_cast<S*>(ptr_s);
+                            s->buffer[addr - s->addr] = byte;
+                        },
+                        (void*) &s
+                )) {
+                    reply.result = Result_WRONG_CHECKSUM_DMA;
+                }
+            }
             break;
-        case MessageType_RAM_WRITE_BLOCK:
+        case MessageType_RAM_WRITE_BLOCK: {
+                struct S {
+                    uint16_t         addr;
+                    pb_byte_t const* buffer;
+                };
+                S s { (uint16_t) request.payload.ramRequest.address, request.payload.ramRequest.buffer };
+                if (!ram_.write_block(
+                        request.payload.ramRequest.address,
+                        request.payload.ramRequest.size,
+                        [](uint16_t addr, void* ptr_s) -> uint8_t {
+                            S* s = reinterpret_cast<S*>(ptr_s);
+                            return s->buffer[addr - s->addr];
+                        },
+                        (void*) &s
+                )) {
+                    reply.result = Result_WRONG_CHECKSUM_DMA;
+                }
+            }
             break;
         default:
             reply.result = Result_INVALID_REQUEST;
