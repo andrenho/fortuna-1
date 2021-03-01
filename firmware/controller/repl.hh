@@ -14,10 +14,10 @@ public:
 
 private:
     void    do_protobuf();
-    void    send_reply(Reply const& reply);
-    size_t  message_size(Reply const& reply);
-    Request recv_request(bool* status);
-    Reply   parse_request(Request const& request);
+    void send_reply(Reply const& reply, uint8_t string[512]);
+    static size_t  message_size(Reply const& reply);
+    Request recv_request(bool* status, uint8_t string[512]);
+    Reply parse_request(Request const& request, uint8_t string[512]);
     void    do_terminal(char cmd);
 
     Serial& serial_;

@@ -101,7 +101,7 @@ void Repl::do_terminal(char cmd)
     }
 }
 
-Reply Repl::parse_request(Request const& request)
+Reply Repl::parse_request(Request const& request, uint8_t buffer[512])
 {
     Reply reply;
     reply.type = request.type;
@@ -184,7 +184,7 @@ Reply Repl::parse_request(Request const& request)
     return reply;
 }
 
-Request Repl::recv_request(bool* status)
+Request Repl::recv_request(bool* status, uint8_t buffer[512])
 {
     Request request = Request_init_zero;
 
@@ -244,7 +244,7 @@ size_t Repl::message_size(Reply const& reply)
     return szstream.bytes_written;
 }
 
-void Repl::send_reply(Reply const& reply)
+void Repl::send_reply(Reply const& reply, uint8_t buffer[512])
 {
     size_t sz = message_size(reply);
     if (sz > MAX_MSG_SZ) {
@@ -288,13 +288,14 @@ void Repl::send_reply(Reply const& reply)
 
 void Repl::do_protobuf()
 {
+    uint8_t buffer[512];
     bool status = true;
-    Request request = recv_request(&status);
+    Request request = recv_request(&status, buffer);
     if (!status)
         return;
 
-    Reply reply = parse_request(request);
-    send_reply(reply);
+    Reply reply = parse_request(request, buffer);
+    send_reply(reply, buffer);
 }
 
 void Repl::execute()
