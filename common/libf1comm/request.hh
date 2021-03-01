@@ -14,6 +14,12 @@ public:
 #ifdef TEST
     bool compare(Message const& message) const override;
 #endif
+
+#ifndef EMBEDDED
+protected:
+    char const* classname() const override { return "Request"; }
+    void debug_detail() const override;
+#endif
 };
 
 #endif

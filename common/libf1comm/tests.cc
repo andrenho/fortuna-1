@@ -46,6 +46,8 @@ int main()
     {
         Request request(MessageType::Nop);
         assert_serialization("NOP request", request);
+        request.debug();
+        printf("------------\n");
     }
     {
         DebugInformation debug_information(buffer);
@@ -53,11 +55,15 @@ int main()
         strcpy(reinterpret_cast<char*>(buffer.data), s.c_str());
         buffer.sz = s.length();
         assert_serialization("DebugInformation", debug_information);
+        debug_information.debug();
+        printf("------------\n");
     }
     {
         Reply reply(MessageType::FreeMem);
         reply.free_mem = 1234;
         Reply r = assert_serialization("Reply FreeMem", reply);
         assert_eq("FreeMem conversion", 1234, r.free_mem);
+        reply.debug();
+        printf("------------\n");
     }
 }

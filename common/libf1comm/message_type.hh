@@ -36,4 +36,10 @@ enum class DeserializationError {
     NoErrors, InvalidMessageClass, ChecksumDoesNotMatch, FinalByteNotReceived, BufferDataTooLarge,
 };
 
+enum Result : uint8_t {
+    OK                 = 0,
+    INVALID_REQUEST    = 1,
+    WRONG_CHECKSUM_DMA = 2,
+};
+
 #endif //LIBF1COMM_MESSAGE_TYPE_HH

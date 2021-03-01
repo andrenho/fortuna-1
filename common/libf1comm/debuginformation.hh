@@ -12,6 +12,10 @@ public:
 protected:
     MessageClass message_class() const override { return MC_DebugInformation; }
     void serialize_detail(SerializationFunction f, void* data) const override {}
+#ifndef EMBEDDED
+    char const* classname() const override { return "DebugInformation"; }
+    void debug_detail() const override { }
+#endif
 };
 
 #endif

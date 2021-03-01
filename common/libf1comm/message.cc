@@ -98,3 +98,25 @@ void Message::deserialize_header(Message* message, Message::DeserializationFunct
         for (uint16_t i = 0; i < message->buffer_->sz; ++i)
             message->buffer_->data[i] = add_to_checksum(f(data), sum1, sum2);
 }
+
+#ifndef EMBEDDED
+#include <iostream>
+
+void Message::debug() const
+{
+    std::cout << classname() << " {\n";
+    std::cout << "  message_type: " << message_type_ << "\n";
+    if (buffer_) {
+        std::cout << "  buffer: ";
+        /*
+        if (buffer_is_string())
+            std::cout << '"' << (const char*) buffer_ << "\" ";
+        */
+        for (size_t i = 0; i < buffer_->sz; ++i)
+            printf("%02X ", buffer_->data[i]);
+        std::cout << "\n";
+    }
+    debug_detail();
+    std::cout << "}\n";
+}
+#endif

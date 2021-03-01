@@ -35,6 +35,13 @@ public:
     bool operator!=(Message const& rhs) const { return !(rhs == *this); }
 #endif
 
+#ifndef EMBEDDED
+    void debug() const;
+protected:
+    virtual const char* classname() const = 0;
+    virtual void debug_detail() const = 0;
+#endif
+
 protected:
     virtual MessageClass message_class() const = 0;
     virtual void         serialize_detail(SerializationFunction f, void* data) const = 0;
