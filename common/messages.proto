@@ -33,7 +33,7 @@ message RamRequest {
     uint32 address = 1;
     uint32 size    = 2;
     uint32 byte    = 3;
-    bytes  buffer  = 4; // [(nanopb).max_size = 256, (nanopb).fixed_length = true];
+    bytes  buffer  = 4 [(nanopb).max_size = 256, (nanopb).fixed_length = true];
 };
 
 //
