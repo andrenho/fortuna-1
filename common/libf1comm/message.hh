@@ -2,7 +2,7 @@
 #define LIBF1COMM_MESSAGE_HH
 
 #include <stdint.h>
-#include "message_type.hh"
+#include "defines.hh"
 #include "buffer.hh"
 
 #ifdef TEST

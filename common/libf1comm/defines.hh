@@ -1,7 +1,8 @@
-#ifndef LIBF1COMM_MESSAGE_TYPE_HH
-#define LIBF1COMM_MESSAGE_TYPE_HH
+#ifndef LIBF1COMM_DEFINES_HH
+#define LIBF1COMM_DEFINES_HH
 
-static constexpr uint8_t FinalByte = 0xe4;
+static constexpr uint8_t FinalByte      = 0xe4;
+static constexpr uint8_t InvalidCommand = 0xef;
 
 enum MessageClass : uint8_t {
     MC_Request          = 0xf0,
@@ -42,4 +43,4 @@ enum Result : uint8_t {
     WRONG_CHECKSUM_DMA = 2,
 };
 
-#endif //LIBF1COMM_MESSAGE_TYPE_HH
+#endif //LIBF1COMM_DEFINES_HH

@@ -3,7 +3,7 @@
 #include <iostream>
 
 #include "messages/request.hh"
-#include "message_type.hh"
+#include "defines.hh"
 #include "buffer.hh"
 #include "messages/debuginformation.hh"
 #include "messages/deserialize.hh"

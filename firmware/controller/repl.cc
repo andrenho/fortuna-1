@@ -3,6 +3,7 @@
 #include <avr/pgmspace.h>
 #include <stdio.h>
 #include <limits.h>
+#include <libf1comm/defines.hh>
 
 #define MAX_MSG_SZ 1024
 
@@ -299,9 +300,8 @@ void Repl::execute()
     /*
     if (cmd == Z_FOLLOWS_PROTOBUF_REQ)
         do_protobuf();
-    else if (cmd >= ' ' && cmd <= '~')
+    else */ if (cmd >= ' ' && cmd <= '~')
         do_terminal(cmd);
     else
-        serial_.send(Z_INVALID_COMMAND);
-    */
+        serial_.send(InvalidCommand);
 }
