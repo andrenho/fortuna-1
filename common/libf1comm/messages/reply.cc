@@ -1,6 +1,10 @@
 #include "reply.hh"
 #include "../serialization.hh"
 
+#ifdef EMBEDDED
+extern "C" void __cxa_pure_virtual() { while (1); }
+#endif
+
 void Reply::serialize_detail(Message::SerializationFunction f, void* data) const
 {
     serialize_u8(result, f, data);

@@ -16,8 +16,6 @@ public:
     explicit Message(Buffer& buffer)                  : message_type_(MessageType::Undefined), buffer_(&buffer) {}
     Message(MessageType message_type, Buffer& buffer) : message_type_(message_type), buffer_(&buffer) {}
     
-    virtual ~Message() = default;
-    
     using SerializationFunction = void(*)(uint8_t byte, void* data);
     using DeserializationFunction = uint8_t(*)(void* data);
     
