@@ -170,6 +170,11 @@ Reply Serial::parse_reply(Buffer& buffer) const
             throw ReplyException("The controller reported that the DMA sent a invalid checksum during an operation.");
         case Result::DeserializationErrorInController:
             throw ReplyException("The controller reported that it had a deserialization error.");
+        default: {
+            char b[3];
+            sprintf(b, "%02X", reply.result);
+            throw ReplyException("Invalid byte 0x"s + b + " received from controller.");
+        }
     }
 }
 
