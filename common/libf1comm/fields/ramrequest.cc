@@ -29,9 +29,7 @@ void RamRequest::debug_detail() const
     std::cout << "    byte: " << (int) byte << "\n";
     std::cout << "  }\n";
 }
-#endif
 
-#ifdef TEST
 bool RamRequest::operator==(RamRequest const& rhs) const
 {
     return address == rhs.address &&

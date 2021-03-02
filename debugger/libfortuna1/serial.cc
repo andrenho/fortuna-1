@@ -16,6 +16,8 @@ using namespace std::string_literals;
 
 #include "protocol.h"
 #include "replyexception.hh"
+#include "libf1comm/messages/debuginformation.hh"
+#include "libf1comm/messages/deserialize.hh"
 
 Serial::Serial(const char* port)
 {
@@ -55,39 +57,32 @@ Serial::~Serial()
 }
 
 Reply
-Serial::request(Request const& request) const
+Serial::request(Request const& request, Buffer& buffer) const
 {
     send_request(request);
-    Reply reply = receive_reply();
-    if (reply.type() != request.type()) {
-        throw ReplyException("The reply type (" + std::to_string(reply.type()) + ") does not match with the request type (" + std::to_string(request.type()) + ")");
-    } else if (reply.result() != reply.result()) {
-        if (reply.additionalinfo().empty())
-            throw ReplyException(reply.result(), reply.additionalinfo());
-        else
-            throw ReplyException(reply.result());
-    }
+    
+    Reply reply = receive_reply(buffer);
+    // TODO - check for errors on reply
     return reply;
 }
 
 void
 Serial::send_request(Request const& request) const
 {
-    std::string data;
-    request.SerializeToString(&data);
-    
-    std::string req_str = std::string(1, Z_FOLLOWS_PROTOBUF_REQ) + length_string_16(data) + data
-            + checksum_string(data) + std::string(1, Z_REQUEST_OVER);
-    
     if (log_message_ || log_bytes_)
         printf("\e[0;32m");
+    
     if (log_message_)
-        printf("\n%s", request.DebugString().c_str());
+        request.debug();
+    
+    std::string req_str = request.serialize_to_string();
+    
     if (log_bytes_) {
         for (uint8_t c: req_str)
             printf("%02X ", c);
         printf("\n");
     }
+    
     if (log_message_ || log_bytes_)
         printf("\e[0m");
     
@@ -106,137 +101,64 @@ Serial::send_request(Request const& request) const
     }
 }
 
-Reply Serial::receive_reply() const
+static int check(int n) {
+    if (n == 0)
+        throw std::runtime_error("Unexpected end-of-file when receiving message");
+    else if (n < 0)
+        throw std::runtime_error("Error receiving message: "s + strerror(errno));
+    return n;
+}
+
+Reply Serial::receive_reply(Buffer& buffer) const
 {
-    auto check = [](int n) -> int {
-        if (n == 0)
-            throw std::runtime_error("Unexpected end-of-file when receiving message");
-        else if (n < 0)
-            throw std::runtime_error("Error receiving message: "s + strerror(errno));
-        return n;
-    };
-    
+next_message:
     if (log_message_ || log_bytes_)
         printf("\e[0;34m");
     
-    // get response
     uint8_t resp;
-get_new_response:
     check(read(fd, &resp, 1));
     if (log_bytes_) {
         printf("%02X ", resp);
         fflush(stdout);
     }
     
-    // print debug message?
-    if (resp == Z_FOLLOWS_DEBUG_MSG) {
-        uint8_t c;
-        std::string dbg;
-        while (true) {
-            check(read(fd, &c, 1));
-            if (log_bytes_) {
-                printf("%02X ", c);
-                fflush(stdout);
+    struct S { bool log_bytes; int fd; };
+    S s = { log_bytes_, fd };
+    
+    switch (resp) {
+        case MessageClass::MC_Reply: {
+                auto reply = deserialize<Reply>(buffer, [](void* data) -> uint8_t {
+                    S* s = (S*) data;
+                    uint8_t byte;
+                    read(s->fd, &byte, 1);
+                    if (s->log_bytes) {
+                        printf("%02X ", byte);
+                        fflush(stdout);
+                    }
+                    return byte;
+                }, (void*) &s, true);
+                // TODO - check for errors
+                if (log_message_)
+                    reply.debug();
+                return reply;
             }
-            if (c == 0)
-                break;
-            dbg += c;
-        }
-        std::cout << dbg << "\n";
-        fflush(stdout);
-        goto get_new_response;
+        case MessageClass::MC_DebugInformation: {
+                deserialize<DebugInformation>(buffer, [](void* data) -> uint8_t {
+                    S* s = (S*) data;
+                    uint8_t byte;
+                    read(s->fd, &byte, 1);
+                    if (s->log_bytes) {
+                        printf("%02X ", byte);
+                        fflush(stdout);
+                    }
+                    return byte;
+                }, (void*) &s, true);
+                printf("\e[0;31m%s\e[0m\n", (const char*) buffer.data);
+                goto next_message;
+            }
+            break;
+        default:
+            throw ReplyException("Unexpected message class " + std::to_string(resp) + " instead of Reply of DebugInformation.");
     }
     
-    // check for errors
-    if (resp == Z_CHECKSUM_NO_MATCH) {
-        throw ReplyException("Controller informed that checksum sent does not match.");
-    } else if (resp == Z_REQUEST_TOO_LARGE) {
-        throw ReplyException("Controller informed that message sent is too large.");
-    } else if (resp == Z_RESPONSE_TOO_LARGE) {
-        throw ReplyException("Controller informed that the response would be too large to create.");
-    } else if (resp == Z_REQUEST_NOT_OVER) {
-        throw ReplyException("Expected request to be over over but received a different byte.");
-    } else if (resp == Z_ERROR_DECODING_REQUEST) {
-        throw ReplyException("Controller informed error decoding the request.");
-    } else if (resp == Z_ERROR_ENCODING_REPLY) {
-        throw ReplyException("Controller informed error encoding the reply.");
-    } else if (resp == Z_INVALID_COMMAND) {
-        throw ReplyException("Controller reported invalid command.");
-    } else if (resp != Z_FOLLOWS_PROTOBUF_RESP) {
-        char buf[3]; sprintf(buf, "%02X", resp);
-        throw ReplyException("Unexpected response from controller: "s + buf);
-    }
-    
-    // get message size
-    uint8_t ssz[2];
-    check(read(fd, ssz, 2));
-    if (log_bytes_) {
-        printf("%02X %02X ", ssz[0], ssz[1]);
-        fflush(stdout);
-    }
-    uint16_t msg_sz = (ssz[0] << 8) | ssz[1];
-    
-    // receive message
-    std::string buffer(msg_sz, 0);
-    size_t received = 0;
-    while (received < msg_sz)
-        received -= check(read(fd, &buffer[received], msg_sz - received));
-    if (log_bytes_) {
-        for (uint8_t c: buffer) {
-            printf("%02X ", c);
-            fflush(stdout);
-        }
-    }
-    
-    // get checksum and calculate it
-    check(read(fd, ssz, 2));
-    if (log_bytes_) {
-        printf("%02X %02X ", ssz[0], ssz[1]);
-        fflush(stdout);
-    }
-    auto [sum1, sum2] = checksum(buffer);
-    
-    // get reply over
-    check(read(fd, &resp, 1));
-    if (log_bytes_) {
-        printf("%02X ", resp);
-        fflush(stdout);
-    }
-    if (resp != Z_REPLY_OVER)
-        throw ReplyException("Expected reply over but received a different byte.");
-    
-    if (ssz[0] != sum2 || ssz[1] != sum1)
-        throw std::runtime_error("Invalid checksum in message sent by controller.");
-    
-    Reply reply;
-    reply.ParseFromString(buffer);
-    if (log_message_)
-        printf("\n%s", reply.DebugString().c_str());
-    
-    if (log_message_ || log_bytes_)
-        printf("\e[0m");
-    return reply;
 }
-
-std::string Serial::length_string_16(std::string const& data)
-{
-    return std::string(1, (data.size() >> 8) & 0xff) + static_cast<char>(data.size() & 0xff);
-}
-
-std::pair<uint8_t, uint8_t> Serial::checksum(std::string const& data)
-{
-    // https://en.wikipedia.org/wiki/Fletcher%27s_checksum
-    uint16_t sum1 = 0, sum2 = 0;
-    for (uint8_t c: data) {
-        sum1 = (sum1 + c) % 0xff;
-        sum2 = (sum2 + sum1) % 0xff;
-    }
-    return { sum1, sum2 };
-}
-
-std::string Serial::checksum_string(std::string const& data)
-{
-    auto [sum1, sum2] = checksum(data);
-    return std::string(1, sum2) + static_cast<char>(sum1);
-}
-

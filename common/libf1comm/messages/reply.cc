@@ -33,7 +33,9 @@ void Reply::deserialize_detail(Message::DeserializationFunction f, void* data, u
     }
 }
 
-#ifdef TEST
+#ifndef EMBEDDED
+#include <iostream>
+
 bool Reply::compare(Message const& message) const
 {
     Reply& other = *(Reply *) &message;
@@ -55,10 +57,6 @@ bool Reply::compare(Message const& message) const
     }
     return eq;
 }
-#endif
-
-#ifndef EMBEDDED
-#include <iostream>
 
 void Reply::debug_detail() const
 {

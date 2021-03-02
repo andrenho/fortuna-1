@@ -5,7 +5,7 @@
 #include "defines.hh"
 #include "buffer.hh"
 
-#ifdef TEST
+#ifndef EMBEDDED
 #include <string>
 #endif
 
@@ -15,6 +15,8 @@ public:
     explicit Message(MessageType message_type)        : message_type_(message_type) {}
     explicit Message(Buffer& buffer)                  : message_type_(MessageType::Undefined), buffer_(&buffer) {}
     Message(MessageType message_type, Buffer& buffer) : message_type_(message_type), buffer_(&buffer) {}
+    
+    virtual ~Message() = default;
     
     using SerializationFunction = void(*)(uint8_t byte, void* data);
     using DeserializationFunction = uint8_t(*)(void* data);
@@ -28,26 +30,21 @@ public:
     void set_deserialization_error(DeserializationError deserialization_error) { deserialization_error_ = deserialization_error; }
     MessageType message_type() const { return message_type_; }
 
-#ifdef TEST
+#ifndef EMBEDDED
     std::string serialize_to_string() const;
     bool operator==(Message const& rhs) const { return compare(rhs); }
     bool operator!=(Message const& rhs) const { return !(rhs == *this); }
-#endif
 
-#ifndef EMBEDDED
     void debug() const;
 protected:
     virtual const char* classname() const = 0;
     virtual void debug_detail() const = 0;
+    virtual bool compare(Message const& message) const;
 #endif
 
 protected:
     virtual MessageClass message_class() const = 0;
     virtual void         serialize_detail(SerializationFunction f, void* data) const = 0;
-    
-#ifdef TEST
-    virtual bool compare(Message const& message) const;
-#endif
     
     MessageType          message_type_;
     DeserializationError deserialization_error_ = DeserializationError::NoErrors;

@@ -12,9 +12,7 @@ struct RamRequest {
 
 #ifndef EMBEDDED
     void debug_detail() const;
-#endif
 
-#ifdef TEST
     bool operator==(RamRequest const& rhs) const;
     bool operator!=(RamRequest const& rhs) const { return !(rhs == *this); }
 #endif

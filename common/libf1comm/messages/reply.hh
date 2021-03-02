@@ -16,14 +16,11 @@ public:
     void deserialize_detail(DeserializationFunction f, void* data, uint16_t* sum1, uint16_t* sum2) override;
 
 protected:
-#if TEST
-    bool compare(Message const& message) const override;
-#endif
-    
     MessageClass message_class() const override { return MC_Reply; }
     void serialize_detail(SerializationFunction f, void* data) const override;
-    
+
 #ifndef EMBEDDED
+    bool compare(Message const& message) const override;
     char const* classname() const override { return "Request"; }
     void debug_detail() const override;
 #endif

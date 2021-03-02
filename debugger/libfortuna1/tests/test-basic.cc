@@ -9,7 +9,9 @@ int main(int argc, char* argv[])
     
     ASSERT_GT("Test memory amount", f->free_mem(), 0UL);
     
+    /*
     std::cout << "Testing debug messages...\n";
     f->test_debug_messages();
     std::cout << "Done.\n";
+     */
 }

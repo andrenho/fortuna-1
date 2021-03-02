@@ -28,7 +28,7 @@ void Request::deserialize_detail(Message::DeserializationFunction f, void* data,
     }
 }
 
-#ifdef TEST
+#ifndef EMBEDDED
 bool Request::compare(Message const& message) const
 {
     Request& other = *(Request *) &message;
@@ -46,9 +46,7 @@ bool Request::compare(Message const& message) const
     }
     return eq;
 }
-#endif
 
-#ifndef EMBEDDED
 void Request::debug_detail() const
 {
     switch (message_type_) {

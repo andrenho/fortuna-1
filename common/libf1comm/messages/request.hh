@@ -16,11 +16,9 @@ public:
         RamRequest ram_request;
     };
 
-#ifdef TEST
-    bool compare(Message const& message) const override;
-#endif
-
 #ifndef EMBEDDED
+    bool compare(Message const& message) const override;
+
 protected:
     char const* classname() const override { return "Request"; }
     void debug_detail() const override;

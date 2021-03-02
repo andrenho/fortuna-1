@@ -22,7 +22,7 @@ T deserialize(Buffer& buffer, Message::DeserializationFunction f, void* data, bo
     return message;
 }
 
-#ifdef TEST
+#ifndef EMBEDDED
 template <typename T>
 T deserialize_from_string(Buffer& buffer, std::string const& serial)
 {

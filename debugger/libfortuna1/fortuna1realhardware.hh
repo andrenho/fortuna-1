@@ -2,13 +2,13 @@
 #define LIBFORTUNA1_FORTUNA1REALHARDWARE_HH
 
 #include <string>
+#include <libf1comm/buffer.hh>
 #include "fortuna1.hh"
 #include "serial.hh"
 
 class Fortuna1RealHardware : public Fortuna1 {
 public:
     explicit Fortuna1RealHardware(std::string const& serial_port);
-    ~Fortuna1RealHardware() override;
     
     void set_log_bytes(bool b) override { serial_.set_log_bytes(b); }
     void set_log_messages(bool b) override { serial_.set_log_message(b); }
@@ -24,6 +24,7 @@ public:
     std::vector<uint8_t> ram_read_buffer(uint16_t addr, uint16_t sz) const override;
 
 private:
+    mutable Buffer buffer_ { {0}, 0 };
     Serial serial_;
 };
 
