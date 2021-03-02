@@ -1,6 +1,7 @@
 #include "repl.hh"
 
 #include <stdio.h>
+#include <string.h>
 #include <limits.h>
 #include <avr/pgmspace.h>
 
@@ -9,10 +10,7 @@
 #include <libf1comm/messages/reply.hh>
 #include <libf1comm/messages/deserialize.hh>
 
-#define MAX_MSG_SZ 1024
-
 // for every new command, include:
-//   - Command
 //   - Repl::do_terminal
 //   - Repl::parse_request
 
@@ -113,6 +111,10 @@ Reply Repl::parse_request(Request const& request)
         case MessageType::TestDebug:
             for (int i = 0; i < 3; ++i)
                 serial_.debug_P(buffer_, PSTR("Debug message %d..."), i);
+            break;
+        case MessageType::TestDMA:
+            memcpy(buffer_.data, ram_.test(), 6);
+            buffer_.sz = 6;
             break;
         default:
             reply.result = Result::InvalidRequest;
