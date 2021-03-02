@@ -110,7 +110,7 @@ Reply Repl::parse_request(Request const& request)
             reply.free_mem = command_.free_ram();
             break;
         default:
-            // TODO - what to do in invalid command?
+            reply.result = Result::InvalidRequest;
             break;
     }
     return reply;
@@ -191,9 +191,13 @@ Reply Repl::parse_request(Request const& request)
 
 Request Repl::recv_request(bool* status)
 {
-    return deserialize<Request>(buffer_, [](void* data) -> uint8_t {
+    *status = true;
+    auto request = deserialize<Request>(buffer_, [](void* data) -> uint8_t {
         return ((Serial*) data)->recv();
     }, &serial_, true);
+    if (request.deserialization_error() != DeserializationError::NoErrors)
+        *status = false;
+    return request;
 }
 
 void Repl::send_reply(Reply& reply)
@@ -205,10 +209,10 @@ void Repl::do_message()
 {
     bool status = true;
     Request request = recv_request(&status);
-    if (!status)
-        return;
 
     Reply reply = parse_request(request);
+    if (!status)
+        reply.result = DeserializationErrorInController;
     send_reply(reply);
 }
 

@@ -38,9 +38,10 @@ enum class DeserializationError {
 };
 
 enum Result : uint8_t {
-    OK                 = 0,
-    INVALID_REQUEST    = 1,
-    WRONG_CHECKSUM_DMA = 2,
+    OK                               = 0,
+    InvalidRequest                   = 1,
+    WrongChecksumDMA                 = 2,
+    DeserializationErrorInController = 3,
 };
 
 #endif //LIBF1COMM_DEFINES_HH
