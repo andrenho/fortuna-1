@@ -75,5 +75,6 @@ void Reply::debug_detail() const
         default:
             break;
     }
+    std::cout << "  result: " << (int) result << "\n";
 }
 #endif

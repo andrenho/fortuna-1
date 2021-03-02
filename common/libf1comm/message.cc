@@ -15,7 +15,7 @@ void Message::serialize(Message::SerializationFunction f, void* data) const
     };
     
     // message class
-    add_byte(static_cast<uint8_t>(message_class()));
+    f(static_cast<uint8_t>(message_class()), data);
     
     // message type
     add_byte(static_cast<uint8_t>(message_type_));
@@ -54,7 +54,7 @@ void Message::serialize(Message::SerializationFunction f, void* data) const
 void Message::deserialize_header(Message* message, Message::DeserializationFunction f, void* data, uint16_t* sum1, uint16_t* sum2, bool skip_first_byte)
 {
     if (!skip_first_byte) {
-        if (add_to_checksum(f(data), sum1, sum2) != message->message_class()) {
+        if (f(data) != message->message_class()) {
             message->deserialization_error_ = DeserializationError::InvalidMessageClass;
         }
     }

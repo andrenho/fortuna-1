@@ -21,7 +21,7 @@ protected:
 
 #ifndef EMBEDDED
     bool compare(Message const& message) const override;
-    char const* classname() const override { return "Request"; }
+    char const* classname() const override { return "Reply"; }
     void debug_detail() const override;
 #endif
 };
