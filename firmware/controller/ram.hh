@@ -4,8 +4,8 @@
 #include "spi.hh"
 
 class RAM {
-    using ReadFunc = void (*)(uint16_t addr, uint8_t byte, void* data);
-    using WriteFunc = uint8_t (*)(uint16_t addr, void* data);
+    using ReadFunc = void (*)(uint16_t idx, uint8_t byte, void* data);
+    using WriteFunc = uint8_t (*)(uint16_t idx, void* data);
 public:
     explicit RAM(SPI& spi): spi_(spi) {}
 

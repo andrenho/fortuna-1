@@ -59,7 +59,7 @@ bool RAM::read_block(uint16_t addr, uint16_t sz, RAM::ReadFunc read_func, void* 
     uint16_t sum1 = 0, sum2 = 0;
     for (uint16_t a = addr; a < (addr + sz); ++a) {
         uint8_t byte = spi_.recv();
-        read_func(a, byte, data);
+        read_func(a - addr, byte, data);
         sum1 = (sum1 + byte) % 255;
         sum2 = (sum2 + sum1) % 255;
     }
@@ -80,7 +80,7 @@ bool RAM::write_block(uint16_t addr, uint16_t sz, RAM::WriteFunc write_func, voi
     spi_.send(sz >> 8);
     uint16_t sum1 = 0, sum2 = 0;
     for (uint16_t a = addr; a < (addr + sz); ++a) {
-        uint8_t byte = write_func(a, data);
+        uint8_t byte = write_func(a - addr, data);
         spi_.send(byte);
         sum1 = (sum1 + byte) % 255;
         sum2 = (sum2 + sum1) % 255;
