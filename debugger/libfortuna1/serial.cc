@@ -121,43 +121,41 @@ next_message:
         fflush(stdout);
     }
     
-    struct S { bool log_bytes; int fd; };
-    S s = { log_bytes_, fd };
-    
     switch (resp) {
-        case MessageClass::MC_Reply: {
-                auto reply = deserialize<Reply>(buffer, [](void* data) -> uint8_t {
-                    S* s = (S*) data;
-                    uint8_t byte;
-                    read(s->fd, &byte, 1);
-                    if (s->log_bytes) {
-                        printf("%02X ", byte);
-                        fflush(stdout);
-                    }
-                    return byte;
-                }, (void*) &s, true);
-                // TODO - check for errors
-                if (log_message_)
-                    reply.debug();
-                return reply;
-            }
-        case MessageClass::MC_DebugInformation: {
-                deserialize<DebugInformation>(buffer, [](void* data) -> uint8_t {
-                    S* s = (S*) data;
-                    uint8_t byte;
-                    read(s->fd, &byte, 1);
-                    if (s->log_bytes) {
-                        printf("%02X ", byte);
-                        fflush(stdout);
-                    }
-                    return byte;
-                }, (void*) &s, true);
-                printf("\e[0;31m%s\e[0m\n", (const char*) buffer.data);
-                goto next_message;
-            }
-            break;
+        case MessageClass::MC_Reply:
+            return parse_reply(buffer);
+        case MessageClass::MC_DebugInformation:
+            parse_debug_information(buffer);
+            goto next_message;
         default:
             throw ReplyException("Unexpected message class " + std::to_string(resp) + " instead of Reply of DebugInformation.");
     }
+}
+
+uint8_t Serial::input_byte(void* data) {
+    auto* s = (Serial*) data;
+    uint8_t byte;
+    read(s->fd, &byte, 1);
+    if (s->log_bytes_) {
+        printf("%02X ", byte);
+        fflush(stdout);
+    }
+    return byte;
+}
+
+void Serial::parse_debug_information(Buffer& buffer) const
+{
+    deserialize<DebugInformation>(buffer, Serial::input_byte, (void*) this, true);
+    printf("\e[0;31m%s\e[0m\n", (const char*) buffer.data);
+}
+
+Reply Serial::parse_reply(Buffer& buffer) const
+{
+    auto reply = deserialize<Reply>(buffer, Serial::input_byte, (void*) this, true);
     
+    // TODO - check for errors
+    
+    if (log_message_)
+        reply.debug();
+    return reply;
 }

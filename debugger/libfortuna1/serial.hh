@@ -22,6 +22,11 @@ private:
     
     void send_request(Request const& request) const;
     Reply receive_reply(Buffer& buffer) const;
+    
+    void parse_debug_information(Buffer& buffer) const;
+    Reply parse_reply(Buffer& buffer) const;
+    
+    static uint8_t input_byte(void* data);
 };
 
 #endif
