@@ -70,7 +70,7 @@ void Reply::debug_detail() const
             break;
         case RamReadByte:
         case RamWriteByte:
-            std::cout << "  ram_byte: " << ram_byte << "\n";
+            std::cout << "  ram_byte: " << (int) ram_byte << "\n";
             break;
         default:
             break;

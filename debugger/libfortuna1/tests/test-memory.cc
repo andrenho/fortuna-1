@@ -22,6 +22,7 @@ int main(int argc, char* argv[])
         ASSERT_EQ("Byte read is equal to byte written", data, f->ram_read_byte(addr));
     }
     
+    /*
     {
         uint16_t addr = rand() & 0x7fff;  // TODO - using only lower bank for now
         std::vector<uint8_t> buffer;
@@ -32,5 +33,6 @@ int main(int argc, char* argv[])
         f->ram_write_buffer(addr, buffer);
         ASSERT_EQ("Bytes read are equal to bytes written", buffer, f->ram_read_buffer(addr, 512));
     }
+     */
 }
 
