@@ -2,7 +2,7 @@
 #define LIBFORTUNA1_FORTUNA1REALHARDWARE_HH
 
 #include <string>
-#include <libf1comm/buffer.hh>
+#include "libf1comm/buffer.hh"
 #include "fortuna1.hh"
 #include "serial.hh"
 

@@ -2,8 +2,8 @@
 #define SERIAL_HH_
 
 #include <string>
-#include <libf1comm/messages/reply.hh>
-#include <libf1comm/messages/request.hh>
+#include "libf1comm/messages/reply.hh"
+#include "libf1comm/messages/request.hh"
 
 class Serial {
 public:

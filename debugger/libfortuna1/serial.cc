@@ -14,7 +14,6 @@
 
 using namespace std::string_literals;
 
-#include "protocol.h"
 #include "replyexception.hh"
 #include "libf1comm/messages/debuginformation.hh"
 #include "libf1comm/messages/deserialize.hh"
