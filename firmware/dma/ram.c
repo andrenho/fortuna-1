@@ -64,17 +64,27 @@ uint8_t ram_get_data()
     return PINC;
 }
 
-void 
+uint8_t
 ram_write_byte(uint16_t addr, uint8_t data)
 {
-    ram_set_addr(addr);
-    ram_set_data(data);
-    PORT_RAM &= ~(1 << MREQ);
-    PORT_RAM &= ~(1 << WE);
-    WAIT;
-    PORT_RAM |= (1 << WE) | (1 << MREQ);
-    PORTC = 0;
-    ram_reset();
+    int tries = 0;
+    uint8_t written;
+    do {
+        ram_set_addr(addr);
+        ram_set_data(data);
+        PORT_RAM &= ~(1 << MREQ);
+        PORT_RAM &= ~(1 << WE);
+        WAIT;
+        PORT_RAM |= (1 << WE) | (1 << MREQ);
+        PORTC = 0;
+        ram_reset();
+        _delay_us(100);
+        written = ram_read_byte(addr);
+        if (tries > 10)
+            break;
+    } while (written != data);
+
+    return written;
 }
 
 uint8_t ram_read_byte(uint16_t addr)
