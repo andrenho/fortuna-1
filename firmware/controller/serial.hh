@@ -2,6 +2,7 @@
 #define SERIAL_H_
 
 #include <stdint.h>
+#include "libf1comm/buffer.hh"
 
 class Serial {
 public:
@@ -24,7 +25,7 @@ public:
     void     clrscr() const;
     void     set_echo(bool v);
 
-    void     debug_P(const char* fmt, ...) const;
+    void     debug_P(Buffer& buffer, const char* fmt, ...) const;
 
 private:
     Serial() = default;

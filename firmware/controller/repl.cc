@@ -1,8 +1,9 @@
 #include "repl.hh"
 
-#include <avr/pgmspace.h>
 #include <stdio.h>
 #include <limits.h>
+#include <avr/pgmspace.h>
+
 #include <libf1comm/defines.hh>
 #include <libf1comm/messages/request.hh>
 #include <libf1comm/messages/reply.hh>
@@ -65,10 +66,10 @@ void Repl::do_terminal(char cmd)
             printf_P(PSTR("[r] read byte  [w] write byte  [d] dump memory\n"));
             break;
         case 'f':
-            printf_P(PSTR("%d bytes free.\n"), command_.free_ram());
+            printf_P(PSTR("%d bytes free.\n"), free_ram());
             break;
         case 'D':
-            printf_P(PSTR("- %s\n"), command_.test_dma());
+            printf_P(PSTR("- %s\n"), ram_.test());
             break;
         case 'r': {
                 int addr = ask_value_P(PSTR("Addr"));
@@ -107,7 +108,11 @@ Reply Repl::parse_request(Request const& request)
     Reply reply(request.message_type(), buffer_);
     switch (request.message_type()) {
         case MessageType::FreeMem:
-            reply.free_mem = command_.free_ram();
+            reply.free_mem = free_ram();
+            break;
+        case MessageType::TestDebug:
+            for (int i = 0; i < 3; ++i)
+                serial_.debug_P(buffer_, PSTR("Debug message %d..."), i);
             break;
         default:
             reply.result = Result::InvalidRequest;

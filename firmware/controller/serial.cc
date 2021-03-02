@@ -5,6 +5,7 @@
 
 #include <avr/io.h>
 #include <avr/pgmspace.h>
+#include <libf1comm/messages/debuginformation.hh>
 
 #include "repl.hh"
 
@@ -118,21 +119,15 @@ Serial::checksum() const
 }
 
 void
-Serial::debug_P(const char* fmt, ...) const
+Serial::debug_P(Buffer& buffer, const char* fmt, ...) const
 {
-    /*
-    char buf[BUF_SZ];
     va_list ap;
     va_start(ap, fmt);
-    vsnprintf_P(buf, BUF_SZ, fmt, ap);
+    buffer.sz = vsnprintf_P(reinterpret_cast<char*>(buffer.data), 511, fmt, ap);
     va_end(ap);
-
-    send(Z_FOLLOWS_DEBUG_MSG);
-    char* b = buf;
-    while (*b != 0)
-        send(*b++);
-    send(0);
-     */
+    
+    DebugInformation di(buffer);
+    di.serialize([](uint8_t byte, void* data) { ((Serial*) data)->send(byte); }, (void*) this);
 }
 
 void Serial::set_echo(bool v)

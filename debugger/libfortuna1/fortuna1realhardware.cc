@@ -15,11 +15,8 @@ size_t Fortuna1RealHardware::free_mem() const
 
 void Fortuna1RealHardware::test_debug_messages() const
 {
-    /*
-    Request req;
-    req.set_type(MessageType::TEST_DEBUG);
-    serial_.request(req);
-     */
+    Request request(MessageType::TestDebug);
+    serial_.request(request, buffer_);
 }
 
 std::string Fortuna1RealHardware::test_dma() const
