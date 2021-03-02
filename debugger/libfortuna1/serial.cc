@@ -121,6 +121,9 @@ next_message:
         fflush(stdout);
     }
     
+    if (log_message_ || log_bytes_)
+        printf("\e[0m");
+    
     switch (resp) {
         case MessageClass::MC_Reply:
             return parse_reply(buffer);
