@@ -9,81 +9,61 @@ Fortuna1RealHardware::Fortuna1RealHardware(std::string const& serial_port)
 
 size_t Fortuna1RealHardware::free_mem() const
 {
-    Request request(MessageType::FreeMem);
+    Request request(MessageType::FreeMem, buffer_);
     return serial_.request(request, buffer_).free_mem;
 }
 
 void Fortuna1RealHardware::test_debug_messages() const
 {
-    Request request(MessageType::TestDebug);
+    Request request(MessageType::TestDebug, buffer_);
     serial_.request(request, buffer_);
 }
 
 std::string Fortuna1RealHardware::test_dma() const
 {
-    /*
-    Request req;
-    req.set_type(MessageType::TEST_DMA);
-    return serial_.request(req).buffer();
-     */
+    Request request(MessageType::TestDMA, buffer_);
+    serial_.request(request, buffer_);
+    return (const char*) buffer_.data;
 }
 
 void Fortuna1RealHardware::ram_write_byte(uint16_t addr, uint8_t data)
 {
-    /*
-    Request req;
-    req.set_type(MessageType::RAM_WRITE_BYTE);
-    auto ram_request = new RamRequest();
-    ram_request->set_address(addr);
-    ram_request->set_byte(data);
-    req.set_allocated_ramrequest(ram_request);
-    uint8_t response = serial_.request(req).ramresponse().byte();
+    Request request(MessageType::RamWriteByte, buffer_);
+    request.ram_request.address = addr;
+    request.ram_request.byte = data;
+    uint8_t response = serial_.request(request, buffer_).ram_byte;
     if (response != data)
         throw ReplyException("The byte sent to memory is not the same one returned by DMA.");
-        */
 }
 
 uint8_t Fortuna1RealHardware::ram_read_byte(uint16_t addr) const
 {
-    /*
-    Request req;
-    req.set_type(MessageType::RAM_READ_BYTE);
-    auto ram_request = new RamRequest();
-    ram_request->set_address(addr);
-    req.set_allocated_ramrequest(ram_request);
-    return serial_.request(req).ramresponse().byte();
-     */
+    Request request(MessageType::RamReadByte, buffer_);
+    request.ram_request.address = addr;
+    return serial_.request(request, buffer_).ram_byte;
 }
 
 void Fortuna1RealHardware::ram_write_buffer(uint16_t addr, std::vector<uint8_t> const& bytes)
 {
-    /*
     if (bytes.size() > 512)
         throw std::runtime_error("There's a 512 byte limit to buffer size when writing to RAM.");
-    Request req;
-    req.set_type(MessageType::RAM_WRITE_BLOCK);
-    auto ram_request = new RamRequest();
-    ram_request->set_address(addr);
-    auto buffer = new std::string();
-    for (uint8_t b: bytes)
-        *buffer += b;
-    ram_request->set_allocated_buffer(buffer);
-    req.set_allocated_ramrequest(ram_request);
-    serial_.request(req);
-     */
+    Request request(MessageType::RamWriteBlock, buffer_);
+    request.ram_request.address = addr;
+    for (size_t i = 0; i < bytes.size(); ++i)
+        buffer_.data[i] = bytes.at(i);
+    serial_.request(request, buffer_);
 }
 
 std::vector<uint8_t> Fortuna1RealHardware::ram_read_buffer(uint16_t addr, uint16_t sz) const
 {
-    /*
     if (sz > 512)
         throw std::runtime_error("There's a 512 byte limit to buffer size when writing to RAM.");
-    Request req;
-    req.set_type(MessageType::RAM_READ_BLOCK);
-    auto ram_request = new RamRequest();
-    ram_request->set_address(addr);
-    ram_request->set_size(sz);
-    auto& str = serial_.request(req).ramresponse().buffer();
-    return std::vector<uint8_t>(str.begin(), str.end());
-     */
+    Request request(MessageType::RamReadBlock, buffer_);
+    request.ram_request.address = addr;
+    request.ram_request.size = sz;
+    serial_.request(request, buffer_);
+    std::vector<uint8_t> vv;
+    for (size_t i = 0; i < buffer_.sz; ++i)
+        vv.push_back(buffer_.data[i]);
+    return vv;
 }
