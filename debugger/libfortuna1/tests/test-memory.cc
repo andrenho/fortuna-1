@@ -14,7 +14,6 @@ int main(int argc, char* argv[])
     
     ASSERT_EQ("Test communication with DMA", "Hello", f->test_dma());
     
-    /*
     for (int i = 0; i < 5; ++i) {
         uint16_t addr = rand() & 0x7fff;  // TODO - using only lower bank for now
         uint8_t data = rand();
@@ -23,6 +22,7 @@ int main(int argc, char* argv[])
         ASSERT_EQ("Byte read is equal to byte written", data, f->ram_read_byte(addr));
     }
     
+    /*
     {
         uint16_t addr = rand() & 0x7fff;  // TODO - using only lower bank for now
         std::vector<uint8_t> buffer;

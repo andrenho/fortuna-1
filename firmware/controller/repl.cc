@@ -116,6 +116,12 @@ Reply Repl::parse_request(Request const& request)
             memcpy(buffer_.data, ram_.test(), 6);
             buffer_.sz = 6;
             break;
+        case MessageType::RamReadByte:
+            reply.ram_byte = ram_.read_byte(request.ram_request.address);
+            break;
+        case MessageType::RamWriteByte:
+            reply.ram_byte = ram_.write_byte(request.ram_request.address, request.ram_request.byte);
+            break;
         default:
             reply.result = Result::InvalidRequest;
             break;
