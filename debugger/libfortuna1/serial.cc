@@ -148,17 +148,43 @@ uint8_t Serial::input_byte(void* data) {
 
 void Serial::parse_debug_information(Buffer& buffer) const
 {
-    deserialize<DebugInformation>(buffer, Serial::input_byte, (void*) this, true);
+    auto di = deserialize<DebugInformation>(buffer, Serial::input_byte, (void*) this, true);
+    check_deserialization_error(di);
     printf("\e[0;31m%s\e[0m\n", (const char*) buffer.data);
 }
 
 Reply Serial::parse_reply(Buffer& buffer) const
 {
     auto reply = deserialize<Reply>(buffer, Serial::input_byte, (void*) this, true);
-    
-    // TODO - check for errors
-    
     if (log_message_)
         reply.debug();
-    return reply;
+    
+    check_deserialization_error(reply);
+    
+    switch (reply.result) {
+        case Result::OK:
+            return reply;
+        case Result::InvalidRequest:
+            throw ReplyException("The controller reported that we sent a invalild request.");
+        case Result::WrongChecksumDMA:
+            throw ReplyException("The controller reported that the DMA sent a invalid checksum during an operation.");
+        case Result::DeserializationErrorInController:
+            throw ReplyException("The controller reported that it had a deserialization error.");
+    }
+}
+
+void Serial::check_deserialization_error(Message const& message)
+{
+    switch (message.deserialization_error()) {
+        case DeserializationError::InvalidMessageClass:
+            throw ReplyException("Invalid message class when deserializing reply.");
+        case DeserializationError::ChecksumDoesNotMatch:
+            throw ReplyException("Checksum does not match when deserializing reply.");
+        case DeserializationError::FinalByteNotReceived:
+            throw ReplyException("Final byte (0xe4) not received when deserializing reply.");
+        case DeserializationError::BufferDataTooLarge:
+            throw ReplyException("Buffer data too large when deserializing reply.");
+        case DeserializationError::NoErrors:
+            break;
+    }
 }

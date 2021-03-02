@@ -27,6 +27,7 @@ private:
     Reply parse_reply(Buffer& buffer) const;
     
     static uint8_t input_byte(void* data);
+    static void   check_deserialization_error(Message const& message) ;
 };
 
 #endif
