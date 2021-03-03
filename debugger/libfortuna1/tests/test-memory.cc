@@ -15,6 +15,7 @@ int main(int argc, char* argv[])
     ASSERT_EQ("Test communication with DMA", "Hello", f->test_dma());
     
     for (int i = 0; i < 512; ++i) {
+        std::cout << "Attempt #" << i << "\n";
         uint16_t addr = rand() & 0x7fff;  // TODO - using only lower bank for now
         uint8_t data = rand();
         printf("Writing byte 0x%02X to address 0x%04X...\n", data, addr);
