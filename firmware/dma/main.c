@@ -45,6 +45,7 @@ int main()
             case 0x2: {
                     uint16_t addr = spi_swap(0xff);
                     addr |= ((uint16_t) spi_swap(0xff)) << 8;
+                    spi_swap(0xfe);
                     spi_swap(ram_read_byte(addr));
                 }
                 break;
@@ -53,6 +54,7 @@ int main()
                     addr |= ((uint16_t) spi_swap(0xff)) << 8;
                     uint8_t data = spi_swap(0xff);
                     uint8_t written = ram_write_byte(addr, data);
+                    spi_swap(0xfe);
                     spi_swap(written);
                 }
                 break;
@@ -62,6 +64,7 @@ int main()
                     uint16_t sz = spi_swap(0xff);
                     sz |= ((uint16_t) spi_swap(0xff)) << 8;
                     ram_read_buffer(addr, sz);
+                    spi_swap(0xfe);
                     for (size_t i = 0; i < sz; ++i)
                         spi_swap(buffer[i]);
                     uint16_t chk = checksum(sz);
@@ -77,6 +80,7 @@ int main()
                     for (size_t i = 0; i < sz; ++i)
                         buffer[i] = spi_swap(0xff);
                     ram_write_buffer(addr, sz);
+                    spi_swap(0xfe);
                     uint16_t chk = checksum(sz);
                     spi_swap(chk & 0xff);
                     spi_swap(chk >> 8);

@@ -28,7 +28,7 @@ test-connection:
 	sudo avrdude ${AVRDUDE_FLAGS}
 
 clean:
-	rm -f *.elf *.o *.hex test-disasm test-simulator *.pb.*
+	rm -f *.elf *.o *.hex test-disasm test-simulator *.pb.* libf1comm/*.o libf1comm/**/*.o
 
 upload: ${PROJECT}.hex
 	sudo avrdude ${AVRDUDE_FLAGS} -U flash:w:$<:i

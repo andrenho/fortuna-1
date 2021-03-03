@@ -27,7 +27,7 @@ void run_tests()
     printf_P(PSTR("0x%02X == 0x42\n"), ram_read_byte(0));
 
     // read/write memory byte
-    for (int i = 0; i < 5; ++i) {
+    for (int i = 0; i < 512; ++i) {
         uint16_t addr = random() & 0x7fff;
         if (i == 0)
             addr = 0x200;
