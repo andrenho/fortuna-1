@@ -10,6 +10,8 @@
 #include <libf1comm/messages/reply.hh>
 #include <libf1comm/messages/deserialize.hh>
 
+#include "tests.hh"
+
 // for every new command, include:
 //   - Repl::do_terminal
 //   - Repl::parse_request
@@ -57,11 +59,18 @@ void Repl::do_terminal(char cmd)
     
     putchar(cmd);
     putchar('\n');
+#ifdef ENABLE_TESTS
+    if (do_tests(cmd))
+        return;
+#endif
     switch (cmd) {
         case 'h':
         case '?':
             printf_P(PSTR("[f] bytes free  [D] test DMA\n"));
             printf_P(PSTR("[r] read byte  [w] write byte  [W] write multiple bytes  [d] dump memory\n"));
+#ifdef ENABLE_TESTS
+            printf_P(tests_help());
+#endif
             break;
         case 'f':
             printf_P(PSTR("%d bytes free.\n"), free_ram());
@@ -100,17 +109,6 @@ void Repl::do_terminal(char cmd)
                 }
             }
             break;
-        /*
-        case 'W': {
-                int addr = ask_value_P(PSTR("Addr"));
-                if (addr != ERROR)
-                    break;
-                int nbytes = ask_value_P(PSTR("# bytes"));
-                for (int i = 0; i < nbytes; ++i) {
-                    if (!ram_.write_block(addr, nbytes, [](uint16_t
-                }
-            }
-        */
         default:
             error();
     }
