@@ -13,7 +13,7 @@ public:
     void   deserialize_detail(DeserializationFunction f, void* data, uint16_t* sum1, uint16_t* sum2) override;
     
     union {
-        RamRequest ram_request;
+        RamRequest ram_request { 0, 0, 0 };
     };
 
 #ifndef EMBEDDED

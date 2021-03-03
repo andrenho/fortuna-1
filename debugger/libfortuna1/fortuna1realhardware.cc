@@ -47,10 +47,11 @@ void Fortuna1RealHardware::ram_write_buffer(uint16_t addr, std::vector<uint8_t> 
 {
     if (bytes.size() > 512)
         throw std::runtime_error("There's a 512 byte limit to buffer size when writing to RAM.");
-    Request request(MessageType::RamWriteBlock, buffer_);
-    request.ram_request.address = addr;
     for (size_t i = 0; i < bytes.size(); ++i)
         buffer_.data[i] = bytes.at(i);
+    buffer_.sz = bytes.size();
+    Request request(MessageType::RamWriteBlock, buffer_);
+    request.ram_request.address = addr;
     serial_.request(request, buffer_);
 }
 

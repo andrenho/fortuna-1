@@ -14,12 +14,21 @@ int main(int argc, char* argv[])
     
     ASSERT_EQ("Test communication with DMA", "Hello", f->test_dma());
     
+    /*
     for (int i = 0; i < 5; ++i) {
         uint16_t addr = rand() & 0x7fff;  // TODO - using only lower bank for now
         uint8_t data = rand();
         printf("Writing byte 0x%02X to address 0x%04X...\n", data, addr);
         f->ram_write_byte(addr, data);
         ASSERT_EQ("Byte read is equal to byte written", data, f->ram_read_byte(addr));
+    }
+     */
+    
+    {
+        std::vector<uint8_t> buffer;
+        buffer.push_back(0x42);
+        f->ram_write_buffer(0, buffer);
+        ASSERT_EQ("Writing a single byte as a block", 0x42, f->ram_read_byte(0));
     }
     
     /*
