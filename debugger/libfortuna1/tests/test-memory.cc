@@ -14,16 +14,15 @@ int main(int argc, char* argv[])
     
     ASSERT_EQ("Test communication with DMA", "Hello", f->test_dma());
     
-    /*
-    for (int i = 0; i < 5; ++i) {
+    for (int i = 0; i < 512; ++i) {
         uint16_t addr = rand() & 0x7fff;  // TODO - using only lower bank for now
         uint8_t data = rand();
         printf("Writing byte 0x%02X to address 0x%04X...\n", data, addr);
         f->ram_write_byte(addr, data);
         ASSERT_EQ("Byte read is equal to byte written", data, f->ram_read_byte(addr));
     }
-     */
     
+    /*
     {
         uint16_t addr = 0x4365;
         std::vector<uint8_t> buffer;
@@ -34,6 +33,7 @@ int main(int argc, char* argv[])
         auto cbuffer = f->ram_read_buffer(addr, 8);
         ASSERT_EQ("Verifying byte written", 0x42, cbuffer.at(0));
     }
+     */
     
     /*
     {

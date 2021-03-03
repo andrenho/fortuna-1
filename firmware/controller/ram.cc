@@ -29,7 +29,7 @@ uint8_t RAM::write_byte(uint16_t addr, uint8_t data)
     spi_.send(addr & 0xff);
     spi_.send(addr >> 8);
     spi_.send(data);
-    _delay_us(100);
+    _delay_us(200);
     uint8_t r = spi_.recv();
     spi_.deactivate();
     return r;
