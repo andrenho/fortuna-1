@@ -60,7 +60,7 @@ void Repl::do_terminal(char cmd)
     putchar(cmd);
     putchar('\n');
 #ifdef ENABLE_TESTS
-    if (do_tests(cmd))
+    if (do_tests(cmd, ram_))
         return;
 #endif
     switch (cmd) {

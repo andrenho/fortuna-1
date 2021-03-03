@@ -1,5 +1,6 @@
 #include "spi.hh"
 
+#include <stdio.h>
 #include <avr/io.h>
 #include <util/delay.h>
 
@@ -50,7 +51,11 @@ uint8_t SPI::send(uint8_t byte)
 {
     SPDR = byte;
     while (!(SPSR & (1 << SPIF)));
-    return SPDR;
+    uint8_t r = SPDR;
+#ifdef ENABLE_TESTS
+    printf("\e[0;36m%02X\e[0m.\e[0;33m%02X \e[0m ", byte, r);
+#endif
+    return r;
 }
 
 uint8_t SPI::recv()
