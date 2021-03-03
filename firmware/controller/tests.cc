@@ -24,11 +24,11 @@ static void create_seed()
 static void run_memory_tests(RAM& ram)
 {
     printf_P(PSTR("Running memory tests...\n"));
-    ram.spi().set_debug_mode(true);
+    // ram.spi().set_debug_mode(true);
     create_seed();
 
     // read/write memory byte
-    for (int i = 0; i < 1; ++i) {
+    for (int i = 0; i < 16; ++i) {
         uint16_t addr = random() & 0x7fff;
         uint8_t data = rand() & 0xff;
         printf_P(PSTR("Write [0x%04X] = 0x%02X, "), addr, data);
