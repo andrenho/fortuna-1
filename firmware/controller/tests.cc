@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include <avr/pgmspace.h>
 #include <avr/eeprom.h>
+#include <string.h>
 
 static void create_seed()
 {
@@ -51,15 +52,11 @@ static void run_memory_tests(RAM& ram)
         uint8_t buffer[256], written[256];
         for (size_t i = 0; i < 256; ++i)
             buffer[i] = rand() & 0xff;
-        ram.write_block(addr, 256, [](uint16_t idx, void* data) -> uint8_t {
-
-        }, buffer);
-
         memcpy(written, buffer, 256);
-        ram_write_buffer(addr, 256);
+        ram.write_block(addr, 256, [](uint16_t idx, void* buffer) -> uint8_t { return ((uint8_t *) buffer)[idx]; }, buffer);
         for (size_t i = 0; i < 256; ++i)
             buffer[i] = 0;
-        ram_read_buffer(addr, 256);
+        ram.read_block(addr, 256, [](uint16_t idx, uint8_t byte, void* buffer) { ((uint8_t *) buffer)[idx] = byte; }, buffer);
         for (volatile size_t i = 0; i < 0x10; ++i) {
             for (volatile size_t j = 0; j < 0x10; ++j)
                 printf_P(PSTR("%02X"), written[i * 0x10 + j]);
