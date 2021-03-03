@@ -103,6 +103,10 @@ uint8_t ram_read_byte(uint16_t addr)
 void
 ram_write_buffer(uint16_t addr, uint16_t sz)
 {
+    for (size_t i = 0; i < sz; ++i)
+        ram_write_byte(addr + i, buffer[i]);
+    
+    /*
     for (size_t i = 0; i < sz; ++i) {
         ram_set_addr(addr + i);
         ram_set_data(buffer[i]);
@@ -114,6 +118,7 @@ ram_write_buffer(uint16_t addr, uint16_t sz)
     }
     PORTC = 0;
     ram_reset();
+     */
 }
 
 void

@@ -61,7 +61,7 @@ void Repl::do_terminal(char cmd)
         case 'h':
         case '?':
             printf_P(PSTR("[f] bytes free  [D] test DMA\n"));
-            printf_P(PSTR("[r] read byte  [w] write byte  [d] dump memory\n"));
+            printf_P(PSTR("[r] read byte  [w] write byte  [W] write multiple bytes  [d] dump memory\n"));
             break;
         case 'f':
             printf_P(PSTR("%d bytes free.\n"), free_ram());
@@ -96,6 +96,17 @@ void Repl::do_terminal(char cmd)
                 }
             }
             break;
+        /*
+        case 'W': {
+                int addr = ask_value_P(PSTR("Addr"));
+                if (addr != ERROR)
+                    break;
+                int nbytes = ask_value_P(PSTR("# bytes"));
+                for (int i = 0; i < nbytes; ++i) {
+                    if (!ram_.write_block(addr, nbytes, [](uint16_t
+                }
+            }
+        */
         default:
             error();
     }

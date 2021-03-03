@@ -25,10 +25,14 @@ int main(int argc, char* argv[])
      */
     
     {
+        uint16_t addr = 0x4365;
         std::vector<uint8_t> buffer;
         buffer.push_back(0x42);
-        f->ram_write_buffer(0, buffer);
-        ASSERT_EQ("Writing a single byte as a block", 0x42, f->ram_read_byte(0));
+        f->ram_write_byte(addr, 0xab);
+        f->ram_write_buffer(addr, buffer);
+        ASSERT_EQ("Writing a single byte as a block", 0x42, f->ram_read_byte(addr));
+        auto cbuffer = f->ram_read_buffer(addr, 8);
+        ASSERT_EQ("Verifying byte written", 0x42, cbuffer.at(0));
     }
     
     /*
