@@ -28,7 +28,7 @@ static void run_memory_tests(RAM& ram)
     create_seed();
 
     // read/write memory byte
-    for (int i = 0; i < 16; ++i) {
+    for (int i = 0; i < 512; ++i) {
         uint16_t addr = random() & 0x7fff;
         uint8_t data = rand() & 0xff;
         printf_P(PSTR("Write [0x%04X] = 0x%02X, "), addr, data);
@@ -36,9 +36,14 @@ static void run_memory_tests(RAM& ram)
         uint8_t data2 = ram.read_byte(addr);
         printf_P(PSTR("Read  [0x%04X] = "), addr);
         printf_P(PSTR("%s0x%02X\n\e[0m"), data == data2 ? "\e[0;32m" : "\e[0;31m", data2);
+        if (data != data2) {
+            printf_P(PSTR("Failed after %d attempts.\n"), i);
+            goto done;
+        }
     }
-    ram.spi().set_debug_mode(false);
 
+done:
+    ram.spi().set_debug_mode(false);
     printf_P(PSTR("Done!\n"));
 }
 

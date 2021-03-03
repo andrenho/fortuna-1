@@ -38,11 +38,15 @@ uint8_t RAM::write_byte(uint16_t addr, uint8_t data)
 uint8_t RAM::read_byte(uint16_t addr) const
 {
     spi_.activate(SPI::DMA);
+try_again:
     spi_.send(CMD_READ_BYTE);
     spi_.send(addr & 0xff);
     spi_.send(addr >> 8);
     while (spi_.recv() != 0xfe);  // TODO - number of tries
     uint8_t r = spi_.recv();
+    uint8_t r2 = spi_.recv();
+    if (r != r2)
+        goto try_again;
     spi_.deactivate();
     return r;
 }

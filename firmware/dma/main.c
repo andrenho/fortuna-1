@@ -46,7 +46,9 @@ int main()
                     uint16_t addr = spi_swap(0xff);
                     addr |= ((uint16_t) spi_swap(0xff)) << 8;
                     spi_swap(0xfe);
-                    spi_swap(ram_read_byte(addr));
+                    uint8_t data = ram_read_byte(addr); 
+                    spi_swap(data);
+                    spi_swap(data);
                 }
                 break;
             case 0x3: {

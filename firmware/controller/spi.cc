@@ -52,7 +52,6 @@ uint8_t SPI::send(uint8_t byte)
     SPDR = byte;
     while (!(SPSR & (1 << SPIF)));
     uint8_t r = SPDR;
-    _delay_us(300);
 #ifdef ENABLE_TESTS
     if (debug_mode_)
         printf("\e[0;36m%02X\e[0m.\e[0;33m%02X \e[0m ", byte, r);
@@ -62,5 +61,6 @@ uint8_t SPI::send(uint8_t byte)
 
 uint8_t SPI::recv()
 {
+    _delay_us(300);
     return send(0xff);
 }

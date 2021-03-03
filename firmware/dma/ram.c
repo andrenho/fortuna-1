@@ -67,15 +67,21 @@ uint8_t ram_get_data()
 uint8_t
 ram_write_byte(uint16_t addr, uint8_t data)
 {
-    ram_set_addr(addr);
-    ram_set_data(data);
-    PORT_RAM &= ~(1 << MREQ);
-    PORT_RAM &= ~(1 << WE);
-    WAIT;
-    PORT_RAM |= (1 << WE) | (1 << MREQ);
-    PORTC = 0;
-    ram_reset();
-    _delay_us(100);
+    uint8_t written, check_again;
+    do {
+        ram_set_addr(addr);
+        ram_set_data(data);
+        PORT_RAM &= ~(1 << MREQ);
+        PORT_RAM &= ~(1 << WE);
+        WAIT;
+        PORT_RAM |= (1 << WE) | (1 << MREQ);
+        PORTC = 0;
+        ram_reset();
+        _delay_us(100);
+        written = ram_read_byte(addr);
+        _delay_us(100);
+        check_again = ram_read_byte(addr);
+    } while (written != data || data != check_again);
     return data;
 }
 
