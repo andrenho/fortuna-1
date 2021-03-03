@@ -27,6 +27,7 @@ static void run_memory_tests(RAM& ram)
     // ram.spi().set_debug_mode(true);
     create_seed();
 
+    /*
     // read/write memory byte
     for (int i = 0; i < 512; ++i) {
         uint16_t addr = random() & 0x7fff;
@@ -40,6 +41,39 @@ static void run_memory_tests(RAM& ram)
             printf_P(PSTR("Failed after %d attempts.\n"), i);
             goto done;
         }
+    }
+    */
+
+    // create block
+    printf_P(PSTR("Testing buffer...\n"));
+    for (int block = 0; block < 2; ++block) {
+        uint16_t addr = block == 0 ? 0 : (random() & 0x7fff);
+        uint8_t buffer[256], written[256];
+        for (size_t i = 0; i < 256; ++i)
+            buffer[i] = rand() & 0xff;
+        ram.write_block(addr, 256, [](uint16_t idx, void* data) -> uint8_t {
+
+        }, buffer);
+
+        memcpy(written, buffer, 256);
+        ram_write_buffer(addr, 256);
+        for (size_t i = 0; i < 256; ++i)
+            buffer[i] = 0;
+        ram_read_buffer(addr, 256);
+        for (volatile size_t i = 0; i < 0x10; ++i) {
+            for (volatile size_t j = 0; j < 0x10; ++j)
+                printf_P(PSTR("%02X"), written[i * 0x10 + j]);
+            putchar(' ');
+            for (size_t j = 0; j < 0x10; ++j) {
+                if (buffer[i * 0x10 + j] == written[i * 0x10 + j])
+                    printf_P(PSTR("\e[0;32m"));
+                else
+                    printf_P(PSTR("\e[0;31m"));
+                printf_P(PSTR("%02X\e[0m"), buffer[i * 0x10 + j]);
+            }
+            putchar('\n');
+        }
+        printf_P(PSTR("-\n"));
     }
 
 done:
