@@ -53,6 +53,9 @@ try_again:
 
 bool RAM::read_block(uint16_t addr, uint16_t sz, RAM::ReadFunc read_func, void* data) const
 {
+    for (uint16_t a = addr; a < (addr + sz); ++a)
+        read_func(a - addr, read_byte(addr), nullptr);
+    /*
     spi_.activate(SPI::DMA);
     spi_.send(CMD_READ_BLOCK);
     spi_.send(addr & 0xff);
@@ -72,10 +75,14 @@ bool RAM::read_block(uint16_t addr, uint16_t sz, RAM::ReadFunc read_func, void* 
     uint8_t csum2 = spi_.recv();
     spi_.deactivate();
     return sum1 == csum1 && sum2 == csum2;
+     */
 }
 
 bool RAM::write_block(uint16_t addr, uint16_t sz, RAM::WriteFunc write_func, void* data)
 {
+    for (uint16_t a = addr; a < (addr + sz); ++a)
+        write_byte(addr, write_func(a - addr, nullptr));
+    /*
     spi_.activate(SPI::DMA);
     spi_.send(CMD_WRITE_BLOCK);
     spi_.send(addr & 0xff);
@@ -94,4 +101,5 @@ bool RAM::write_block(uint16_t addr, uint16_t sz, RAM::WriteFunc write_func, voi
     uint8_t csum2 = spi_.recv();
     spi_.deactivate();
     return sum1 == csum1 && sum2 == csum2;
+     */
 }
