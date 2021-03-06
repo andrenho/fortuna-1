@@ -77,4 +77,12 @@ int main()
         request.debug();
         printf("------------\n");
     }
+    {
+        Reply reply(MessageType::RamReadBlock, buffer);
+        buffer.sz = 2;
+        buffer.data[0] = 0xfa;
+        buffer.data[1] = 0xfb;
+        Reply r = assert_serialization("RAM reply", reply);
+        assert_eq("Buffer size = 2", 2, buffer.sz);
+    }
 }
