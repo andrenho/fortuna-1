@@ -20,7 +20,7 @@ static uint16_t checksum(uint16_t sz, uint8_t* buffer)
 
 int main()
 {
-    uint8_t buffer[512];
+    uint8_t buffer[256];
 
     spi_init();
     ram_init();
@@ -80,7 +80,6 @@ int main()
                     uint16_t chk = checksum(sz, buffer);
                     spi_swap(chk & 0xff);
                     spi_swap(chk >> 8);
-                    spi_done();
                     spi_done();
                 }
                 break;
