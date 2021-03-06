@@ -42,12 +42,12 @@ int main(int argc, char* argv[])
     {
         uint16_t addr = rand() & 0xffff;
         std::vector<uint8_t> buffer;
-        buffer.reserve(64);
-        for (size_t i = 0; i < 64; ++i)
+        buffer.reserve(512);
+        for (size_t i = 0; i < 512; ++i)
             buffer.push_back(rand());
-        printf("Writing 64 random bytes to address 0x%04X...\n", addr);
+        printf("Writing 512 random bytes to address 0x%04X...\n", addr);
         f->ram_write_buffer(addr, buffer);
-        ASSERT_EQ("Bytes read are equal to bytes written", buffer, f->ram_read_buffer(addr, 64));
+        ASSERT_EQ("Bytes read are equal to bytes written", buffer, f->ram_read_buffer(addr, 512));
     }
 }
 

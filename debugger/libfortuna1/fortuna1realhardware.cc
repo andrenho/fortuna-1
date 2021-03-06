@@ -50,8 +50,6 @@ uint8_t Fortuna1RealHardware::ram_read_byte(uint16_t addr) const
 
 void Fortuna1RealHardware::ram_write_buffer(uint16_t addr, std::vector<uint8_t> const& bytes)
 {
-    if (bytes.size() > 64)
-        throw std::runtime_error("There's a 64 byte limit to buffer size when writing to RAM.");
     for (size_t i = 0; i < bytes.size(); ++i)
         buffer_.data[i] = bytes.at(i);
     buffer_.sz = bytes.size();
@@ -63,8 +61,6 @@ void Fortuna1RealHardware::ram_write_buffer(uint16_t addr, std::vector<uint8_t> 
 
 std::vector<uint8_t> Fortuna1RealHardware::ram_read_buffer(uint16_t addr, uint16_t sz) const
 {
-    if (sz > 64)
-        throw std::runtime_error("There's a 64 byte limit to buffer size when writing to RAM.");
     Request request(MessageType::RamReadBlock, buffer_);
     request.ram_request.address = addr;
     request.ram_request.size = sz;
