@@ -30,7 +30,7 @@ static void run_memory_tests(RAM& ram)
 
     // read/write memory byte
     for (int i = 0; i < 512; ++i) {
-        uint16_t addr = random() & 0x7fff;
+        uint16_t addr = random() & 0xffff;
         uint8_t data = rand() & 0xff;
         printf_P(PSTR("Write [0x%04X] = 0x%02X, "), addr, data);
         ram.write_byte(addr, data);
