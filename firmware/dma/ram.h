@@ -15,7 +15,12 @@ uint8_t  ram_get_data();
 uint8_t  ram_write_byte(uint16_t addr, uint8_t data);
 uint8_t  ram_read_byte(uint16_t addr);
 
-void     ram_write_buffer(uint16_t addr, uint16_t sz, uint8_t const* buffer);
-void     ram_read_buffer(uint16_t addr, uint16_t sz, uint8_t* buffer);
+void     ram_write_stream_start();
+void     ram_write_byte_stream(uint16_t addr, uint8_t byte);
+void     ram_write_stream_end();
+
+void     ram_read_stream_start();
+uint8_t  ram_read_byte_stream(uint16_t addr);
+void     ram_read_stream_end();
 
 #endif

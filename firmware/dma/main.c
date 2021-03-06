@@ -69,6 +69,7 @@ int main()
                     spi_done();
                 }
                 break;
+            /*
             case 0x4: {    // READ BLOCK
                     uint16_t addr = spi_swap(0xff);
                     addr |= ((uint16_t) spi_swap(0xff)) << 8;
@@ -101,6 +102,7 @@ int main()
                 spi_swap((chk >> 8) & 0xff);
                 spi_done();
             }
+            */
             break;
                 /*
                 case 0x6:

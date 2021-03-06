@@ -96,34 +96,45 @@ uint8_t ram_read_byte(uint16_t addr)
     return data;
 }
 
-void
-ram_write_buffer(uint16_t addr, uint16_t sz, uint8_t const* buffer)
+void ram_write_stream_start()
 {
-    for (size_t i = 0; i < sz; ++i) {
-        ram_set_addr(addr + i);
-        ram_set_data(buffer[i]);
-        PORT_RAM &= ~(1 << MREQ);
-        PORT_RAM &= ~(1 << WE);
-        WAIT;
-        PORT_RAM |= (1 << WE) | (1 << MREQ);
-        WAIT;
-    }
+}
+
+void ram_write_byte_stream(uint16_t addr, uint8_t byte)
+{
+    ram_set_addr(addr);
+    ram_set_data(byte);
+    PORT_RAM &= ~(1 << MREQ);
+    PORT_RAM &= ~(1 << WE);
+    WAIT;
+    PORT_RAM |= (1 << WE) | (1 << MREQ);
+    WAIT;
+}
+
+void ram_write_stream_end()
+{
     PORTC = 0;
     ram_reset();
 }
 
-void
-ram_read_buffer(uint16_t addr, uint16_t sz, uint8_t* buffer)
+void ram_read_stream_start()
 {
     DDRC = 0;
-    for (size_t i = 0; i < sz; ++i) {
-        ram_set_addr(addr + i);
-        PORT_RAM &= ~(1 << MREQ);
-        PORT_RAM &= ~(1 << RD);
-        WAIT;
-        buffer[i] = ram_get_data();
-        PORT_RAM |= (1 << RD) | (1 << MREQ);
-        WAIT;
-    }
+}
+
+uint8_t ram_read_byte_stream(uint16_t addr)
+{
+    ram_set_addr(addr);
+    PORT_RAM &= ~(1 << MREQ);
+    PORT_RAM &= ~(1 << RD);
+    WAIT;
+    uint8_t byte = ram_get_data();
+    PORT_RAM |= (1 << RD) | (1 << MREQ);
+    WAIT;
+    return byte;
+}
+
+void ram_read_stream_end()
+{
     ram_reset();
 }

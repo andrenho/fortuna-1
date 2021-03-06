@@ -41,53 +41,55 @@ void run_tests()
         printf_P(PSTR("%s0x%02X\n\e[0m"), data == data2 ? "\e[0;32m" : "\e[0;31m", data2);
     }
 
-    // create block
-    printf_P(PSTR("Testing buffer...\n"));
-    for (int block = 0; block < 2; ++block) {
-        uint16_t addr = block == 0 ? 0 : (random() & 0xffff);
-        for (size_t i = 0; i < 256; ++i)
-            buffer[i] = rand() & 0xff;
-        memcpy(written, buffer, 256);
-        ram_write_buffer(addr, 256);
-        for (size_t i = 0; i < 256; ++i)
-            buffer[i] = 0;
-        ram_read_buffer(addr, 256);
-        for (volatile size_t i = 0; i < 0x10; ++i) {
-            for (volatile size_t j = 0; j < 0x10; ++j)
-                printf_P(PSTR("%02X"), written[i * 0x10 + j]);
-            putchar(' ');
-            for (size_t j = 0; j < 0x10; ++j) {
-                if (buffer[i * 0x10 + j] == written[i * 0x10 + j])
-                    printf_P(PSTR("\e[0;32m"));
-                else
-                    printf_P(PSTR("\e[0;31m"));
-                printf_P(PSTR("%02X\e[0m"), buffer[i * 0x10 + j]);
-            }
-            putchar('\n');
-        }
-        printf_P(PSTR("-\n"));
+    // create 512 byte block
+    uint16_t addr = random() & 0xffff;
+
+    printf_P(PSTR("Testing writing stream...\n"));
+    srand(seed);
+    ram_write_stream_start();
+    for (size_t i = 0; i < 512; ++i) {
+        uint8_t byte = rand() & 0xff;
+        printf_P(PSTR("%02X"), byte);
+        ram_write_byte_stream(addr + i, byte);
     }
+    putchar('\n');
+    ram_write_stream_end();
+
+    printf_P(PSTR("Testing reading stream...\n"));
+    srand(seed);
+    ram_read_stream_start();
+    for (size_t i = 0; i < 512; ++i) {
+        uint8_t expected = rand() & 0xff;
+        uint8_t byte = ram_read_byte_stream(addr + i);
+        printf_P(PSTR("\e[0;3%dm%02X\e[0m"), (byte == expected) ? 2 : 1, byte);
+    }
+    putchar('\n');
+    ram_read_stream_end();
 
     // test whole memory
     printf_P(PSTR("Testing whole memory... writing... "));
-    uint8_t diff = rand();
-    for (uint16_t block = 0; block < (0x10000 / 512); ++block) {
-        for (size_t i = 0; i < 512; ++i)
-            buffer[i] = (block + i + diff) & 0xff;
-        ram_write_buffer(block * 512, 512);
+
+    srand(seed);
+    ram_write_stream_start();
+    for (uint32_t i = 0; i < 0x10000; ++i) {
+        uint8_t byte = rand() & 0xff;
+        ram_write_byte_stream(i, byte);
     }
+    ram_write_stream_end();
 
     printf_P(PSTR("reading... "));
-    for (uint16_t block = 0; block < (0x10000 / 512); ++block) {
-        ram_read_buffer(block * 512, 512);
-        for (size_t i = 0; i < 512; ++i) {
-            if (buffer[i] != ((block + i + diff) & 0xff)) {
-                printf_P(PSTR("Failed at memory position 0x%X, expected 0x%02X but found 0x%02X.\n"), block * 512 + i, (block + i + diff) & 0xff, buffer[i]);
-                printf_P(PSTR("Actual data: 0x%02X.\n"), ram_read_byte(block * 512 + i));
-                for(;;);
-            }
+    srand(seed);
+    ram_read_stream_start();
+    for (uint32_t i = 0; i < 0x10000; ++i) {
+        uint8_t expected = rand() & 0xff;
+        uint8_t byte = ram_read_byte_stream(i);
+        if (expected != byte) {
+            printf_P(PSTR("\e[0;31mMismatch at address 0x%0X.\e[0m\n"), i);
+            return;
         }
     }
+    putchar('\n');
+    ram_read_stream_end();
 
     printf_P(PSTR("ok!\n"));
 }
