@@ -8,6 +8,9 @@
 #include "serial.h"
 #endif
 
+uint8_t buffer[256];
+extern int min_memory;
+
 static uint16_t checksum(uint16_t sz, uint8_t* buffer)
 {
     uint16_t sum1 = 0, sum2 = 0;
@@ -20,8 +23,6 @@ static uint16_t checksum(uint16_t sz, uint8_t* buffer)
 
 int main()
 {
-    uint8_t buffer[256];
-
     spi_init();
     ram_init();
 
@@ -97,7 +98,7 @@ int main()
                 spi_ready();
                 spi_swap(remote_chk == chk ? 0 : 1);
                 spi_swap(chk & 0xff);
-                spi_swap(chk >> 8);
+                spi_swap((chk >> 8) & 0xff);
                 spi_done();
             }
             break;

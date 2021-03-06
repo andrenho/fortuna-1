@@ -31,6 +31,7 @@ static void run_memory_tests(RAM& ram)
     create_seed();
 
     // read/write memory byte
+    /*
     for (int i = 0; i < 512; ++i) {
         uint16_t addr = random() & 0xffff;
         uint8_t data = rand() & 0xff;
@@ -44,10 +45,12 @@ static void run_memory_tests(RAM& ram)
             goto done;
         }
     }
+    */
     
-    // test block with a single byte
+    // test block
     sz = 1;
     for (int i = 0; i < 16; ++i) {
+        sz = 64;
         if (sz > 64)
             sz = 64;
         printf_P(PSTR("%d: "), sz);
@@ -58,12 +61,16 @@ static void run_memory_tests(RAM& ram)
             printf_P(PSTR("%02X"), buffer[j]);
         }
         fflush(stdout);
-        ram.write_block(addr, sz, [](uint16_t idx, void* buffer) -> uint8_t { return ((uint8_t *) buffer)[idx]; }, buffer);
+        bool wc = ram.write_block(addr, sz, [](uint16_t idx, void* buffer) -> uint8_t { return ((uint8_t *) buffer)[idx]; }, buffer);
         putchar('|');
-        ram.read_block(addr, sz, [](uint16_t idx, uint8_t byte, void* buffer) { ((uint8_t *) buffer)[idx] = byte; }, buffer);
+        bool rc = ram.read_block(addr, sz, [](uint16_t idx, uint8_t byte, void* buffer) { ((uint8_t *) buffer)[idx] = byte; }, buffer);
         for (size_t j = 0; j < sz; ++j)
             printf_P(PSTR("\e[0;3%dm%02X\e[0m"), (buffer[j] == written[j]) ? 2 : 1, buffer[j]);
         putchar('\n');
+        if (!wc)
+            printf_P(PSTR("\e[0;31mInvalid checksum on write.\e[0m\n"));
+        if (!rc)
+            printf_P(PSTR("\e[0;31mInvalid checksum on read.\e[0m\n"));
         sz *= 2;
     }
 

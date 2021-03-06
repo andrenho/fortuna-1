@@ -141,8 +141,8 @@ Reply Repl::parse_request(Request const& request)
                                 reinterpret_cast<Buffer*>(data)->data[idx] = byte;
                            }, &buffer_)) {
                     reply.result = Result::WrongChecksumDMA;
-                    buffer_.sz = request.ram_request.size;
                 }
+                buffer_.sz = request.ram_request.size;
             }
             break;
         case MessageType::RamWriteBlock: {
