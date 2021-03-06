@@ -44,8 +44,26 @@ static void run_memory_tests(RAM& ram)
         }
     }
     */
+    
+    // test block with a single byte
+    for (size_t sz = 1; sz < 2; sz *= 2) {
+        uint8_t buffer[sz], written[sz];
+        uint16_t addr = random() & 0xffff;
+        for (size_t j = 0; j < sz; ++j) {
+            buffer[j] = written[j] = rand() & 0xff;
+            printf_P("%02X", buffer[j]);
+        }
+        fflush(stdout);
+        ram.write_block(addr, sz, [](uint16_t idx, void* buffer) -> uint8_t { return ((uint8_t *) buffer)[idx]; }, buffer);
+        putchar('|');
+        ram.read_block(addr, sz, [](uint16_t idx, uint8_t byte, void* buffer) { ((uint8_t *) buffer)[idx] = byte; }, buffer);
+        for (size_t j = 0; j < sz; ++j)
+            printf_P(PSTR("\e[0;3%dm%02X\e[0m"), (buffer[j] == written[j]) ? 2 : 1, buffer[j]);
+        putchar('\n');
+    }
 
     // create block
+    /*
     printf_P(PSTR("Testing buffer...\n"));
     for (int block = 0; block < 1; ++block) {
         uint16_t addr = block == 0 ? 0 : (random() & 0x7fff);
@@ -72,6 +90,7 @@ static void run_memory_tests(RAM& ram)
         }
         printf_P(PSTR("-\n"));
     }
+     */
 
 done:
     ram.spi().set_debug_mode(false);
