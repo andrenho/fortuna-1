@@ -15,6 +15,7 @@ const char* RAM::test()
 {
     spi_.activate(SPI::DMA);
     spi_.send(CMD_TEST);
+    spi_.wait_dma_cs();
     for (int i = 0; i < 6; ++i)
         test_buf_[i] = spi_.recv();
     spi_.deactivate();

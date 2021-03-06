@@ -10,7 +10,7 @@ SPI::SPI()
 {
     set_MOSI_as_output();
     set_SCLK_as_output();
-    set_DMA_CS_as_input();
+    set_DMA_RDY_as_input();
     set_MOSI(0);
     set_SCLK(0);
 
@@ -68,5 +68,5 @@ uint8_t SPI::recv()
 
 void SPI::wait_dma_cs() const
 {
-    while (get_DMA_CS() == 0);   // TODO - for how long?
+    while (get_DMA_RDY() != 0);   // TODO - for how long?
 }
