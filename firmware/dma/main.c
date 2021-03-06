@@ -8,19 +8,6 @@
 #include "serial.h"
 #endif
 
-uint8_t buffer[256];
-extern int min_memory;
-
-static uint16_t checksum(uint16_t sz, uint8_t* buffer)
-{
-    uint16_t sum1 = 0, sum2 = 0;
-    for (size_t i = 0; i < sz; ++i) {
-        sum1 = (sum1 + buffer[i]) % 255;
-        sum2 = (sum2 + sum1) % 255;
-    }
-    return (sum2 << 8) | sum1;
-}
-
 int main()
 {
     spi_init();
@@ -33,8 +20,6 @@ int main()
     run_tests();
 #endif
 
-#pragma clang diagnostic push
-#pragma ide diagnostic ignored "EndlessLoop"
     while (1) {
         uint8_t r = spi_swap(0xff);
         spi_activate();
@@ -69,23 +54,48 @@ int main()
                     spi_done();
                 }
                 break;
-            /*
             case 0x4: {    // READ BLOCK
                     uint16_t addr = spi_swap(0xff);
                     addr |= ((uint16_t) spi_swap(0xff)) << 8;
                     uint16_t sz = spi_swap(0xff);
                     sz |= ((uint16_t) spi_swap(0xff)) << 8;
-                    ram_read_buffer(addr, sz, buffer);
-                    spi_ready();
-                    for (size_t i = 0; i < sz; ++i)
-                        spi_swap(buffer[i]);
-                    uint16_t chk = checksum(sz, buffer);
-                    spi_swap(chk & 0xff);
-                    spi_swap(chk >> 8);
+                    ram_read_stream_start();
+                    uint16_t sum1 = 0, sum2 = 0;
+                    for (size_t i = 0; i < sz; ++i) {
+                        uint8_t byte = ram_read_byte_stream(addr + i);
+                        spi_ready();
+                        spi_swap(byte);
+                        sum1 = (sum1 + byte) % 255;
+                        sum2 = (sum2 + sum1) % 255;
+                        spi_done();
+                    }
+                    ram_read_stream_end();
+                    spi_swap(sum1);
+                    spi_swap(sum2);
                     spi_done();
                 }
                 break;
             case 0x5: {    // WRITE BLOCK
+                    uint16_t addr = spi_swap(0xff);
+                    addr |= ((uint16_t) spi_swap(0xff)) << 8;
+                    uint16_t sz = spi_swap(0xff);
+                    sz |= ((uint16_t) spi_swap(0xff)) << 8;
+                    ram_write_stream_start();
+                    uint16_t sum1 = 0, sum2 = 0;
+                    for (size_t i = 0; i < sz; ++i) {
+                        uint8_t byte = spi_swap(0xff);
+                        ram_write_byte_stream(addr + i, byte);
+                        sum1 = (sum1 + byte) % 255;
+                        sum2 = (sum2 + sum1) % 255;
+                        spi_ready();
+                        spi_done();
+                    }
+                    ram_write_stream_end();
+                    spi_swap(sum1);
+                    spi_swap(sum2);
+                    spi_done();
+                }
+                /*
                 uint16_t addr = spi_swap(0xff);
                 addr |= ((uint16_t) spi_swap(0xff)) << 8;
                 uint16_t sz = spi_swap(0xff);
@@ -101,8 +111,7 @@ int main()
                 spi_swap(chk & 0xff);
                 spi_swap((chk >> 8) & 0xff);
                 spi_done();
-            }
-            */
+                */
             break;
                 /*
                 case 0x6:
@@ -120,5 +129,4 @@ int main()
         }
         spi_deactivate();
     }
-#pragma clang diagnostic pop
 }
