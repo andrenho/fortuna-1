@@ -79,6 +79,7 @@ int main()
                     spi_swap(chk & 0xff);
                     spi_swap(chk >> 8);
                     spi_done();
+                    spi_done();
                 }
                 break;
             case 0x5: {    // WRITE BLOCK
