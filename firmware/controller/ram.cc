@@ -53,16 +53,13 @@ try_again:
 
 bool RAM::read_block(uint16_t addr, uint16_t sz, RAM::ReadFunc read_func, void* data) const
 {
-    for (uint16_t a = addr; a < (addr + sz); ++a)
-        read_func(a - addr, read_byte(addr), nullptr);
-    /*
     spi_.activate(SPI::DMA);
     spi_.send(CMD_READ_BLOCK);
     spi_.send(addr & 0xff);
     spi_.send(addr >> 8);
     spi_.send(sz & 0xff);
     spi_.send(sz >> 8);
-    _delay_ms(100);
+    spi_.wait_dma_cs();
     uint16_t sum1 = 0, sum2 = 0;
     for (uint16_t a = addr; a < (addr + sz); ++a) {
         uint8_t byte = spi_.recv();
@@ -70,19 +67,14 @@ bool RAM::read_block(uint16_t addr, uint16_t sz, RAM::ReadFunc read_func, void* 
         sum1 = (sum1 + byte) % 255;
         sum2 = (sum2 + sum1) % 255;
     }
-    _delay_ms(10);
     uint8_t csum1 = spi_.recv();
     uint8_t csum2 = spi_.recv();
     spi_.deactivate();
     return sum1 == csum1 && sum2 == csum2;
-     */
 }
 
 bool RAM::write_block(uint16_t addr, uint16_t sz, RAM::WriteFunc write_func, void* data)
 {
-    for (uint16_t a = addr; a < (addr + sz); ++a)
-        write_byte(addr, write_func(a - addr, nullptr));
-    /*
     spi_.activate(SPI::DMA);
     spi_.send(CMD_WRITE_BLOCK);
     spi_.send(addr & 0xff);
@@ -96,10 +88,12 @@ bool RAM::write_block(uint16_t addr, uint16_t sz, RAM::WriteFunc write_func, voi
         sum1 = (sum1 + byte) % 255;
         sum2 = (sum2 + sum1) % 255;
     }
-    _delay_ms(100);
+    spi_.send(sum1);
+    spi_.send(sum2);
+    spi_.wait_dma_cs();
+    uint8_t r = spi_.recv();
     uint8_t csum1 = spi_.recv();
     uint8_t csum2 = spi_.recv();
     spi_.deactivate();
-    return sum1 == csum1 && sum2 == csum2;
-     */
+    return r == 0 && sum1 == csum1 && sum2 == csum2;
 }

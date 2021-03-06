@@ -45,7 +45,7 @@ int main()
                 spi_swap('\n');
                 spi_done();
                 break;
-            case 0x2: {
+            case 0x2: {   // READ BYTE
                     uint16_t addr = spi_swap(0xff);
                     addr |= ((uint16_t) spi_swap(0xff)) << 8;
                     spi_ready();
@@ -55,7 +55,7 @@ int main()
                     spi_done();
                 }
                 break;
-            case 0x3: {
+            case 0x3: {    // WRITE BYTE
                     uint16_t addr = spi_swap(0xff);
                     addr |= ((uint16_t) spi_swap(0xff)) << 8;
                     uint8_t data = spi_swap(0xff);
@@ -65,47 +65,52 @@ int main()
                     spi_done();
                 }
                 break;
-            /*
-            case 0x4: {
+            case 0x4: {    // READ BLOCK
                     uint16_t addr = spi_swap(0xff);
                     addr |= ((uint16_t) spi_swap(0xff)) << 8;
                     uint16_t sz = spi_swap(0xff);
                     sz |= ((uint16_t) spi_swap(0xff)) << 8;
                     ram_read_buffer(addr, sz);
-                    spi_swap(0xfe);
+                    spi_ready();
                     for (size_t i = 0; i < sz; ++i)
                         spi_swap(buffer[i]);
                     uint16_t chk = checksum(sz);
                     spi_swap(chk & 0xff);
                     spi_swap(chk >> 8);
+                    spi_done();
                 }
                 break;
-            case 0x5: {
-                    uint16_t addr = spi_swap(0xff);
-                    addr |= ((uint16_t) spi_swap(0xff)) << 8;
-                    uint16_t sz = spi_swap(0xff);
-                    sz |= ((uint16_t) spi_swap(0xff)) << 8;
-                    for (size_t i = 0; i < sz; ++i)
-                        buffer[i] = spi_swap(0xff);
-                    ram_write_buffer(addr, sz);
+            case 0x5: {    // WRITE BLOCK
+                uint16_t addr = spi_swap(0xff);
+                addr |= ((uint16_t) spi_swap(0xff)) << 8;
+                uint16_t sz = spi_swap(0xff);
+                sz |= ((uint16_t) spi_swap(0xff)) << 8;
+                for (size_t i = 0; i < sz; ++i)
+                    buffer[i] = spi_swap(0xff);
+                uint16_t remote_chk = spi_swap(0xff);
+                remote_chk |= ((uint16_t) spi_swap(0xff)) << 8;
+                uint16_t chk = checksum(sz);
+                ram_write_buffer(addr, sz);
+                spi_ready();
+                spi_swap(remote_chk == chk ? 0 : 1);
+                spi_swap(chk & 0xff);
+                spi_swap(chk >> 8);
+                spi_done();
+            }
+            break;
+                /*
+                case 0x6:
+                    spi_swap(ram_get_data());
+                    break;
+                case 0x7: {
+                        uint8_t data = spi_swap(0xff);
+                        ram_set_data(data);
+                        spi_swap(data);
+                    }
+                    break;
+                default:
                     spi_swap(0xfe);
-                    uint16_t chk = checksum(sz);
-                    spi_swap(chk & 0xff);
-                    spi_swap(chk >> 8);
-                }
-                break;
-            case 0x6:
-                spi_swap(ram_get_data());
-                break;
-            case 0x7: {
-                    uint8_t data = spi_swap(0xff);
-                    ram_set_data(data);
-                    spi_swap(data);
-                }
-                break;
-            default:
-                spi_swap(0xfe);
-                */
+                    */
         }
         spi_deactivate();
     }
