@@ -3,8 +3,6 @@
 
 #include <stdint.h>
 
-extern uint8_t buffer[512];
-
 void     ram_init();
 void     ram_reset();
 
@@ -17,7 +15,7 @@ uint8_t  ram_get_data();
 uint8_t  ram_write_byte(uint16_t addr, uint8_t data);
 uint8_t  ram_read_byte(uint16_t addr);
 
-void     ram_write_buffer(uint16_t addr, uint16_t sz);
-void     ram_read_buffer(uint16_t addr, uint16_t sz);
+void     ram_write_buffer(uint16_t addr, uint16_t sz, uint8_t const* buffer);
+void     ram_read_buffer(uint16_t addr, uint16_t sz, uint8_t* buffer);
 
 #endif

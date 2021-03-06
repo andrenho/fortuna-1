@@ -6,8 +6,6 @@
 #include <avr/cpufunc.h>
 #include <util/delay.h>
 
-uint8_t buffer[512] = {0};
-
 #define DDR_RAM  DDRB
 #define PORT_RAM PORTB
 #define MREQ     PINB0
@@ -99,7 +97,7 @@ uint8_t ram_read_byte(uint16_t addr)
 }
 
 void
-ram_write_buffer(uint16_t addr, uint16_t sz)
+ram_write_buffer(uint16_t addr, uint16_t sz, uint8_t const* buffer)
 {
     for (size_t i = 0; i < sz; ++i) {
         ram_set_addr(addr + i);
@@ -115,7 +113,7 @@ ram_write_buffer(uint16_t addr, uint16_t sz)
 }
 
 void
-ram_read_buffer(uint16_t addr, uint16_t sz)
+ram_read_buffer(uint16_t addr, uint16_t sz, uint8_t* buffer)
 {
     DDRC = 0;
     for (size_t i = 0; i < sz; ++i) {
