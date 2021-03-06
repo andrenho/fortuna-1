@@ -3,7 +3,7 @@
 
 #include <stdint.h>
 
-extern uint8_t buffer[];
+extern uint8_t buffer[512];
 
 void     ram_init();
 void     ram_reset();

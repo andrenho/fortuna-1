@@ -46,12 +46,13 @@ static void run_memory_tests(RAM& ram)
     */
     
     // test block with a single byte
-    for (size_t sz = 1; sz < 2; sz *= 2) {
+    for (size_t sz = 28; sz < 128; sz++) {
+        printf_P(PSTR("%d: "), sz);
         uint8_t buffer[sz], written[sz];
         uint16_t addr = random() & 0xffff;
         for (size_t j = 0; j < sz; ++j) {
             buffer[j] = written[j] = rand() & 0xff;
-            printf_P("%02X", buffer[j]);
+            printf_P(PSTR("%02X"), buffer[j]);
         }
         fflush(stdout);
         ram.write_block(addr, sz, [](uint16_t idx, void* buffer) -> uint8_t { return ((uint8_t *) buffer)[idx]; }, buffer);
