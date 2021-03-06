@@ -100,6 +100,8 @@ bool RAM::write_block(uint16_t addr, uint16_t sz, RAM::WriteFunc write_func, voi
         sum2 = (sum2 + sum1) % 255;
         spi_.wait_dma_cs();
     }
+
+    // checksum
     uint8_t csum1 = spi_.recv();
     uint8_t csum2 = spi_.recv();
     spi_.deactivate();

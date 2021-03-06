@@ -1,4 +1,5 @@
 #include <stddef.h>
+#include <util/delay.h>
 #include "ram.h"
 #include "spi.h"
 
@@ -84,34 +85,19 @@ int main()
                     uint16_t sum1 = 0, sum2 = 0;
                     for (size_t i = 0; i < sz; ++i) {
                         uint8_t byte = spi_swap(0xff);
+                        spi_done();
                         ram_write_byte_stream(addr + i, byte);
+                        spi_ready();
                         sum1 = (sum1 + byte) % 255;
                         sum2 = (sum2 + sum1) % 255;
-                        spi_ready();
-                        spi_done();
+                        _delay_us(30);
                     }
+                    spi_done();
                     ram_write_stream_end();
                     spi_swap(sum1);
                     spi_swap(sum2);
                     spi_done();
                 }
-                /*
-                uint16_t addr = spi_swap(0xff);
-                addr |= ((uint16_t) spi_swap(0xff)) << 8;
-                uint16_t sz = spi_swap(0xff);
-                sz |= ((uint16_t) spi_swap(0xff)) << 8;
-                for (size_t i = 0; i < sz; ++i)
-                    buffer[i] = spi_swap(0xff);
-                uint16_t remote_chk = spi_swap(0xff);
-                remote_chk |= ((uint16_t) spi_swap(0xff)) << 8;
-                uint16_t chk = checksum(sz, buffer);
-                ram_write_buffer(addr, sz, buffer);
-                spi_ready();
-                spi_swap(remote_chk == chk ? 0 : 1);
-                spi_swap(chk & 0xff);
-                spi_swap((chk >> 8) & 0xff);
-                spi_done();
-                */
             break;
                 /*
                 case 0x6:
