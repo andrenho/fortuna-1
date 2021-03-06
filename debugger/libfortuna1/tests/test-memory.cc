@@ -38,7 +38,7 @@ int main(int argc, char* argv[])
         ASSERT_EQ("Verifying byte written (1)", 0xfe, cbuffer.at(1));
     }
     
-    /*
+    for (int i = 0; i < 8; ++i)
     {
         uint16_t addr = rand() & 0xffff;
         std::vector<uint8_t> buffer;
@@ -49,6 +49,5 @@ int main(int argc, char* argv[])
         f->ram_write_buffer(addr, buffer);
         ASSERT_EQ("Bytes read are equal to bytes written", buffer, f->ram_read_buffer(addr, 64));
     }
-     */
 }
 

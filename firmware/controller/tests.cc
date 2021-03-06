@@ -49,7 +49,7 @@ static void run_memory_tests(RAM& ram)
     
     // test block
     sz = 1;
-    for (int i = 0; i < 16; ++i) {
+    for (int i = 0; i < 1; ++i) {
         sz = 64;
         if (sz > 64)
             sz = 64;
