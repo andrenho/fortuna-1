@@ -151,6 +151,7 @@ Reply Repl::parse_request(Request const& request)
                         }, &buffer_)) {
                     reply.result = Result::WrongChecksumDMA;
                 }
+                buffer_.sz = request.ram_request.size;
             }
             break;
         default:

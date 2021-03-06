@@ -14,7 +14,7 @@ int main(int argc, char* argv[])
     
     ASSERT_EQ("Test communication with DMA", "Hello", f->test_dma());
     
-    for (int i = 0; i < 512; ++i) {
+    for (int i = 0; i < 32; ++i) {
         std::cout << "Attempt #" << i << "\n";
         uint16_t addr = rand() & 0x7fff;  // TODO - using only lower bank for now
         uint8_t data = rand();
@@ -23,29 +23,31 @@ int main(int argc, char* argv[])
         ASSERT_EQ("Byte read is equal to byte written", data, f->ram_read_byte(addr));
     }
     
-    /*
     {
         uint16_t addr = 0x4365;
         std::vector<uint8_t> buffer;
         buffer.push_back(0x42);
-        f->ram_write_byte(addr, 0xab);
+        buffer.push_back(0xFE);
+        f->ram_write_byte(addr, 8);
+        printf("Writing buffer...\n");
         f->ram_write_buffer(addr, buffer);
-        ASSERT_EQ("Writing a single byte as a block", 0x42, f->ram_read_byte(addr));
-        auto cbuffer = f->ram_read_buffer(addr, 8);
-        ASSERT_EQ("Verifying byte written", 0x42, cbuffer.at(0));
+        ASSERT_EQ("Checking byte 0", 0x42, f->ram_read_byte(addr));
+        ASSERT_EQ("Checking byte 1'", 0xfe, f->ram_read_byte(addr + 1));
+        auto cbuffer = f->ram_read_buffer(addr, 2);
+        ASSERT_EQ("Verifying byte written (0)", 0x42, cbuffer.at(0));
+        ASSERT_EQ("Verifying byte written (1)", 0xfe, cbuffer.at(1));
     }
-     */
     
     /*
     {
-        uint16_t addr = rand() & 0x7fff;  // TODO - using only lower bank for now
+        uint16_t addr = rand() & 0xffff;
         std::vector<uint8_t> buffer;
-        buffer.reserve(512);
-        for (size_t i = 0; i < 512; ++i)
+        buffer.reserve(64);
+        for (size_t i = 0; i < 64; ++i)
             buffer.push_back(rand());
-        printf("Writing 512 random bytes to address 0x%04X...\n", addr);
+        printf("Writing 64 random bytes to address 0x%04X...\n", addr);
         f->ram_write_buffer(addr, buffer);
-        ASSERT_EQ("Bytes read are equal to bytes written", buffer, f->ram_read_buffer(addr, 512));
+        ASSERT_EQ("Bytes read are equal to bytes written", buffer, f->ram_read_buffer(addr, 64));
     }
      */
 }
