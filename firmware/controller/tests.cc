@@ -46,7 +46,7 @@ static void run_memory_tests(RAM& ram)
     */
     
     // test block with a single byte
-    for (size_t sz = 64; sz < 512; sz *= 2) {
+    for (size_t sz = 1; sz < 512; sz *= 2) {
         printf_P(PSTR("%d: "), sz);
         uint8_t buffer[sz], written[sz];
         uint16_t addr = random() & 0xffff;

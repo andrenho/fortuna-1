@@ -8,9 +8,7 @@
 #include "serial.h"
 #endif
 
-uint8_t buffer[512];
-
-static uint16_t checksum(uint16_t sz)
+static uint16_t checksum(uint16_t sz, uint8_t* buffer)
 {
     uint16_t sum1 = 0, sum2 = 0;
     for (size_t i = 0; i < sz; ++i) {
@@ -22,6 +20,8 @@ static uint16_t checksum(uint16_t sz)
 
 int main()
 {
+    uint8_t buffer[512];
+
     spi_init();
     ram_init();
 
@@ -77,7 +77,7 @@ int main()
                     spi_ready();
                     for (size_t i = 0; i < sz; ++i)
                         spi_swap(buffer[i]);
-                    uint16_t chk = checksum(sz);
+                    uint16_t chk = checksum(sz, buffer);
                     spi_swap(chk & 0xff);
                     spi_swap(chk >> 8);
                     spi_done();
@@ -93,7 +93,7 @@ int main()
                     buffer[i] = spi_swap(0xff);
                 uint16_t remote_chk = spi_swap(0xff);
                 remote_chk |= ((uint16_t) spi_swap(0xff)) << 8;
-                uint16_t chk = checksum(sz);
+                uint16_t chk = checksum(sz, buffer);
                 ram_write_buffer(addr, sz, buffer);
                 spi_ready();
                 spi_swap(remote_chk == chk ? 0 : 1);
