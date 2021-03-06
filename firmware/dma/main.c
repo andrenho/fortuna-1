@@ -1,12 +1,11 @@
-#include <stdio.h>
-#include <avr/io.h>
-#include <avr/interrupt.h>
-#include <avr/pgmspace.h>
-#include <util/delay.h>
-
+#include <stddef.h>
 #include "ram.h"
-#include "serial.h"
 #include "spi.h"
+
+#ifdef RUN_TESTS
+#include <stdio.h>
+#include "serial.h"
+#endif
 
 static uint16_t checksum(uint16_t sz)
 {
@@ -20,35 +19,40 @@ static uint16_t checksum(uint16_t sz)
 
 int main()
 {
-    serial_init();
     spi_init();
     ram_init();
 
-    printf_P(PSTR("\e[1;1H\e[2J"));
 #ifdef RUN_TESTS
+    printf_P(PSTR("\e[1;1H\e[2J"));
+    serial_init();
     extern void run_tests();
     run_tests();
 #endif
 
+#pragma clang diagnostic push
+#pragma ide diagnostic ignored "EndlessLoop"
     while (1) {
         uint8_t r = spi_swap(0xff);
         spi_activate();
         switch (r) {
             case 0x1:
+                spi_ready();
                 spi_swap('H');
                 spi_swap('e');
                 spi_swap('l');
                 spi_swap('l');
                 spi_swap('o');
                 spi_swap('\n');
+                spi_done();
                 break;
             case 0x2: {
                     uint16_t addr = spi_swap(0xff);
                     addr |= ((uint16_t) spi_swap(0xff)) << 8;
-                    spi_swap(0xfe);
-                    uint8_t data = ram_read_byte(addr); 
+                    spi_ready();
+                    uint8_t data = ram_read_byte(addr);
                     spi_swap(data);
                     spi_swap(data);
+                    spi_done();
                 }
                 break;
             case 0x3: {
@@ -56,10 +60,12 @@ int main()
                     addr |= ((uint16_t) spi_swap(0xff)) << 8;
                     uint8_t data = spi_swap(0xff);
                     uint8_t written = ram_write_byte(addr, data);
-                    spi_swap(0xfe);
+                    spi_ready();
                     spi_swap(written);
+                    spi_done();
                 }
                 break;
+            /*
             case 0x4: {
                     uint16_t addr = spi_swap(0xff);
                     addr |= ((uint16_t) spi_swap(0xff)) << 8;
@@ -88,7 +94,6 @@ int main()
                     spi_swap(chk >> 8);
                 }
                 break;
-            /*
             case 0x6:
                 spi_swap(ram_get_data());
                 break;
@@ -104,4 +109,5 @@ int main()
         }
         spi_deactivate();
     }
+#pragma clang diagnostic pop
 }
