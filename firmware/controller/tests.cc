@@ -29,6 +29,7 @@ static void run_memory_tests(RAM& ram)
     create_seed();
 
     // read/write memory byte
+    /*
     for (int i = 0; i < 512; ++i) {
         uint16_t addr = random() & 0xffff;
         uint8_t data = rand() & 0xff;
@@ -42,11 +43,11 @@ static void run_memory_tests(RAM& ram)
             goto done;
         }
     }
+    */
 
-    /*
     // create block
     printf_P(PSTR("Testing buffer...\n"));
-    for (int block = 0; block < 2; ++block) {
+    for (int block = 0; block < 1; ++block) {
         uint16_t addr = block == 0 ? 0 : (random() & 0x7fff);
         uint8_t buffer[256], written[256];
         for (size_t i = 0; i < 256; ++i)
@@ -71,7 +72,6 @@ static void run_memory_tests(RAM& ram)
         }
         printf_P(PSTR("-\n"));
     }
-    */
 
 done:
     ram.spi().set_debug_mode(false);
