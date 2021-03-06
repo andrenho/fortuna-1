@@ -67,7 +67,6 @@ bool RAM::read_block(uint16_t addr, uint16_t sz, RAM::ReadFunc read_func, void* 
         read_func(a - addr, byte, data);
         sum1 = (sum1 + byte) % 255;
         sum2 = (sum2 + sum1) % 255;
-        _delay_us(10);
     }
     uint8_t csum1 = spi_.recv();
     uint8_t csum2 = spi_.recv();
@@ -89,7 +88,6 @@ bool RAM::write_block(uint16_t addr, uint16_t sz, RAM::WriteFunc write_func, voi
         spi_.send(byte);
         sum1 = (sum1 + byte) % 255;
         sum2 = (sum2 + sum1) % 255;
-        _delay_us(10);
     }
     spi_.send(sum1);
     spi_.send(sum2);
