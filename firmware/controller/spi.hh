@@ -17,6 +17,8 @@ public:
 
     uint8_t send(uint8_t byte);
     uint8_t recv();
+    
+    void wait_dma_cs() const;
 
 #ifdef ENABLE_TESTS
     void set_debug_mode(bool debug_mode) { debug_mode_ = debug_mode; }

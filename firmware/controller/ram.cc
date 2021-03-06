@@ -29,7 +29,7 @@ uint8_t RAM::write_byte(uint16_t addr, uint8_t data)
     spi_.send(addr & 0xff);
     spi_.send(addr >> 8);
     spi_.send(data);
-    while (spi_.recv() != 0xfe);  // TODO - number of tries
+    spi_.wait_dma_cs();
     uint8_t r = spi_.recv();
     spi_.deactivate();
     return r;
@@ -42,7 +42,7 @@ try_again:
     spi_.send(CMD_READ_BYTE);
     spi_.send(addr & 0xff);
     spi_.send(addr >> 8);
-    while (spi_.recv() != 0xfe);  // TODO - number of tries
+    spi_.wait_dma_cs();
     uint8_t r = spi_.recv();
     uint8_t r2 = spi_.recv();
     if (r != r2)

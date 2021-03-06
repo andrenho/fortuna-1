@@ -14,8 +14,9 @@ void io_init();
 
 // ports only read by the microcontroller (get_XXX)
 #define INPUT_PORTS     \
-    P(MISO,   B, 4)
-
+    P(MISO,   B, 4)     \
+    P(DMA_CS, B, 1)
+    
 // ports both read and written by the microcontroller (get_XXX, set_XXX)
 #define IO_PORTS        \
     P(MOSI,   B, 3)     \
