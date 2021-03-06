@@ -4,6 +4,7 @@
 
 #ifdef RUN_TESTS
 #include <stdio.h>
+#include <avr/pgmspace.h>
 #include "serial.h"
 #endif
 

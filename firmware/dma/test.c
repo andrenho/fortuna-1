@@ -28,7 +28,7 @@ void run_tests()
 
     // read/write memory byte
     for (int i = 0; i < 512; ++i) {
-        uint16_t addr = random() & 0x7fff;
+        uint16_t addr = random() & 0xffff;
         if (i == 0)
             addr = 0x200;
         else if (i == 1)
@@ -44,7 +44,7 @@ void run_tests()
     // create block
     printf_P(PSTR("Testing buffer...\n"));
     for (int block = 0; block < 2; ++block) {
-        uint16_t addr = block == 0 ? 0 : (random() & 0x7fff);
+        uint16_t addr = block == 0 ? 0 : (random() & 0xffff);
         for (size_t i = 0; i < 256; ++i)
             buffer[i] = rand() & 0xff;
         memcpy(written, buffer, 256);
@@ -71,14 +71,14 @@ void run_tests()
     // test whole memory
     printf_P(PSTR("Testing whole memory... writing... "));
     uint8_t diff = rand();
-    for (uint16_t block = 0; block < (0x8000 / 512); ++block) {
+    for (uint16_t block = 0; block < (0x10000 / 512); ++block) {
         for (size_t i = 0; i < 512; ++i)
             buffer[i] = (block + i + diff) & 0xff;
         ram_write_buffer(block * 512, 512);
     }
 
     printf_P(PSTR("reading... "));
-    for (uint16_t block = 0; block < (0x8000 / 512); ++block) {
+    for (uint16_t block = 0; block < (0x10000 / 512); ++block) {
         ram_read_buffer(block * 512, 512);
         for (size_t i = 0; i < 512; ++i) {
             if (buffer[i] != ((block + i + diff) & 0xff)) {
