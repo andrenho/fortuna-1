@@ -24,12 +24,13 @@ static void create_seed()
 
 static void run_memory_tests(RAM& ram)
 {
+    size_t sz;
+
     printf_P(PSTR("Running memory tests...\n"));
     // ram.spi().set_debug_mode(true);
     create_seed();
 
     // read/write memory byte
-    /*
     for (int i = 0; i < 512; ++i) {
         uint16_t addr = random() & 0xffff;
         uint8_t data = rand() & 0xff;
@@ -43,10 +44,12 @@ static void run_memory_tests(RAM& ram)
             goto done;
         }
     }
-    */
     
     // test block with a single byte
-    for (size_t sz = 64; sz < 512; sz *= 2) {
+    sz = 1;
+    for (int i = 0; i < 16; ++i) {
+        if (sz > 64)
+            sz = 64;
         printf_P(PSTR("%d: "), sz);
         uint8_t buffer[sz], written[sz];
         uint16_t addr = random() & 0xffff;
@@ -61,37 +64,8 @@ static void run_memory_tests(RAM& ram)
         for (size_t j = 0; j < sz; ++j)
             printf_P(PSTR("\e[0;3%dm%02X\e[0m"), (buffer[j] == written[j]) ? 2 : 1, buffer[j]);
         putchar('\n');
+        sz *= 2;
     }
-
-    // create block
-    /*
-    printf_P(PSTR("Testing buffer...\n"));
-    for (int block = 0; block < 1; ++block) {
-        uint16_t addr = block == 0 ? 0 : (random() & 0x7fff);
-        uint8_t buffer[256], written[256];
-        for (size_t i = 0; i < 256; ++i)
-            buffer[i] = rand() & 0xff;
-        memcpy(written, buffer, 256);
-        ram.write_block(addr, 256, [](uint16_t idx, void* buffer) -> uint8_t { return ((uint8_t *) buffer)[idx]; }, buffer);
-        for (size_t i = 0; i < 256; ++i)
-            buffer[i] = 0;
-        ram.read_block(addr, 256, [](uint16_t idx, uint8_t byte, void* buffer) { ((uint8_t *) buffer)[idx] = byte; }, buffer);
-        for (volatile size_t i = 0; i < 0x10; ++i) {
-            for (volatile size_t j = 0; j < 0x10; ++j)
-                printf_P(PSTR("%02X"), written[i * 0x10 + j]);
-            putchar(' ');
-            for (size_t j = 0; j < 0x10; ++j) {
-                if (buffer[i * 0x10 + j] == written[i * 0x10 + j])
-                    printf_P(PSTR("\e[0;32m"));
-                else
-                    printf_P(PSTR("\e[0;31m"));
-                printf_P(PSTR("%02X\e[0m"), buffer[i * 0x10 + j]);
-            }
-            putchar('\n');
-        }
-        printf_P(PSTR("-\n"));
-    }
-     */
 
 done:
     ram.spi().set_debug_mode(false);
