@@ -97,6 +97,7 @@ std::array<uint8_t, 512> Fortuna1RealHardware::sdcard_read(uint32_t block)
 {
     Request request(MessageType::SDCard_Read, buffer_);
     request.sdcard_block = block;
+    serial_.request(request, buffer_);
     std::array<uint8_t, 512> data {};
     std::copy(std::begin(buffer_.data), std::end(buffer_.data), data.begin());
     return data;
