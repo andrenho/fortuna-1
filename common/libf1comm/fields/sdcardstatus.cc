@@ -1,4 +1,3 @@
-#include <iostream>
 #include "sdcardstatus.hh"
 #include "../serialization.hh"
 
@@ -17,6 +16,8 @@ SDCardStatus SDCardStatus::unserialize(Message::DeserializationFunction f, void*
 }
 
 #ifndef EMBEDDED
+#include <iostream>
+
 void SDCardStatus::debug_detail() const
 {
     std::cout << "  sdcard_status: {\n";

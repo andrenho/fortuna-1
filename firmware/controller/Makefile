@@ -1,7 +1,7 @@
 PROJECT=controller
 OBJECTS=main.o repl.o serial.o util.o io.o spi.o ram.o tests.o sdcard.o \
 	libf1comm/message.o libf1comm/serialization.o libf1comm/messages/request.o libf1comm/messages/reply.o \
-	libf1comm/fields/ramrequest.o
+	libf1comm/fields/ramrequest.o libf1comm/fields/sdcardstatus.o
 AVRDUDE_FLAGS=-p m328p -C ./avrdude_gpio.conf -c pi_1 -V
 FUSES=-U lfuse:w:0xDE:m	-U hfuse:w:0xD9:m -U efuse:w:0xFF:m -U lock:w:0xFF:m
 MCU=atmega328p
