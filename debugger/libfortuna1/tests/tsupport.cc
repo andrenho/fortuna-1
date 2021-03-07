@@ -43,10 +43,12 @@ TestArgs::TestArgs(int argc, char** argv)
 std::unique_ptr<Fortuna1> TestArgs::create_fortuna() const
 {
     std::unique_ptr<Fortuna1> f;
-    if (real_hardware_mode)
+    if (real_hardware_mode) {
         f = std::make_unique<Fortuna1RealHardware>(serial_port);
-    else
+    } else {
         f = std::make_unique<Fortuna1Emulator>();
+        dynamic_cast<Fortuna1Emulator*>(f.get())->sdcard_set_image("../tests/sdcard.img");
+    }
     f->set_log_bytes(log_bytes);
     f->set_log_messages(log_messages);
     return f;

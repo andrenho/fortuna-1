@@ -49,3 +49,13 @@ void Fortuna1Emulator::sdcard_set_image(std::string const& filename)
     if (!sd_image_stream_->is_open())
         throw std::runtime_error("The file " + filename + " could not be open.");
 }
+
+std::array<uint8_t, 512> Fortuna1Emulator::sdcard_read(uint32_t block)
+{
+    if (!sd_image_stream_.has_value())
+        throw std::runtime_error("A SD card image is not defined in `sdcard_read`.");
+    sd_image_stream_->seekp(block * 512, std::ios_base::beg);
+    std::array<uint8_t, 512> data {0};
+    sd_image_stream_->read(reinterpret_cast<char*>(data.data()), 512);
+    return data;
+}

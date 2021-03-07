@@ -21,8 +21,9 @@ public:
     uint8_t              data_bus() const override { return 0; }
     void                 set_data_bus(uint8_t) override {}
     
-    void                 sdcard_set_image(std::string const& filename);
-    SDCardStatus         sdcard_status() const override;
+    void                     sdcard_set_image(std::string const& filename);
+    SDCardStatus             sdcard_status() const override;
+    std::array<uint8_t, 512> sdcard_read(uint32_t block) override;
 
 private:
     uint8_t                     ram_[64 * 1024] = {0};

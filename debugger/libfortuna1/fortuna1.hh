@@ -24,7 +24,7 @@ public:
     virtual void                     set_data_bus(uint8_t data) = 0;
     
     virtual SDCardStatus             sdcard_status() const = 0;
-    virtual std::array<uint8_t, 512> sdcard_read(uint32_t block) const = 0;
+    virtual std::array<uint8_t, 512> sdcard_read(uint32_t block) = 0;
     
     virtual void set_log_bytes(bool) {}
     virtual void set_log_messages(bool) {}

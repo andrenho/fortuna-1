@@ -92,3 +92,12 @@ SDCardStatus Fortuna1RealHardware::sdcard_status() const
     Request request(MessageType::SDCard_Status, buffer_);
     return serial_.request(request, buffer_).sd_status;
 }
+
+std::array<uint8_t, 512> Fortuna1RealHardware::sdcard_read(uint32_t block)
+{
+    Request request(MessageType::SDCard_Read, buffer_);
+    request.sdcard_block = block;
+    std::array<uint8_t, 512> data {};
+    std::copy(std::begin(buffer_.data), std::end(buffer_.data), data.begin());
+    return data;
+}
