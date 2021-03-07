@@ -31,6 +31,7 @@ static void run_memory_tests(RAM& ram)
     create_seed();
 
     // read/write memory byte
+    /*
     for (int i = 0; i < 512; ++i) {
         uint16_t addr = random() & 0xffff;
         uint8_t data = rand() & 0xff;
@@ -44,6 +45,7 @@ static void run_memory_tests(RAM& ram)
             goto done;
         }
     }
+    */
     
     // test block
     sz = 1;

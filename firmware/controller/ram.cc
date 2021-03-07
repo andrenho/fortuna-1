@@ -104,6 +104,7 @@ bool RAM::write_block(uint16_t addr, uint16_t sz, RAM::WriteFunc write_func, voi
     }
 
     // checksum
+    _delay_us(30);
     uint8_t csum1 = spi_.recv();
     uint8_t csum2 = spi_.recv();
     spi_.deactivate();

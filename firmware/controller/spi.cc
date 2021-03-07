@@ -62,7 +62,7 @@ uint8_t SPI::send(uint8_t byte)
 
 uint8_t SPI::recv()
 {
-    _delay_us(30);
+    // _delay_us(30);
     return send(0xff);
 }
 
