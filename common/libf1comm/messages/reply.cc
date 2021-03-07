@@ -80,14 +80,15 @@ bool Reply::compare(Message const& message) const
 
 void Reply::debug_detail() const
 {
+    std::cout << std::hex << std::uppercase;
     switch (message_type_) {
         case FreeMem:
-            std::cout << "  free_mem: " << free_mem << "\n";
+            std::cout << "  free_mem: " << std::dec << free_mem << std::hex << "\n";
             break;
         case RamReadByte:
         case RamWriteByte:
         case DataReadBus:
-            std::cout << "  ram_byte: " << (int) ram_byte << "\n";
+            std::cout << "  ram_byte: 0x" << (int) ram_byte << "\n";
             break;
         case SDCard_Status:
         case SDCard_Read:
@@ -96,6 +97,6 @@ void Reply::debug_detail() const
         default:
             break;
     }
-    std::cout << "  result: " << (int) result << "\n";
+    std::cout << "  result: 0x" << (int) result << "\n";
 }
 #endif

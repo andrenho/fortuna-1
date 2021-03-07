@@ -103,8 +103,9 @@ bool Message::compare(Message const& other) const
 
 void Message::debug() const
 {
+    std::cout << std::hex << std::uppercase;
     std::cout << classname() << " {\n";
-    std::cout << "  message_type: " << message_type_ << "\n";
+    std::cout << "  message_type: 0x" << (int) message_type_ << "\n";
     if (buffer_) {
         std::cout << "  buffer: ";
         /*

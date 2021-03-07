@@ -20,9 +20,10 @@ SDCardStatus SDCardStatus::unserialize(Message::DeserializationFunction f, void*
 
 void SDCardStatus::debug_detail() const
 {
+    std::cout << std::hex << std::uppercase;
     std::cout << "  sdcard_status: {\n";
-    std::cout << "    last_stage: " << last_stage << "\n";
-    std::cout << "    last_response: " << last_response << "\n";
+    std::cout << "    last_stage: 0x" << (int) last_stage << "\n";
+    std::cout << "    last_response: 0x" << (int) last_response << "\n";
     std::cout << "  }\n";
 }
 

@@ -23,10 +23,11 @@ RamRequest RamRequest::unserialize(Message::DeserializationFunction f, void* dat
 
 void RamRequest::debug_detail() const
 {
+    std::cout << std::hex << std::uppercase;
     std::cout << "  ram_request: {\n";
-    std::cout << "    address: " << address << "\n";
-    std::cout << "    size: " << size << "\n";
-    std::cout << "    byte: " << (int) byte << "\n";
+    std::cout << "    address: 0x" << address << "\n";
+    std::cout << "    size: 0x" << size << "\n";
+    std::cout << "    byte: 0x" << (int) byte << "\n";
     std::cout << "  }\n";
 }
 
