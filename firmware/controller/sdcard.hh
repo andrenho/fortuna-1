@@ -2,6 +2,7 @@
 #define CONTROLLER_SDCARD_HH
 
 #include <stdint.h>
+#include "spi.hh"
 
 enum SDCardStage {
     SD_MCU_SETUP   = 0x0, SD_RESET = 0x1, SD_GO_IDLE = 0x2, SD_IF_COND = 0x3, SD_INIT = 0x4,
@@ -13,11 +14,17 @@ enum SDCardStage {
 
 class SDCard {
 public:
+    explicit SDCard(SPI& spi) : spi_(spi) {}
+    
     bool initialize();
     void read_page(uint32_t page);
     void write_page(uint32_t page);
+    
+    SDCardStage last_stage() const { return last_stage_; }
+    uint8_t last_response() const { return last_response_; }
 
 private:
+    SPI&        spi_;
     SDCardStage last_stage_ = SD_NOT_INITIALIZED;
     uint8_t     last_response_ = 0xff;
     

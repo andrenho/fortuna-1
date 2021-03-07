@@ -66,8 +66,9 @@ void Repl::do_terminal(char cmd)
     switch (cmd) {
         case 'h':
         case '?':
-            printf_P(PSTR("[f] bytes free  [D] test DMA\n"));
-            printf_P(PSTR("[r] read byte  [w] write byte  [W] write multiple bytes  [d] dump memory\n"));
+            printf_P(PSTR("Ctrl:   [f] bytes free  [D] test DMA\n"));
+            printf_P(PSTR("RAM:    [r] read byte  [w] write byte  [W] write multiple bytes  [d] dump memory\n"));
+            printf_P(PSTR("SdCard: [l] Last status\n"));
 #ifdef ENABLE_TESTS
             printf_P(tests_help());
 #endif
@@ -108,6 +109,9 @@ void Repl::do_terminal(char cmd)
                         printf_P(PSTR("Checksum error\n"));
                 }
             }
+            break;
+        case 'l':
+            printf_P(PSTR("Last stage: 0x%02X   last response: 0x%02X\n"), sdcard_.last_stage(), sdcard_.last_response());
             break;
         default:
             error();

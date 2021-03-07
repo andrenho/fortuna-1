@@ -2,6 +2,7 @@
 #include "ram.hh"
 #include "repl.hh"
 #include "serial.hh"
+#include "sdcard.hh"
 
 int main()
 {
@@ -11,8 +12,9 @@ int main()
     SPI spi;
 
     RAM ram(spi);
+    SDCard sdcard(spi);
 
-    Repl repl(serial, ram);
+    Repl repl(serial, ram, sdcard);
 
     // serial.clrscr();
     while (true)

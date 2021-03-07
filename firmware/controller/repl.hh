@@ -6,10 +6,11 @@
 #include "util.hh"
 #include "ram.hh"
 #include "serial.hh"
+#include "sdcard.hh"
 
 class Repl {
 public:
-    Repl(Serial& serial, RAM& ram) : serial_(serial), ram_(ram) {}
+    Repl(Serial& serial, RAM& ram, SDCard& sdcard) : serial_(serial), ram_(ram), sdcard_(sdcard) {}
 
     void execute();
 
@@ -24,6 +25,7 @@ private:
     Serial& serial_;
     RAM     ram_;
     Buffer  buffer_ { {0}, 0 };
+    SDCard  sdcard_;
 };
 
 #endif
