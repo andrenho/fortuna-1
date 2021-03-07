@@ -89,8 +89,10 @@ bool do_tests(char cmd, RAM& ram, SDCard& sdcard)
             run_memory_tests(ram);
             return true;
         case 'I':
-            sdcard.initialize();
+            if (!sdcard.initialize())
+                printf_P(PSTR("Initialization failed.\n"));
             printf_P(PSTR("Last stage: 0x%02X   last response: 0x%02X\n"), sdcard.last_stage(), sdcard.last_response());
+            printf_P(PSTR("Last stage and response expected: 0x04 0x00\n"));
             return true;
     }
     return false;
