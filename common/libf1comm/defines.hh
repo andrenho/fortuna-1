@@ -28,7 +28,11 @@ enum MessageType : uint8_t {
     DataReadBus     = 14,
     DataWriteBus    = 15,
     
-    
+    // SDCardEmulated
+    SDStatus        = 16,
+    SDInitialize    = 17,
+    SDRead          = 18,
+    SDWrite         = 19,
     
     Undefined       = 0xff,
 };

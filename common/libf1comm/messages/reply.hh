@@ -2,6 +2,7 @@
 #define LIBF1COMM_REPLY_HH
 
 #include "../message.hh"
+#include "../fields/sdcardstatus.hh"
 
 class Reply : public Message {
 public:
@@ -9,8 +10,9 @@ public:
     
     Result result = Result::OK;
     union {
-        uint16_t free_mem;
-        uint8_t  ram_byte;
+        uint16_t     free_mem;
+        uint8_t      ram_byte;
+        SDCardStatus sd_status;
     };
     
     void deserialize_detail(DeserializationFunction f, void* data, uint16_t* sum1, uint16_t* sum2) override;

@@ -4,6 +4,7 @@
 #include <cstdint>
 #include <string>
 #include <vector>
+#include "libf1comm/fields/sdcardstatus.hh"
 
 class Fortuna1 {
 public:
@@ -20,6 +21,8 @@ public:
     virtual std::vector<uint8_t> ram_read_buffer(uint16_t addr, uint16_t sz) const = 0;
     virtual uint8_t              data_bus() const = 0;
     virtual void                 set_data_bus(uint8_t data) = 0;
+    
+    virtual SDCardStatus         sdcard_status() const = 0;
     
     virtual void set_log_bytes(bool) {}
     virtual void set_log_messages(bool) {}

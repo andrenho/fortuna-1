@@ -2,8 +2,8 @@
 #define LIBFORTUNA1_FORTUNA1REALHARDWARE_HH
 
 #include <string>
-#include "libf1comm/buffer.hh"
-#include "fortuna1.hh"
+#include "../libf1comm/buffer.hh"
+#include "../fortuna1.hh"
 #include "serial.hh"
 
 class Fortuna1RealHardware : public Fortuna1 {
@@ -24,6 +24,8 @@ public:
     std::vector<uint8_t> ram_read_buffer(uint16_t addr, uint16_t sz) const override;
     uint8_t              data_bus() const override;
     void                 set_data_bus(uint8_t data) override;
+    
+    SDCardStatus sdcard_status() const override { return { 0xff, 0xff }; }
 
 private:
     mutable Buffer buffer_ { {0}, 0 };

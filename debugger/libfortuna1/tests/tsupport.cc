@@ -2,8 +2,8 @@
 
 #include <getopt.h>
 
-#include <fortuna1realhardware.hh>
-#include <fortuna1emulator.hh>
+#include <realhardware/fortuna1realhardware.hh>
+#include <emulator/fortuna1emulator.hh>
 #include <iostream>
 #include <iomanip>
 

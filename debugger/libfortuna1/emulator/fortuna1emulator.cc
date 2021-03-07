@@ -37,3 +37,8 @@ std::vector<uint8_t> Fortuna1Emulator::ram_read_buffer(uint16_t addr, uint16_t s
         r.push_back(ram_[a]);
     return r;
 }
+
+SDCardStatus Fortuna1Emulator::sdcard_status() const
+{
+    return { sd_card_.last_stage(), sd_card_.last_response() };
+}

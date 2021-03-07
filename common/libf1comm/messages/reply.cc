@@ -17,6 +17,12 @@ void Reply::serialize_detail(Message::SerializationFunction f, void* data) const
         case DataReadBus:
             serialize_u8(ram_byte, f, data);
             break;
+        case SDStatus:
+        case SDInitialize:
+        case SDRead:
+        case SDWrite:
+            sd_status.serialize(f, data);
+            break;
         default:
             break;
     }
@@ -33,6 +39,12 @@ void Reply::deserialize_detail(Message::DeserializationFunction f, void* data, u
         case RamWriteByte:
         case DataReadBus:
             ram_byte = unserialize_u8(f, data, sum1, sum2);
+            break;
+        case SDStatus:
+        case SDInitialize:
+        case SDRead:
+        case SDWrite:
+            sd_status = SDCardStatus::unserialize(f, data, sum1, sum2);
             break;
         default:
             break;
@@ -59,6 +71,13 @@ bool Reply::compare(Message const& message) const
             if (ram_byte != other.ram_byte)
                 eq = false;
             break;
+        case SDStatus:
+        case SDInitialize:
+        case SDRead:
+        case SDWrite:
+            if (sd_status != other.sd_status)
+                eq = false;
+            break;
         default:
             break;
     }
@@ -75,6 +94,12 @@ void Reply::debug_detail() const
         case RamWriteByte:
         case DataReadBus:
             std::cout << "  ram_byte: " << (int) ram_byte << "\n";
+            break;
+        case SDStatus:
+        case SDInitialize:
+        case SDRead:
+        case SDWrite:
+            sd_status.debug_detail();
             break;
         default:
             break;

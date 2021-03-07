@@ -14,9 +14,9 @@
 
 using namespace std::string_literals;
 
-#include "replyexception.hh"
-#include "libf1comm/messages/debuginformation.hh"
-#include "libf1comm/messages/deserialize.hh"
+#include "../replyexception.hh"
+#include "../libf1comm/messages/debuginformation.hh"
+#include "../libf1comm/messages/deserialize.hh"
 
 Serial::Serial(const char* port)
 {

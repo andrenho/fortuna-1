@@ -2,7 +2,8 @@
 #define LIBFORTUNA1_FORTUNA1EMULATOR_HH
 
 #include <cstddef>
-#include "fortuna1.hh"
+#include "../fortuna1.hh"
+#include "sdcard_emulated.hh"
 
 class Fortuna1Emulator : public Fortuna1 {
 public:
@@ -17,9 +18,12 @@ public:
     std::vector<uint8_t> ram_read_buffer(uint16_t addr, uint16_t sz) const override;
     uint8_t              data_bus() const override { return 0; }
     void                 set_data_bus(uint8_t) override {}
+    
+    SDCardStatus sdcard_status() const override;
 
 private:
-    uint8_t ram_[64 * 1024] = {0};
+    uint8_t        ram_[64 * 1024] = {0};
+    SDCardEmulated sd_card_ {};
 };
 
 #endif

@@ -1,6 +1,6 @@
 #include "fortuna1realhardware.hh"
-#include "replyexception.hh"
-#include "libf1comm/messages/request.hh"
+#include "../replyexception.hh"
+#include "../libf1comm/messages/request.hh"
 
 Fortuna1RealHardware::Fortuna1RealHardware(std::string const& serial_port)
     : serial_(serial_port.c_str())
