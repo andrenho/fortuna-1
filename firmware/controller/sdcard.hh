@@ -30,8 +30,8 @@ private:
     
     void reset();
     uint8_t go_idle();
-    uint8_t if_cond(uint32_t* p_int);
-    uint8_t init_process(uint32_t* p_int);
+    uint8_t if_cond(uint32_t* response);
+    uint8_t init_process(uint32_t* response);
     
     void    command(uint8_t cmd, uint32_t args, uint8_t crc);
 };
