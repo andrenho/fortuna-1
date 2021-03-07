@@ -17,8 +17,8 @@ public:
     explicit SDCard(SPI& spi) : spi_(spi) {}
     
     bool initialize();
-    void read_page(uint32_t page);
-    void write_page(uint32_t page);
+    bool read_page(uint32_t block, Buffer& buffer);
+    bool write_page(uint32_t block, Buffer const& buffer);
     
     SDCardStage last_stage() const { return last_stage_; }
     uint8_t last_response() const { return last_response_; }

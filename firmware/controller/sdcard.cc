@@ -39,13 +39,108 @@ bool SDCard::initialize()
     return false;
 }
 
-void SDCard::read_page(uint32_t page)
+bool SDCard::read_page(uint32_t block, Buffer& buffer)
 {
+    spi_.activate(SPI::SD);
+    
+    // send read command
+    command(CMD17, block, 0);
+    uint8_t r = spi_.recv_ignore_ff();
+    last_response_ = r;
+    if (r != 0) {
+        spi_.deactivate();
+        last_stage_ = SD_READ_REJECTED;
+        return false;
+    }
+
+    // read data
+    uint8_t rr = 0;
+    for (int i = 0; i < MAX_READ_ATTEMPTS; ++i) {
+        rr = spi_.recv_ignore_ff();
+        if (rr == 0xfe)
+            goto read_data;
+        _delay_ms(10);
+    }
+
+    // read timeout
+    spi_.deactivate();
+    last_stage_ = SD_READ_TIMEOUT;
+    return false;
+
+read_data:
+    for (int i = 0; i < 512; ++i)
+        buffer.data[i] = spi_.recv();
+    buffer.sz = 512;
+
+    // crc
+    spi_.send(0xff);
+    spi_.send(0xff);
+
+    last_stage_ = SD_READ_OK;
+    spi_.deactivate();
+    return true;
 }
 
-void SDCard::write_page(uint32_t page)
+bool SDCard::write_page(uint32_t page, Buffer const& buffer)
 {
+    /*
+    sd_cs(true);
+    
+    // send read command
+    sd_command(CMD24, block, 0);
+    R1 r = { .value = sd_recv_spi_byte() };
+    last_response = r;
+    if (r.value != 0) {
+        sd_cs(false);
+        last_stage = SD_WRITE_REJECTED;
+        return false;
+    }
 
+    // write data to card
+    sd_send_spi_byte(0xfe);
+    for (uint16_t i = 0; i < 512; ++i)
+        sd_send_spi_byte(wd(i, data));
+
+    // wait for a response
+    uint8_t rr = 0;
+    for (int i = 0; i < MAX_WRITE_ATTEMPTS; ++i) {
+        rr = sd_send_spi_byte(0xff);
+        if (rr != 0xff)
+            goto response_received;
+        _delay_ms(10);
+    }
+
+    // response timeout
+    sd_cs(false);
+    last_stage = SD_WRITE_TIMEOUT;
+    return false;
+
+response_received:
+    if ((rr & 0x1f) != 0x5) {
+        sd_cs(false);
+        last_response.value = rr;
+        last_stage = SD_WRITE_DATA_REJECTED;
+        return false;
+    }
+
+    // wait for write to finish
+    for (int i = 0; i < MAX_WRITE_ATTEMPTS; ++i) {
+        rr = sd_send_spi_byte(0xff);
+        if (rr != 0x0)
+            goto response_data_received;
+        _delay_ms(10);
+    }
+
+    // response timeout
+    sd_cs(false);
+    last_stage = SD_WRITE_DATA_TIMEOUT;
+    return false;
+
+response_data_received:
+    last_stage = SD_WRITE_OK;
+    sd_cs(false);
+    return true;
+     */
 }
 
 void SDCard::reset()

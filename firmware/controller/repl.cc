@@ -66,9 +66,9 @@ void Repl::do_terminal(char cmd)
     switch (cmd) {
         case 'h':
         case '?':
-            printf_P(PSTR("Ctrl:   [f] bytes free  [D] test DMA\n"));
-            printf_P(PSTR("RAM:    [r] read byte  [w] write byte  [W] write multiple bytes  [d] dump memory\n"));
-            printf_P(PSTR("SdCard: [l] Last status\n"));
+            printf_P(PSTR("Ctrl:   [f] bytes free   [D] test DMA\n"));
+            printf_P(PSTR("RAM:    [r] read byte    [w] write byte  [W] write multiple bytes  [d] dump memory\n"));
+            printf_P(PSTR("SdCard: [l] last status  [s] dump block\n"));
 #ifdef ENABLE_TESTS
             printf_P(tests_help());
 #endif
@@ -112,6 +112,23 @@ void Repl::do_terminal(char cmd)
             break;
         case 'l':
             printf_P(PSTR("Last stage: 0x%02X   last response: 0x%02X\n"), sdcard_.last_stage(), sdcard_.last_response());
+            break;
+        case 's': {
+                int block = ask_value_P(PSTR("Block"));
+                if (block == ERROR)
+                    return;
+                if (!sdcard_.read_page(block, buffer_)) {
+                    printf_P(PSTR("Error reading SDCard.\n"));
+                    return;
+                }
+                for (size_t i = 0; i < 512; ++i) {
+                    if (i % 0x10 == 0)
+                        printf_P(PSTR("%08X : "), block * 512 + i);
+                    printf_P(PSTR("%02X "), buffer_.data[i]);
+                    if (i % 0x10 == 0xf)
+                        putchar('\n');
+                }
+            }
             break;
         default:
             error();
