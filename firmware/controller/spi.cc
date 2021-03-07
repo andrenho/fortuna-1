@@ -66,7 +66,13 @@ uint8_t SPI::recv()
     return send(0xff);
 }
 
+uint8_t SPI::recv_ignore_ff()
+{
+    return 0;
+}
+
 void SPI::wait_dma_cs() const
 {
     while (get_DMA_RDY() != 0);   // TODO - for how long?
 }
+

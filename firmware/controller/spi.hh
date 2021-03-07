@@ -17,6 +17,7 @@ public:
 
     uint8_t send(uint8_t byte);
     uint8_t recv();
+    uint8_t recv_ignore_ff();
     
     void wait_dma_cs() const;
 
