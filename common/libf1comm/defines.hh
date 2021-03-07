@@ -44,6 +44,7 @@ enum Result : uint8_t {
     InvalidRequest                   = 1,
     WrongChecksumDMA                 = 2,
     DeserializationErrorInController = 3,
+    SDCardError                      = 4,
 };
 
 #endif //LIBF1COMM_DEFINES_HH

@@ -184,6 +184,10 @@ Reply Repl::parse_request(Request const& request)
         case MessageType::SDCard_Status:
             reply.sd_status = { static_cast<uint8_t>(sdcard_.last_stage()), sdcard_.last_response() };
             break;
+        case MessageType::SDCard_Read:
+            if (!sdcard_.read_page(request.sdcard_block, buffer_))
+                reply.result = SDCardError;
+            break;
         default:
             reply.result = Result::InvalidRequest;
             break;

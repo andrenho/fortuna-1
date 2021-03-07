@@ -20,6 +20,7 @@ public:
     void                 set_data_bus(uint8_t) override {}
     
     SDCardStatus sdcard_status() const override;
+    
 
 private:
     uint8_t        ram_[64 * 1024] = {0};
