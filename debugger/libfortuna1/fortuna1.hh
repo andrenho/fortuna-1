@@ -18,6 +18,8 @@ public:
     virtual uint8_t              ram_read_byte(uint16_t addr) const = 0;
     virtual void                 ram_write_buffer(uint16_t addr, std::vector<uint8_t> const& bytes) = 0;
     virtual std::vector<uint8_t> ram_read_buffer(uint16_t addr, uint16_t sz) const = 0;
+    virtual uint8_t              data_bus() const = 0;
+    virtual void                 set_data_bus(uint8_t data) = 0;
     
     virtual void set_log_bytes(bool) {}
     virtual void set_log_messages(bool) {}

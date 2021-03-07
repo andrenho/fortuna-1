@@ -10,6 +10,8 @@
 #define CMD_WRITE_BYTE  0x3
 #define CMD_READ_BLOCK  0x4
 #define CMD_WRITE_BLOCK 0x5
+#define CMD_READ_DATA   0x6
+#define CMD_WRITE_DATA  0x7
 
 const char* RAM::test()
 {
@@ -106,4 +108,23 @@ bool RAM::write_block(uint16_t addr, uint16_t sz, RAM::WriteFunc write_func, voi
     uint8_t csum2 = spi_.recv();
     spi_.deactivate();
     return sum1 == csum1 && sum2 == csum2;
+}
+
+uint8_t RAM::data_bus() const
+{
+    spi_.activate(SPI::DMA);
+    spi_.send(CMD_READ_DATA);
+    spi_.wait_dma_cs();
+    uint8_t byte = spi_.recv();
+    spi_.deactivate();
+    return byte;
+}
+
+void RAM::set_data_bus(uint8_t data)
+{
+    spi_.activate(SPI::DMA);
+    spi_.send(CMD_WRITE_DATA);
+    spi_.send(data);
+    spi_.wait_dma_cs();
+    spi_.deactivate();
 }

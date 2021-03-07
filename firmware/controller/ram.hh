@@ -16,6 +16,9 @@ public:
     
     bool read_block(uint16_t addr, uint16_t sz, ReadFunc read_func, void* data = nullptr) const;
     bool write_block(uint16_t addr, uint16_t sz, WriteFunc write_func, void* data = nullptr);
+    
+    uint8_t data_bus() const;
+    void    set_data_bus(uint8_t data);
 
     SPI& spi() const { return spi_; }
 

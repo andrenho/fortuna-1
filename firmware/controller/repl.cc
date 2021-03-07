@@ -154,6 +154,12 @@ Reply Repl::parse_request(Request const& request)
                 }
             }
             break;
+        case MessageType::DataReadBus:
+            reply.ram_byte = ram_.data_bus();
+            break;
+        case MessageType::DataWriteBus:
+            ram_.set_data_bus(request.ram_request.byte);
+            break;
         default:
             reply.result = Result::InvalidRequest;
             break;

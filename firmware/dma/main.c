@@ -98,20 +98,23 @@ int main()
                     spi_swap(sum2);
                     spi_done();
                 }
-            break;
-                /*
-                case 0x6:
-                    spi_swap(ram_get_data());
-                    break;
-                case 0x7: {
-                        uint8_t data = spi_swap(0xff);
-                        ram_set_data(data);
-                        spi_swap(data);
-                    }
-                    break;
-                default:
-                    spi_swap(0xfe);
-                    */
+                break;
+            case 0x6: {
+                    uint8_t byte = ram_get_data();
+                    spi_ready();
+                    _delay_us(30);
+                    spi_done();
+                    spi_swap(byte);
+                }
+                break;
+            case 0x7: {
+                    uint8_t data = spi_swap(0xff);
+                    ram_set_data(data);
+                    spi_ready();
+                    _delay_us(30);
+                    spi_done();
+                }
+                break;
         }
         spi_deactivate();
     }
