@@ -78,14 +78,19 @@ done:
 
 const char* tests_help()
 {
-    return PSTR("[M] Run memory tests\n");
+    return PSTR("[M] Run memory tests\n"
+                "[I] Initialize SDCard  [S] Write random data to SDCard\n");
 }
 
-bool do_tests(char cmd, RAM& ram)
+bool do_tests(char cmd, RAM& ram, SDCard& sdcard)
 {
     switch (cmd) {
         case 'M':
             run_memory_tests(ram);
+            return true;
+        case 'I':
+            sdcard.initialize();
+            printf_P(PSTR("Last stage: 0x%02X   last response: 0x%02X\n"), sdcard.last_stage(), sdcard.last_response());
             return true;
     }
     return false;
