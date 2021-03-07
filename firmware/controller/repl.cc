@@ -164,6 +164,9 @@ Reply Repl::parse_request(Request const& request)
         case MessageType::DataWriteBus:
             ram_.set_data_bus(request.ram_request.byte);
             break;
+        case MessageType::SDCard_Status:
+            reply.sd_status = { static_cast<uint8_t>(sdcard_.last_stage()), sdcard_.last_response() };
+            break;
         default:
             reply.result = Result::InvalidRequest;
             break;
