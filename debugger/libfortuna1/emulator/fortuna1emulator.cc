@@ -42,3 +42,10 @@ SDCardStatus Fortuna1Emulator::sdcard_status() const
 {
     return { sd_card_.last_stage(), sd_card_.last_response() };
 }
+
+void Fortuna1Emulator::sdcard_set_image(std::string const& filename)
+{
+    sd_image_stream_.emplace(filename, std::ios::in | std::ios::out | std::ios::binary);
+    if (!sd_image_stream_->is_open())
+        throw std::runtime_error("The file " + filename + " could not be open.");
+}
