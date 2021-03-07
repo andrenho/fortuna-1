@@ -14,7 +14,6 @@ int main(int argc, char* argv[])
     
     ASSERT_EQ("Test communication with DMA", "Hello", f->test_dma());
     
-    /*
     for (int i = 0; i < 32; ++i) {
         std::cout << "Attempt #" << i << "\n";
         uint16_t addr = rand() & 0x7fff;  // TODO - using only lower bank for now
@@ -50,11 +49,12 @@ int main(int argc, char* argv[])
         f->ram_write_buffer(addr, buffer);
         ASSERT_EQ("Bytes read are equal to bytes written", buffer, f->ram_read_buffer(addr, 512));
     }
-     */
     
-    uint8_t data = rand() & 0xff;
-    printf("Writing 0x%02X to data bus...\n", data);
-    f->set_data_bus(data);
-    printf("Data bus: 0x%02X\n", f->data_bus());
+    {
+        uint8_t data = rand() & 0xff;
+        printf("Writing 0x%02X to data bus...\n", data);
+        f->set_data_bus(data);
+        printf("Data bus: 0x%02X\n", f->data_bus());
+    }
 }
 
