@@ -11,28 +11,26 @@ enum MessageClass : uint8_t {
 };
 
 enum MessageType : uint8_t {
-    Nop             = 0,
+    Nop             = 0x0,
     
     // tests
-    TestDebug       = 1,
-    TestDMA         = 2,
+    TestDebug       = 0x1,
+    TestDMA         = 0x2,
     
     // internal
-    FreeMem         = 9,
+    FreeMem         = 0xa,
     
     // RAM
-    RamReadByte     = 10,
-    RamWriteByte    = 11,
-    RamReadBlock    = 12,
-    RamWriteBlock   = 13,
-    DataReadBus     = 14,
-    DataWriteBus    = 15,
+    RamReadByte     = 0x10,
+    RamWriteByte    = 0x11,
+    RamReadBlock    = 0x12,
+    RamWriteBlock   = 0x13,
+    DataReadBus     = 0x14,
+    DataWriteBus    = 0x15,
     
-    // SDCardEmulated
-    SDStatus        = 16,
-    SDInitialize    = 17,
-    SDRead          = 18,
-    SDWrite         = 19,
+    // SDCard
+    SDCard_Status   = 0x20,
+    SDCard_Read     = 0x21,
     
     Undefined       = 0xff,
 };

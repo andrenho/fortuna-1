@@ -25,7 +25,7 @@ public:
     uint8_t              data_bus() const override;
     void                 set_data_bus(uint8_t data) override;
     
-    SDCardStatus sdcard_status() const override { return { 0xff, 0xff }; }
+    SDCardStatus sdcard_status() const override;
 
 private:
     mutable Buffer buffer_ { {0}, 0 };

@@ -85,3 +85,10 @@ void Fortuna1RealHardware::set_data_bus(uint8_t data)
     request.ram_request.byte = data;
     serial_.request(request, buffer_);
 }
+
+SDCardStatus Fortuna1RealHardware::sdcard_status() const
+{
+    buffer_.sz = 0;
+    Request request(MessageType::SDCard_Status, buffer_);
+    return serial_.request(request, buffer_).sd_status;
+}
