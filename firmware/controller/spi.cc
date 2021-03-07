@@ -62,13 +62,19 @@ uint8_t SPI::send(uint8_t byte)
 
 uint8_t SPI::recv()
 {
-    // _delay_us(30);
     return send(0xff);
 }
 
 uint8_t SPI::recv_ignore_ff()
 {
-    return 0;
+    uint8_t i = 0, r;
+    while ((r = recv()) == 0xff) {
+        ++i;
+        _delay_us(30);
+        if (i > 8)
+            break;  // timeout
+    }
+    return r;
 }
 
 void SPI::wait_dma_cs() const

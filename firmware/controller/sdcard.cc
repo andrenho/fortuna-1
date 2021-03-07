@@ -65,7 +65,7 @@ uint8_t SDCard::go_idle()
 {
     spi_.activate(SPI::SD);
     command(CMD0, 0, 0x94);
-    uint8_t r1 = spi_.recv();
+    uint8_t r1 = spi_.recv_ignore_ff();
     spi_.deactivate();
     return r1;
 }
@@ -74,7 +74,7 @@ uint8_t SDCard::if_cond(uint32_t* response)
 {
     spi_.activate(SPI::SD);
     command(CMD8, 0x1AA, 0x86);
-    uint8_t r1 = spi_.recv();
+    uint8_t r1 = spi_.recv_ignore_ff();
     if (r1 <= 1) {
         *response = 0;
         *response |= (uint32_t) spi_.send(0xff) << 24;
@@ -90,14 +90,14 @@ uint8_t SDCard::init_process(uint32_t* response)
 {
     spi_.activate(SPI::SD);
     command(CMD55, 0, 0);
-    uint8_t r1 = spi_.recv();
+    uint8_t r1 = spi_.recv_ignore_ff();
     spi_.deactivate();
     if (r1 > 1)
         return r1;
     
     spi_.activate(SPI::SD);
     command(ACMD41, 0x40000000, 0);
-    r1 = spi_.recv();
+    r1 = spi_.recv_ignore_ff();
     if (r1 <= 1) {
         *response = 0;
         *response |= (uint32_t) spi_.send(0xff) << 24;
