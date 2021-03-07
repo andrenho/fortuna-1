@@ -14,6 +14,7 @@ public:
     
     union {
         RamRequest ram_request { 0, 0, 0 };
+        uint32_t   sdcard_block;
     };
 
 #ifndef EMBEDDED
