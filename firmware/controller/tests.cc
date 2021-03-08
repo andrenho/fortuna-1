@@ -90,7 +90,7 @@ bool do_tests(char cmd, Fortuna1& fortuna1)
     switch (cmd) {
         case 'D':
             printf_P(PSTR("- %s\n"), fortuna1.ram().test());
-            break;
+            return true;
         case 'M':
             run_memory_tests(fortuna1.ram());
             return true;
