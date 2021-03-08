@@ -102,3 +102,8 @@ std::array<uint8_t, 512> Fortuna1RealHardware::sdcard_read(uint32_t block)
     std::copy(std::begin(buffer_.data), std::end(buffer_.data), data.begin());
     return data;
 }
+
+void Fortuna1RealHardware::reset()
+{
+
+}

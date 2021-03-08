@@ -6,6 +6,7 @@
 #include <fstream>
 #include "../fortuna1.hh"
 #include "sdcard_emulated.hh"
+#include "z80/Z80.h"
 
 class Fortuna1Emulator : public Fortuna1 {
 public:
@@ -13,6 +14,8 @@ public:
     
     void        test_debug_messages() const override;
     std::string test_dma() const override;
+    
+    void reset() override;
     
     void                 ram_write_byte(uint16_t addr, uint8_t data) override;
     uint8_t              ram_read_byte(uint16_t addr) const override;
@@ -29,6 +32,7 @@ private:
     uint8_t                     ram_[64 * 1024] = {0};
     SDCardEmulated              sd_card_ {};
     std::optional<std::fstream> sd_image_stream_ {};
+    Z80                         z80_ {};
 };
 
 #endif

@@ -16,6 +16,8 @@ public:
     virtual void        test_debug_messages() const = 0;
     virtual std::string test_dma() const = 0;
     
+    virtual void                     reset() = 0;
+    
     virtual void                     ram_write_byte(uint16_t addr, uint8_t data) = 0;
     virtual uint8_t                  ram_read_byte(uint16_t addr) const = 0;
     virtual void                     ram_write_buffer(uint16_t addr, std::vector<uint8_t> const& bytes) = 0;

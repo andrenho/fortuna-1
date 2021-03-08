@@ -2,6 +2,13 @@
 
 #include <iostream>
 
+void Fortuna1Emulator::reset()
+{
+    ResetZ80(&z80_);
+    auto boot = sdcard_read(0);
+    ram_write_buffer(0, std::vector<uint8_t>(boot.begin(), boot.end()));
+}
+
 void Fortuna1Emulator::test_debug_messages() const
 {
     for (int i = 0; i < 3; ++i)
@@ -59,3 +66,4 @@ std::array<uint8_t, 512> Fortuna1Emulator::sdcard_read(uint32_t block)
     sd_image_stream_->read(reinterpret_cast<char*>(data.data()), 512);
     return data;
 }
+
