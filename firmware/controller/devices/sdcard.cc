@@ -81,66 +81,64 @@ read_data:
     return true;
 }
 
-bool SDCard::write_page(uint32_t page, Buffer const& buffer)
+bool SDCard::write_page(uint32_t block, Buffer const& buffer)
 {
-    /*
-    sd_cs(true);
+    spi_.activate(SPI::SD);
     
     // send read command
-    sd_command(CMD24, block, 0);
-    R1 r = { .value = sd_recv_spi_byte() };
-    last_response = r;
-    if (r.value != 0) {
-        sd_cs(false);
-        last_stage = SD_WRITE_REJECTED;
+    command(CMD24, block, 0);
+    uint8_t r = spi_.recv_ignore_ff();
+    last_response_ = r;
+    if (r != 0) {
+        spi_.deactivate();
+        last_stage_ = SD_WRITE_REJECTED;
         return false;
     }
 
     // write data to card
-    sd_send_spi_byte(0xfe);
+    spi_.send(0xfe);
     for (uint16_t i = 0; i < 512; ++i)
-        sd_send_spi_byte(wd(i, data));
+        spi_.send(buffer.data[i]);
 
     // wait for a response
     uint8_t rr = 0;
     for (int i = 0; i < MAX_WRITE_ATTEMPTS; ++i) {
-        rr = sd_send_spi_byte(0xff);
+        rr = spi_.recv();
         if (rr != 0xff)
             goto response_received;
         _delay_ms(10);
     }
 
     // response timeout
-    sd_cs(false);
-    last_stage = SD_WRITE_TIMEOUT;
+    spi_.deactivate();
+    last_stage_ = SD_WRITE_TIMEOUT;
     return false;
 
 response_received:
     if ((rr & 0x1f) != 0x5) {
-        sd_cs(false);
-        last_response.value = rr;
-        last_stage = SD_WRITE_DATA_REJECTED;
+        spi_.deactivate();
+        last_response_ = rr;
+        last_stage_ = SD_WRITE_DATA_REJECTED;
         return false;
     }
 
     // wait for write to finish
     for (int i = 0; i < MAX_WRITE_ATTEMPTS; ++i) {
-        rr = sd_send_spi_byte(0xff);
+        rr = spi_.recv_ignore_ff();
         if (rr != 0x0)
             goto response_data_received;
         _delay_ms(10);
     }
 
     // response timeout
-    sd_cs(false);
-    last_stage = SD_WRITE_DATA_TIMEOUT;
+    spi_.deactivate();
+    last_stage_ = SD_WRITE_DATA_TIMEOUT;
     return false;
 
 response_data_received:
-    last_stage = SD_WRITE_OK;
-    sd_cs(false);
+    last_stage_ = SD_WRITE_OK;
+    spi_.deactivate();
     return true;
-     */
 }
 
 void SDCard::reset()

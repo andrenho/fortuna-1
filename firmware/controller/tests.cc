@@ -102,12 +102,14 @@ bool do_tests(char cmd, Fortuna1& fortuna1, Buffer& buffer)
             return true;
         case 'S': {
                 uint8_t initial = rand() & 0xff;
-                printf_P(PSTR("Writing SDCard block 0 with initial byte 0x%02X...\n"), initial);
+                printf_P(PSTR("Writing SDCard block 1 with initial byte 0x%02X...\n"), initial);
                 for (size_t i = 0; i < 512; ++i)
                     buffer.data[i] = initial + i;
                 buffer.sz = 512;
-                sdcard.write_page(1, buffer);
-                printf_P(PSTR("Done.\n"));
+                if (sdcard.write_page(1, buffer))
+                    printf_P(PSTR("Done.\n"));
+                else
+                    printf_P(PSTR("Operation failed.\n"));
             }
             break;
     }
