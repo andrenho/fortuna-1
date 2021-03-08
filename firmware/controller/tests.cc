@@ -111,7 +111,7 @@ bool do_tests(char cmd, Fortuna1& fortuna1, Buffer& buffer)
                 else
                     printf_P(PSTR("Operation failed.\n"));
             }
-            break;
+            return true;
     }
     return false;
 }
