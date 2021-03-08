@@ -12,6 +12,8 @@ public:
     RAM&    ram() const { return ram_; }
     SDCard& sdcard() const { return sdcard_; }
     Z80&    z80() const { return z80_; }
+    
+    void    reset(Buffer& buffer);
 
 private:
     RAM& ram_;

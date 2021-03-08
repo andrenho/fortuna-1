@@ -5,7 +5,10 @@
 
 class Z80 {
 public:
-    Z80(RAM& ram) : ram_(ram) {}
+    explicit Z80(RAM& ram) : ram_(ram) {}
+    
+    void powerdown();
+    void startup();
 
 private:
     RAM& ram_;

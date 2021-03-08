@@ -78,8 +78,9 @@ done:
 
 const char* tests_help()
 {
-    return PSTR("[M] Run memory tests\n"
-                "[I] Initialize SDCard  [S] Write random data to SDCard\n");
+    return PSTR("Tests:\n"
+                "   [D] Test DMA [M] Run memory tests\n"
+                "   [I] Initialize SDCard  [S] Write random data to SDCard\n");
 }
 
 bool do_tests(char cmd, Fortuna1& fortuna1)
@@ -87,6 +88,9 @@ bool do_tests(char cmd, Fortuna1& fortuna1)
     SDCard& sdcard = fortuna1.sdcard();
     
     switch (cmd) {
+        case 'D':
+            printf_P(PSTR("- %s\n"), fortuna1.ram().test());
+            break;
         case 'M':
             run_memory_tests(fortuna1.ram());
             return true;

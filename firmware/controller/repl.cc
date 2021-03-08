@@ -66,7 +66,7 @@ void Repl::do_terminal(char cmd)
     switch (cmd) {
         case 'h':
         case '?':
-            printf_P(PSTR("Ctrl:   [f] bytes free   [D] test DMA\n"));
+            printf_P(PSTR("Ctrl:   [f] bytes free   [R] reset\n"));
             printf_P(PSTR("RAM:    [r] read byte    [w] write byte  [W] write multiple bytes  [d] dump memory\n"));
             printf_P(PSTR("SdCard: [l] last status  [s] dump block\n"));
 #ifdef ENABLE_TESTS
@@ -76,8 +76,8 @@ void Repl::do_terminal(char cmd)
         case 'f':
             printf_P(PSTR("%d bytes free.\n"), free_ram());
             break;
-        case 'D':
-            printf_P(PSTR("- %s\n"), fortuna1_.ram().test());
+        case 'R':
+            fortuna1_.reset(buffer_);
             break;
         case 'r': {
                 int addr = ask_value_P(PSTR("Addr"));
