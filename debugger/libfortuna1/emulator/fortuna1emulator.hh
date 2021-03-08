@@ -10,6 +10,8 @@
 
 class Fortuna1Emulator : public Fortuna1 {
 public:
+    Fortuna1Emulator();
+    
     size_t free_mem() const override { return 1000; }
     
     void        test_debug_messages() const override;

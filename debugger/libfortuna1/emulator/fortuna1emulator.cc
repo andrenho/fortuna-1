@@ -2,6 +2,14 @@
 
 #include <iostream>
 
+Fortuna1Emulator* emulator = nullptr;
+
+Fortuna1Emulator::Fortuna1Emulator()
+{
+    z80_.User = this;
+    emulator = this;
+}
+
 void Fortuna1Emulator::reset()
 {
     ResetZ80(&z80_);

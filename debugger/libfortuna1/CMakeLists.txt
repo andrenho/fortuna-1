@@ -9,7 +9,7 @@ add_compile_options(-Wall -Wextra -I. -I${PROJECT_BINARY_DIR})
 
 set(LIBRARY_SOURCES
     fortuna1.hh realhardware/fortuna1realhardware.cc realhardware/fortuna1realhardware.hh realhardware/serial.cc realhardware/serial.hh
-    emulator/fortuna1emulator.cc emulator/fortuna1emulator.hh replyexception.hh)
+    emulator/fortuna1emulator.cc emulator/fortuna1emulator.hh replyexception.hh emulator/z80_overrides.cc)
 
 set(EMULATOR_SOURCES
     emulator/z80/Codes.h emulator/z80/CodesCB.h emulator/z80/CodesED.h emulator/z80/CodesXCB.h emulator/z80/CodesXX.h
