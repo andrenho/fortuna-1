@@ -135,6 +135,9 @@ Reply Repl::parse_request(Request const& request)
 {
     Reply reply(request.message_type(), buffer_);
     switch (request.message_type()) {
+        case MessageType::Reset:
+            fortuna1_.reset(buffer_);
+            break;
         case MessageType::FreeMem:
             reply.free_mem = free_ram();
             break;

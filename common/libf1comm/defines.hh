@@ -11,14 +11,15 @@ enum MessageClass : uint8_t {
 };
 
 enum MessageType : uint8_t {
-    Nop             = 0x0,
+    Nop             = 0x00,
     
     // tests
-    TestDebug       = 0x1,
-    TestDMA         = 0x2,
+    TestDebug       = 0x01,
+    TestDMA         = 0x02,
     
-    // internal
-    FreeMem         = 0xa,
+    // general
+    FreeMem         = 0x0a,
+    Reset           = 0x0b,
     
     // RAM
     RamReadByte     = 0x10,
