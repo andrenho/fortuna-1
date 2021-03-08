@@ -9,6 +9,8 @@ public:
     
     void powerdown();
     void startup();
+    
+    void request_bus();
 
 private:
     RAM& ram_;

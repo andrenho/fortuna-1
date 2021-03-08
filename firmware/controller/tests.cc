@@ -22,7 +22,7 @@ static void create_seed()
 
 }
 
-static void run_memory_tests(RAM& ram)
+static void run_memory_tests(Fortuna1& fortuna1)
 {
     size_t sz;
 
@@ -35,8 +35,8 @@ static void run_memory_tests(RAM& ram)
         uint16_t addr = random() & 0xffff;
         uint8_t data = rand() & 0xff;
         printf_P(PSTR("Write [0x%04X] = 0x%02X, "), addr, data);
-        ram.write_byte(addr, data);
-        uint8_t data2 = ram.read_byte(addr);
+        fortuna1.write_byte(addr, data);
+        uint8_t data2 = fortuna1.read_byte(addr);
         printf_P(PSTR("Read  [0x%04X] = "), addr);
         printf_P(PSTR("%s0x%02X\n\e[0m"), data == data2 ? "\e[0;32m" : "\e[0;31m", data2);
         if (data != data2) {
@@ -58,9 +58,9 @@ static void run_memory_tests(RAM& ram)
             printf_P(PSTR("%02X"), buffer[j]);
         }
         fflush(stdout);
-        bool wc = ram.write_block(addr, sz, [](uint16_t idx, void* buffer) -> uint8_t { return ((uint8_t *) buffer)[idx]; }, buffer);
+        bool wc = fortuna1.write_block(addr, sz, [](uint16_t idx, void* buffer) -> uint8_t { return ((uint8_t *) buffer)[idx]; }, buffer);
         putchar('|');
-        bool rc = ram.read_block(addr, sz, [](uint16_t idx, uint8_t byte, void* buffer) { ((uint8_t *) buffer)[idx] = byte; }, buffer);
+        bool rc = fortuna1.read_block(addr, sz, [](uint16_t idx, uint8_t byte, void* buffer) { ((uint8_t *) buffer)[idx] = byte; }, buffer);
         for (size_t j = 0; j < sz; ++j)
             printf_P(PSTR("\e[0;3%dm%02X\e[0m"), (buffer[j] == written[j]) ? 2 : 1, buffer[j]);
         putchar('\n');
@@ -72,7 +72,7 @@ static void run_memory_tests(RAM& ram)
     }
 
 done:
-    ram.spi().set_debug_mode(false);
+    // ram.spi().set_debug_mode(false);
     printf_P(PSTR("Done!\n"));
 }
 
@@ -92,7 +92,7 @@ bool do_tests(char cmd, Fortuna1& fortuna1, Buffer& buffer)
             printf_P(PSTR("- %s\n"), fortuna1.ram().test());
             return true;
         case 'M':
-            run_memory_tests(fortuna1.ram());
+            run_memory_tests(fortuna1);
             return true;
         case 'I':
             if (!sdcard.initialize())

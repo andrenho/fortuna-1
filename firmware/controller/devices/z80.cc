@@ -9,3 +9,8 @@ void Z80::startup()
 {
 
 }
+
+void Z80::request_bus()
+{
+
+}

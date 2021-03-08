@@ -4,9 +4,10 @@
 #include "protocol/spi.hh"
 
 class RAM {
+public:
     using ReadFunc = void (*)(uint16_t idx, uint8_t byte, void* data);
     using WriteFunc = uint8_t (*)(uint16_t idx, void* data);
-public:
+    
     explicit RAM(SPI& spi): spi_(spi) {}
 
     const char* test();
