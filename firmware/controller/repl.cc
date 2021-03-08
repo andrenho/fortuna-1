@@ -60,7 +60,7 @@ void Repl::do_terminal(char cmd)
     putchar(cmd);
     putchar('\n');
 #ifdef ENABLE_TESTS
-    if (do_tests(cmd, fortuna1_))
+    if (do_tests(cmd, fortuna1_, buffer_))
         return;
 #endif
     switch (cmd) {
@@ -78,6 +78,7 @@ void Repl::do_terminal(char cmd)
             break;
         case 'R':
             fortuna1_.reset(buffer_);
+            printf_P(PSTR("System reset.\n"));
             break;
         case 'r': {
                 int addr = ask_value_P(PSTR("Addr"));

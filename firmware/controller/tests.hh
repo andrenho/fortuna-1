@@ -7,7 +7,7 @@
 #include "fortuna1.hh"
 
 const char* tests_help();
-bool        do_tests(char cmd, Fortuna1& fortuna1);
+bool        do_tests(char cmd, Fortuna1& fortuna1, Buffer& buffer);
 
 #endif
 
