@@ -34,6 +34,7 @@ clean:
 
 upload: ${PROJECT}.hex
 	sudo avrdude ${AVRDUDE_FLAGS} -U flash:w:$<:i
+	../dma/reset
 
 fuse:
 	sudo avrdude ${AVRDUDE_FLAGS} ${FUSES}
