@@ -1,8 +1,10 @@
+#include "devices/z80.hh"
 #include "io.hh"
-#include "ram.hh"
+#include "devices/ram.hh"
 #include "repl.hh"
-#include "serial.hh"
-#include "sdcard.hh"
+#include "protocol/serial.hh"
+#include "devices/sdcard.hh"
+#include "fortuna1.hh"
 
 int main()
 {
@@ -13,8 +15,10 @@ int main()
 
     RAM ram(spi);
     SDCard sdcard(spi);
+    Z80 z80(ram);
+    Fortuna1 fortuna1(ram, sdcard, z80);
 
-    Repl repl(serial, ram, sdcard);
+    Repl repl(serial, fortuna1);
 
     // serial.clrscr();
     while (true)

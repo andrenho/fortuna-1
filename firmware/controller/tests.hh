@@ -4,12 +4,10 @@
 #ifdef ENABLE_TESTS
 
 #include <stdbool.h>
-
-#include "ram.hh"
-#include "sdcard.hh"
+#include "fortuna1.hh"
 
 const char* tests_help();
-bool        do_tests(char cmd, RAM& ram, SDCard& sdcard);
+bool        do_tests(char cmd, Fortuna1& fortuna1);
 
 #endif
 

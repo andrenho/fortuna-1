@@ -84,11 +84,13 @@ const char* tests_help()
                 "[I] Initialize SDCard  [S] Write random data to SDCard\n");
 }
 
-bool do_tests(char cmd, RAM& ram, SDCard& sdcard)
+bool do_tests(char cmd, Fortuna1& fortuna1)
 {
+    SDCard& sdcard = fortuna1.sdcard();
+    
     switch (cmd) {
         case 'M':
-            run_memory_tests(ram);
+            run_memory_tests(fortuna1.ram());
             return true;
         case 'I':
             if (!sdcard.initialize())

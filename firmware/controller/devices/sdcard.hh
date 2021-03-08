@@ -2,7 +2,7 @@
 #define CONTROLLER_SDCARD_HH
 
 #include <stdint.h>
-#include "spi.hh"
+#include "protocol/spi.hh"
 
 enum SDCardStage {
     SD_RESET    = 0x1, SD_GO_IDLE = 0x2, SD_IF_COND = 0x3, SD_INIT = 0x4,

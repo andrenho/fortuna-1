@@ -1,7 +1,7 @@
 #ifndef RAM_HH_
 #define RAM_HH_
 
-#include "spi.hh"
+#include "protocol/spi.hh"
 
 class RAM {
     using ReadFunc = void (*)(uint16_t idx, uint8_t byte, void* data);

@@ -1,5 +1,6 @@
 PROJECT=controller
-OBJECTS=main.o repl.o serial.o util.o io.o spi.o ram.o tests.o sdcard.o \
+OBJECTS=main.o repl.o tests.o util.o io.o fortuna1.o protocol/serial.o protocol/spi.o \
+    devices/ram.o devices/sdcard.o devices/z80.o \
 	libf1comm/message.o libf1comm/serialization.o libf1comm/messages/request.o libf1comm/messages/reply.o \
 	libf1comm/fields/ramrequest.o libf1comm/fields/sdcardstatus.o
 AVRDUDE_FLAGS=-p m328p -C ./avrdude_gpio.conf -c pi_1 -V

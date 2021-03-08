@@ -4,13 +4,14 @@
 #include <libf1comm/messages/reply.hh>
 #include <libf1comm/messages/request.hh>
 #include "util.hh"
-#include "ram.hh"
-#include "serial.hh"
-#include "sdcard.hh"
+#include "devices/ram.hh"
+#include "protocol/serial.hh"
+#include "devices/sdcard.hh"
+#include "fortuna1.hh"
 
 class Repl {
 public:
-    Repl(Serial& serial, RAM& ram, SDCard& sdcard) : serial_(serial), ram_(ram), sdcard_(sdcard) {}
+    Repl(Serial& serial, Fortuna1& fortuna1) : serial_(serial), fortuna1_(fortuna1) {}
 
     void execute();
 
@@ -23,9 +24,8 @@ private:
     Reply   parse_request(Request const& request);
 
     Serial& serial_;
-    RAM     ram_;
+    Fortuna1& fortuna1_;
     Buffer  buffer_ { {0}, 0 };
-    SDCard  sdcard_;
 };
 
 #endif

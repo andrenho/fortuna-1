@@ -60,7 +60,7 @@ void Repl::do_terminal(char cmd)
     putchar(cmd);
     putchar('\n');
 #ifdef ENABLE_TESTS
-    if (do_tests(cmd, ram_, sdcard_))
+    if (do_tests(cmd, fortuna1_))
         return;
 #endif
     switch (cmd) {
@@ -77,29 +77,29 @@ void Repl::do_terminal(char cmd)
             printf_P(PSTR("%d bytes free.\n"), free_ram());
             break;
         case 'D':
-            printf_P(PSTR("- %s\n"), ram_.test());
+            printf_P(PSTR("- %s\n"), fortuna1_.ram().test());
             break;
         case 'r': {
                 int addr = ask_value_P(PSTR("Addr"));
                 if (addr != ERROR)
-                    printf_P(PSTR("0x%02X\n"), ram_.read_byte(addr));
+                    printf_P(PSTR("0x%02X\n"), fortuna1_.ram().read_byte(addr));
             }
             break;
         case 'w': {
                 Values vv = ask_two_values_P(PSTR("Addr Data"));
                 if (vv.v1 != ERROR) {
-                    printf_P(PSTR("0x%02X\n"), ram_.write_byte(vv.v1, vv.v2));
+                    printf_P(PSTR("0x%02X\n"), fortuna1_.ram().write_byte(vv.v1, vv.v2));
                 }
             }
             break;
         case 'd': {
                 int page = ask_value_P(PSTR("Page (0x100)"));
                 if (page != ERROR) {
-                    if (!ram_.write_block(page * 0x100, 0x100, [](uint16_t idx, void*) -> uint8_t {
+                    if (!fortuna1_.ram().write_block(page * 0x100, 0x100, [](uint16_t idx, void*) -> uint8_t {
                         return idx + 2;
                     }))
                         printf_P(PSTR("Checksum error writing."));
-                    if (!ram_.read_block(page * 0x100, 0x100, [](uint16_t addr, uint8_t byte, void* page) {
+                    if (!fortuna1_.ram().read_block(page * 0x100, 0x100, [](uint16_t addr, uint8_t byte, void* page) {
                         if (addr % 0x10 == 0)
                             printf_P(PSTR("%04X : "), addr + (*(int*)page * 0x100));
                         printf_P(PSTR("%02X "), byte);
@@ -111,13 +111,13 @@ void Repl::do_terminal(char cmd)
             }
             break;
         case 'l':
-            printf_P(PSTR("Last stage: 0x%02X   last response: 0x%02X\n"), sdcard_.last_stage(), sdcard_.last_response());
+            printf_P(PSTR("Last stage: 0x%02X   last response: 0x%02X\n"), fortuna1_.sdcard().last_stage(), fortuna1_.sdcard().last_response());
             break;
         case 's': {
                 int block = ask_value_P(PSTR("Block"));
                 if (block == ERROR)
                     return;
-                if (!sdcard_.read_page(block, buffer_)) {
+                if (!fortuna1_.sdcard().read_page(block, buffer_)) {
                     printf_P(PSTR("Error reading SDCard.\n"));
                     return;
                 }
@@ -147,17 +147,17 @@ Reply Repl::parse_request(Request const& request)
                 serial_.debug_P(buffer_, PSTR("Debug message %d..."), i);
             break;
         case MessageType::TestDMA:
-            memcpy(buffer_.data, ram_.test(), 6);
+            memcpy(buffer_.data, fortuna1_.ram().test(), 6);
             buffer_.sz = 6;
             break;
         case MessageType::RamReadByte:
-            reply.ram_byte = ram_.read_byte(request.ram_request.address);
+            reply.ram_byte = fortuna1_.ram().read_byte(request.ram_request.address);
             break;
         case MessageType::RamWriteByte:
-            reply.ram_byte = ram_.write_byte(request.ram_request.address, request.ram_request.byte);
+            reply.ram_byte = fortuna1_.ram().write_byte(request.ram_request.address, request.ram_request.byte);
             break;
         case MessageType::RamReadBlock: {
-                if (!ram_.read_block(request.ram_request.address, request.ram_request.size,
+                if (!fortuna1_.ram().read_block(request.ram_request.address, request.ram_request.size,
                            [](uint16_t idx, uint8_t byte, void* data) {
                                 reinterpret_cast<Buffer*>(data)->data[idx] = byte;
                            }, &buffer_)) {
@@ -167,7 +167,7 @@ Reply Repl::parse_request(Request const& request)
             }
             break;
         case MessageType::RamWriteBlock: {
-                if (!ram_.write_block(request.ram_request.address, request.ram_request.size,
+                if (!fortuna1_.ram().write_block(request.ram_request.address, request.ram_request.size,
                         [](uint16_t idx, void* data) {
                             return reinterpret_cast<Buffer*>(data)->data[idx];
                         }, &buffer_)) {
@@ -176,18 +176,18 @@ Reply Repl::parse_request(Request const& request)
             }
             break;
         case MessageType::DataReadBus:
-            reply.ram_byte = ram_.data_bus();
+            reply.ram_byte = fortuna1_.ram().data_bus();
             break;
         case MessageType::DataWriteBus:
-            ram_.set_data_bus(request.ram_request.byte);
+            fortuna1_.ram().set_data_bus(request.ram_request.byte);
             break;
         case MessageType::SDCard_Status:
-            reply.sd_status = { static_cast<uint8_t>(sdcard_.last_stage()), sdcard_.last_response() };
+            reply.sd_status = { static_cast<uint8_t>(fortuna1_.sdcard().last_stage()), fortuna1_.sdcard().last_response() };
             break;
         case MessageType::SDCard_Read:
-            if (!sdcard_.read_page(request.sdcard_block, buffer_))
+            if (!fortuna1_.sdcard().read_page(request.sdcard_block, buffer_))
                 reply.result = SDCardError;
-            reply.sd_status = { static_cast<uint8_t>(sdcard_.last_stage()), sdcard_.last_response() };
+            reply.sd_status = { static_cast<uint8_t>(fortuna1_.sdcard().last_stage()), fortuna1_.sdcard().last_response() };
             break;
         default:
             reply.result = Result::InvalidRequest;
