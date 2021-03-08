@@ -8,7 +8,7 @@
 
 #define P(name, port, pin)                                 \
     static bool p_ ## name = false;                        \
-    void set_ ## name(bool v)                              \
+    void set_ ## name(uint8_t v)                           \
     {                                                      \
         if (v)                                             \
             PORT ## port |= _BV(PORT ## port ## pin);      \

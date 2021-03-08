@@ -5,7 +5,7 @@
 
 class Z80 {
 public:
-    explicit Z80(RAM& ram) : ram_(ram) {}
+    explicit Z80(RAM& ram);
     
     void powerdown();
     void startup();
