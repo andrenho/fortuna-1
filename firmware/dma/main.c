@@ -1,4 +1,5 @@
 #include <stddef.h>
+#include <avr/wdt.h>
 #include <util/delay.h>
 #include "ram.h"
 #include "spi.h"
@@ -23,6 +24,7 @@ int main()
 
     while (1) {
         uint8_t r = spi_swap(0xff);
+        wdt_enable(WDTO_2S);
         spi_activate();
         switch (r) {
             case 0x1:
@@ -117,5 +119,6 @@ int main()
                 break;
         }
         spi_deactivate();
+        wdt_disable();
     }
 }
