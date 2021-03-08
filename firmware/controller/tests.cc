@@ -80,10 +80,10 @@ const char* tests_help()
 {
     return PSTR("Tests:\n"
                 "   [D] Test DMA [M] Run memory tests\n"
-                "   [I] Initialize SDCard  [S] Write random data to SDCard\n");
+                "   [I] Initialize SDCard  [S] Write sequential data to block 1 of SDCard\n");
 }
 
-bool do_tests(char cmd, Fortuna1& fortuna1)
+bool do_tests(char cmd, Fortuna1& fortuna1, Buffer& buffer)
 {
     SDCard& sdcard = fortuna1.sdcard();
     
@@ -100,6 +100,16 @@ bool do_tests(char cmd, Fortuna1& fortuna1)
             printf_P(PSTR("Last stage: 0x%02X   last response: 0x%02X\n"), sdcard.last_stage(), sdcard.last_response());
             printf_P(PSTR("Last stage and response expected: 0x04 0x00\n"));
             return true;
+        case 'S': {
+                uint8_t initial = rand() & 0xff;
+                printf_P(PSTR("Writing SDCard block 0 with initial byte 0x%02X...\n"), initial);
+                for (size_t i = 0; i < 512; ++i)
+                    buffer.data[i] = initial + i;
+                buffer.sz = 512;
+                sdcard.write_page(1, buffer);
+                printf_P(PSTR("Done.\n"));
+            }
+            break;
     }
     return false;
 }
