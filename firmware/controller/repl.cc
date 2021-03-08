@@ -135,7 +135,6 @@ void Repl::do_terminal(char cmd)
 Reply Repl::parse_request(Request const& request)
 {
     Reply reply(request.message_type(), buffer_);
-    buffer_.sz = 0;
     switch (request.message_type()) {
         case MessageType::Reset:
             fortuna1_.reset(buffer_);
