@@ -19,15 +19,16 @@ void io_init();
 
 // ports only read by the microcontroller (get_XXX)
 #define INPUT_PORTS     \
-    P(MISO,    B, 4)     \
-    P(DMA_RDY, B, 1)
+    P(MISO,    B, 4)    \
+    P(DMA_RDY, B, 1)    \
+    P(BUSACK,  C, 0)    \
+    P(M1,      D, 4)
     
 // ports both read and written by the microcontroller (get_XXX, set_XXX)
 //    (the SPI ports are here so that they can be disabled)
 #define IO_PORTS        \
     P(MOSI,   B, 3)     \
-    P(SCLK,   B, 5)     \
-    P(BUSACK, C, 0)
+    P(SCLK,   B, 5)
     
 #define P(name, port, pin) \
     void set_ ## name(uint8_t v); \

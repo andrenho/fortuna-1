@@ -12,6 +12,7 @@
 #define CMD_WRITE_BLOCK 0x5
 #define CMD_READ_DATA   0x6
 #define CMD_WRITE_DATA  0x7
+#define CMD_READ_ADDR   0x8
 
 const char* RAM::test()
 {
@@ -128,4 +129,15 @@ void RAM::set_data_bus(uint8_t data)
     spi_.send(data);
     spi_.wait_dma_cs();
     spi_.deactivate();
+}
+
+uint16_t RAM::addr_bus() const
+{
+    spi_.activate(SPI::DMA);
+    spi_.send(CMD_READ_ADDR);
+    spi_.wait_dma_cs();
+    uint16_t addr = spi_.recv();
+    addr |= ((uint16_t) spi_.recv()) << 8;
+    spi_.deactivate();
+    return addr;
 }

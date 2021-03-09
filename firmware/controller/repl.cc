@@ -69,6 +69,7 @@ void Repl::do_terminal(char cmd)
             printf_P(PSTR("Ctrl:   [f] bytes free   [R] reset\n"));
             printf_P(PSTR("RAM:    [r] read byte    [w] write byte  [W] write multiple bytes  [d] dump memory\n"));
             printf_P(PSTR("SdCard: [l] last status  [s] dump block\n"));
+            printf_P(PSTR("Z80:    [i] CPU info     [p] step\n"));
 #ifdef ENABLE_TESTS
             printf_P(tests_help());
 #endif
@@ -126,6 +127,15 @@ void Repl::do_terminal(char cmd)
                         putchar('\n');
                 }
             }
+            break;
+        case 'i':
+            printf_P(PSTR("Powered: %s   Cycle: %d   PC: 0x%04X\n"),
+                     fortuna1_.z80().powered() ? "yes" : "no",
+                     fortuna1_.z80().cycle_count(), fortuna1_.z80().pc());
+            break;
+        case 'p':
+            fortuna1_.z80().step();
+            printf_P(PSTR("PC = %04X\n"), fortuna1_.z80().pc());
             break;
         default:
             error();
@@ -191,7 +201,7 @@ Reply Repl::parse_request(Request const& request)
             reply.sd_status = { static_cast<uint8_t>(fortuna1_.sdcard().last_stage()), fortuna1_.sdcard().last_response() };
             break;
         case MessageType::Z80_CpuInfo:
-            reply.z80_info = { fortuna1_.z80().cycle_count() };
+            reply.z80_info = { fortuna1_.z80().cycle_count(), fortuna1_.z80().pc() };
             break;
         default:
             reply.result = Result::InvalidRequest;

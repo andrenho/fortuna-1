@@ -20,6 +20,8 @@ public:
     
     uint8_t data_bus() const;
     void    set_data_bus(uint8_t data);
+    
+    uint16_t addr_bus() const;
 
     SPI& spi() const { return spi_; }
 

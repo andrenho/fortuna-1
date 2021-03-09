@@ -10,6 +10,15 @@
 #include "serial.h"
 #endif
 
+#define CMD_TEST        0x1
+#define CMD_READ_BYTE   0x2
+#define CMD_WRITE_BYTE  0x3
+#define CMD_READ_BLOCK  0x4
+#define CMD_WRITE_BLOCK 0x5
+#define CMD_READ_DATA   0x6
+#define CMD_WRITE_DATA  0x7
+#define CMD_READ_ADDR   0x8
+
 int main()
 {
     spi_init();
@@ -27,7 +36,7 @@ int main()
         wdt_enable(WDTO_2S);
         spi_activate();
         switch (r) {
-            case 0x1:
+            case CMD_TEST:
                 spi_ready();
                 spi_swap('H');
                 spi_swap('e');
@@ -37,7 +46,7 @@ int main()
                 spi_swap('\n');
                 spi_done();
                 break;
-            case 0x2: {   // READ BYTE
+            case CMD_READ_BYTE: {
                     uint16_t addr = spi_swap(0xff);
                     addr |= ((uint16_t) spi_swap(0xff)) << 8;
                     spi_ready();
@@ -47,7 +56,7 @@ int main()
                     spi_done();
                 }
                 break;
-            case 0x3: {    // WRITE BYTE
+            case CMD_WRITE_BYTE: {
                     uint16_t addr = spi_swap(0xff);
                     addr |= ((uint16_t) spi_swap(0xff)) << 8;
                     uint8_t data = spi_swap(0xff);
@@ -57,7 +66,7 @@ int main()
                     spi_done();
                 }
                 break;
-            case 0x4: {    // READ BLOCK
+            case CMD_READ_BLOCK: {
                     uint16_t addr = spi_swap(0xff);
                     addr |= ((uint16_t) spi_swap(0xff)) << 8;
                     uint16_t sz = spi_swap(0xff);
@@ -78,7 +87,7 @@ int main()
                     spi_done();
                 }
                 break;
-            case 0x5: {    // WRITE BLOCK
+            case CMD_WRITE_BLOCK: {
                     uint16_t addr = spi_swap(0xff);
                     addr |= ((uint16_t) spi_swap(0xff)) << 8;
                     uint16_t sz = spi_swap(0xff);
@@ -101,7 +110,7 @@ int main()
                     spi_done();
                 }
                 break;
-            case 0x6: {
+            case CMD_READ_DATA: {
                     uint8_t byte = ram_get_data();
                     spi_ready();
                     _delay_us(30);
@@ -109,12 +118,21 @@ int main()
                     spi_swap(byte);
                 }
                 break;
-            case 0x7: {
+            case CMD_WRITE_DATA: {
                     uint8_t data = spi_swap(0xff);
                     ram_set_data(data);
                     spi_ready();
                     _delay_us(30);
                     spi_done();
+                }
+                break;
+            case CMD_READ_ADDR: {
+                    uint16_t addr = ram_get_addr();
+                    spi_ready();
+                    _delay_us(30);
+                    spi_done();
+                    spi_swap(addr & 0xff);
+                    spi_swap((addr >> 8) & 0xff);
                 }
                 break;
         }

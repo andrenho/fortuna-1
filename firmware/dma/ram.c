@@ -48,7 +48,17 @@ void ram_set_addr(uint16_t addr)
 
 uint16_t ram_get_addr()
 {
-    return PORTC;
+    // set address pins as input
+    DDRB &= ~(1 << PINB3);  // A9
+    DDRD &= ~0b11111101;    // A8, A10..15
+    DDRA = 0x0;             // A0..A7
+    
+    // get address
+    uint16_t addr = (uint16_t) PINA | ((uint16_t) PIND << 8);   // all pins except A9
+    if (PINB & (1 << PINB3))
+        addr |= (1 << 9);
+    
+    return addr;
 }
 
 void ram_set_data(uint8_t data)
