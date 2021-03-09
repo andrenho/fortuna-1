@@ -13,6 +13,9 @@ uint8_t written[256];
 
 void run_tests()
 {
+    printf_P(PSTR("%04X\n"), ram_get_addr());
+    return;
+    
     // create a seed
     eeprom_busy_wait();
     uint16_t seed = eeprom_read_word((uint16_t*) 0);
