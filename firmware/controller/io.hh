@@ -12,8 +12,11 @@ void io_init();
     P(DMACS,  C, 2)     \
     P(BUSREQ, B, 2)     \
     P(SDCS,   C, 1)     \
-    P(Z80RST, C, 5)
-    
+    P(ZRST,   C, 5)     \
+    P(ZCLK,   D, 5)     \
+    P(NMI,    C, 3)     \
+    P(INT,    D, 2)
+
 // ports only read by the microcontroller (get_XXX)
 #define INPUT_PORTS     \
     P(MISO,    B, 4)     \
@@ -24,7 +27,8 @@ void io_init();
 #define IO_PORTS        \
     P(MOSI,   B, 3)     \
     P(SCLK,   B, 5)     \
-
+    P(BUSACK, C, 0)
+    
 #define P(name, port, pin) \
     void set_ ## name(uint8_t v); \
     void set_ ## name ## _as_output();

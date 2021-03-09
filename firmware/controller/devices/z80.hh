@@ -14,6 +14,10 @@ public:
 
 private:
     RAM& ram_;
+    bool power_ = false;
+    
+    void cycle();
+    void check_iorq();
 };
 
 #endif
