@@ -57,6 +57,8 @@ uint16_t ram_get_addr()
     uint16_t addr = (uint16_t) PINA | ((uint16_t) PIND << 8);   // all pins except A9
     if (PINB & (1 << PINB3))
         addr |= (1 << 9);
+    else
+        addr &= (1 << 9);
     
     return addr;
 }
