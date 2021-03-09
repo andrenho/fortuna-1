@@ -15,6 +15,7 @@ void Fortuna1Emulator::reset()
     ResetZ80(&z80_);
     auto boot = sdcard_read(0);
     ram_write_buffer(0, std::vector<uint8_t>(boot.begin(), boot.end()));
+    emulator->cycle_count_ = 0;
 }
 
 void Fortuna1Emulator::test_debug_messages() const
@@ -73,5 +74,10 @@ std::array<uint8_t, 512> Fortuna1Emulator::sdcard_read(uint32_t block)
     std::array<uint8_t, 512> data {0};
     sd_image_stream_->read(reinterpret_cast<char*>(data.data()), 512);
     return data;
+}
+
+Z80_Info Fortuna1Emulator::z80_info() const
+{
+    return { cycle_count_ };
 }
 

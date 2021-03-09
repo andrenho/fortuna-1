@@ -7,6 +7,7 @@ extern Fortuna1Emulator* emulator;
 word LoopZ80(Z80 *R)
 {
     (void) R;
+    emulator->increment_cycle_counter();
     return INT_QUIT;
 }
 

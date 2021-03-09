@@ -29,6 +29,8 @@ public:
     
     SDCardStatus             sdcard_status() const override;
     std::array<uint8_t, 512> sdcard_read(uint32_t block) override;
+    
+    Z80_Info z80_info() const override;
 
 private:
     mutable Buffer buffer_ { {0}, 0 };

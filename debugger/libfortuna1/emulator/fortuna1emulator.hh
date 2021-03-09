@@ -29,12 +29,17 @@ public:
     void                     sdcard_set_image(std::string const& filename);
     SDCardStatus             sdcard_status() const override;
     std::array<uint8_t, 512> sdcard_read(uint32_t block) override;
+    
+    Z80_Info z80_info() const override;
+    
+    void increment_cycle_counter() { ++cycle_count_; }
 
 private:
     uint8_t                     ram_[64 * 1024] = {0};
     SDCardEmulated              sd_card_ {};
     std::optional<std::fstream> sd_image_stream_ {};
     Z80                         z80_ {};
+    uint32_t                    cycle_count_ = 0;
 };
 
 #endif

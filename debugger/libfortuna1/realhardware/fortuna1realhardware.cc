@@ -109,3 +109,10 @@ void Fortuna1RealHardware::reset()
     Request request(MessageType::Reset, buffer_);
     serial_.request(request, buffer_);
 }
+
+Z80_Info Fortuna1RealHardware::z80_info() const
+{
+    buffer_.sz = 0;
+    Request request(MessageType::Z80_CpuInfo, buffer_);
+    return serial_.request(request, buffer_).z80_info;
+}

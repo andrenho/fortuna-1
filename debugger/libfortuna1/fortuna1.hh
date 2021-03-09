@@ -6,6 +6,7 @@
 #include <string>
 #include <vector>
 #include "libf1comm/fields/sdcardstatus.hh"
+#include "libf1comm/fields/z80info.hh"
 
 class Fortuna1 {
 public:
@@ -27,6 +28,8 @@ public:
     
     virtual SDCardStatus             sdcard_status() const = 0;
     virtual std::array<uint8_t, 512> sdcard_read(uint32_t block) = 0;
+    
+    virtual Z80_Info                 z80_info() const = 0;
     
     virtual void set_log_bytes(bool) {}
     virtual void set_log_messages(bool) {}
