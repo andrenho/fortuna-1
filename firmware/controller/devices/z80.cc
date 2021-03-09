@@ -37,7 +37,7 @@ void Z80::startup()
 
 void Z80::request_bus()
 {
-    if (!power_)
+    if (!power_ || get_BUSACK() == 0)
         return;
     
     bool busack = 1;
