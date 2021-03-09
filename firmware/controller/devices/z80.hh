@@ -11,10 +11,13 @@ public:
     void startup();
     
     void request_bus();
+    
+    uint32_t cycle_count() const { return cycle_count_; }
 
 private:
     RAM& ram_;
     bool power_ = false;
+    uint32_t cycle_count_ = 0;
     
     void cycle();
     void check_iorq();

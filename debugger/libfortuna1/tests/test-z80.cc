@@ -13,4 +13,10 @@ int main(int argc, char* argv[])
     f->reset();
     ASSERT_EQ("Check that the boot sector was loaded correctly (byte 0x1fe)", 0x55, f->ram_read_byte(0x1fe));
     ASSERT_EQ("Check that the boot sector was loaded correctly (byte 0x1ff)", 0xaa, f->ram_read_byte(0x1ff));
+    
+    // set bytes with the CPU on
+    f->ram_write_byte(0, 0x42);
+    f->ram_write_byte(1, 0xab);
+    ASSERT_EQ("Check that memory was written with CPU on [byte 0]", 0x42, f->ram_read_byte(0));
+    ASSERT_EQ("Check that memory was written with CPU on [byte 1]", 0xab, f->ram_read_byte(1));
 }

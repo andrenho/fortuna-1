@@ -33,6 +33,9 @@ enum MessageType : uint8_t {
     SDCard_Status   = 0x20,
     SDCard_Read     = 0x21,
     
+    // Z80
+    Z80_CpuInfo     = 0x30,
+    
     Undefined       = 0xff,
 };
 

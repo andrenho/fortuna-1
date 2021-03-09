@@ -3,6 +3,7 @@
 
 #include "../message.hh"
 #include "../fields/sdcardstatus.hh"
+#include "../fields/z80info.hh"
 
 class Reply : public Message {
 public:
@@ -13,6 +14,7 @@ public:
         uint16_t     free_mem;
         uint8_t      ram_byte;
         SDCardStatus sd_status;
+        Z80_Info     z80_info;
     };
     
     void deserialize_detail(DeserializationFunction f, void* data, uint16_t* sum1, uint16_t* sum2) override;

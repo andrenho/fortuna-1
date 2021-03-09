@@ -31,6 +31,7 @@ void Z80::startup()
     
     set_ZRST(1);
     power_ = true;
+    cycle_count_ = 0;
     // step();
 }
 
@@ -54,6 +55,7 @@ void Z80::cycle()
 {
     set_ZCLK(1);
     set_ZCLK(0);
+    ++cycle_count_;
 }
 
 void Z80::check_iorq()

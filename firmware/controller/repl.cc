@@ -190,6 +190,9 @@ Reply Repl::parse_request(Request const& request)
                 reply.result = SDCardError;
             reply.sd_status = { static_cast<uint8_t>(fortuna1_.sdcard().last_stage()), fortuna1_.sdcard().last_response() };
             break;
+        case MessageType::Z80_CpuInfo:
+            reply.z80_info = { fortuna1_.z80().cycle_count() };
+            break;
         default:
             reply.result = Result::InvalidRequest;
             break;
