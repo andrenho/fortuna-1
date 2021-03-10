@@ -78,6 +78,6 @@ std::array<uint8_t, 512> Fortuna1Emulator::sdcard_read(uint32_t block)
 
 Z80_Info Fortuna1Emulator::z80_info() const
 {
-    return { cycle_count_ };
+    return { cycle_count_, z80_.PC.W };
 }
 
