@@ -7,21 +7,25 @@
 static int uart_putchar(char c, FILE* f)
 {
     (void) f;
+    UCSRB = (1<<TXEN);     // Enable Transmitter
     while (!( UCSRA & (1<<UDRE))); // Wait for empty transmit buffer
     UDR = c;
     if (c == '\n') {
         while (!( UCSRA & (1<<UDRE)));
         UDR = '\r';
     }
+    UCSRB = 0;     // Disable transmitter
     return 0;
 }
 
+/*
 static int uart_getchar(FILE* f)
 {
     (void) f;
     while (!( UCSRA & (1<<RXC)));  // wait for empty receive buffer
     return UDR;
 }
+*/
 
 void serial_init()
 {
@@ -32,9 +36,9 @@ void serial_init()
 
     // set config
     UCSRC = (1<<URSEL) | (1<<UCSZ1) | (1<<UCSZ0);   // Async-mode 
-    UCSRB = /* (1<<RXEN) | */ (1<<TXEN);     // Enable Receiver and Transmitter
+    // UCSRB = /* (1<<RXEN) | */ (1<<TXEN);     // Enable Receiver and Transmitter
 
-    static FILE uart = FDEV_SETUP_STREAM(uart_putchar, uart_getchar, _FDEV_SETUP_RW);
+    static FILE uart = FDEV_SETUP_STREAM(uart_putchar, NULL, _FDEV_SETUP_WRITE);
     stdout = &uart;
 }
 

@@ -1,8 +1,6 @@
 #ifndef LIBF1COMM_DEFINES_HH
 #define LIBF1COMM_DEFINES_HH
 
-#include <unordered_map>
-
 static constexpr uint8_t FinalByte      = 0xe4;
 static constexpr uint8_t InvalidCommand = 0xef;
 
@@ -47,6 +45,8 @@ enum MessageType : uint8_t {
 };
 
 #ifndef EMBEDDED
+#include <unordered_map>
+
 inline const std::unordered_map<uint8_t, std::string> message_type_names = {
 #define X(name, value) { value, #name },
    MESSAGE_TYPES

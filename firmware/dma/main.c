@@ -25,8 +25,8 @@ int main()
     ram_init();
 
 #if defined(RUN_TESTS) || defined(DEBUG_UART)
-    printf_P(PSTR("\e[1;1H\e[2J"));
     serial_init();
+    printf_P(PSTR("\e[1;1H\e[2JDMA initialized.\n"));
 #endif
 #ifdef RUN_TESTS
     extern void run_tests();
@@ -60,6 +60,7 @@ int main()
                     spi_swap(data);
                     spi_done();
 #ifdef DEBUG_UART
+                    _delay_ms(1);
                     printf_P(PSTR("Read byte 0x%02X from address 0x%X.\n"), data, addr);
 #endif
                 }
@@ -73,6 +74,7 @@ int main()
                     spi_swap(written);
                     spi_done();
 #ifdef DEBUG_UART
+                    _delay_ms(1);
                     printf_P(PSTR("Written byte 0x%02X to address 0x%X (confirmation: 0x%02X).\n"), data, addr, written);
 #endif
             }
@@ -97,6 +99,7 @@ int main()
                     spi_swap(sum2);
                     spi_done();
 #ifdef DEBUG_UART
+                    _delay_ms(1);
                     printf_P(PSTR("Read block from address 0x%X to 0x%X - data checksum = 0x%04X.\n"), addr, addr + sz, sum1 | (sum2 << 8));
 #endif
             }
@@ -123,6 +126,7 @@ int main()
                     spi_swap(sum2);
                     spi_done();
 #ifdef DEBUG_UART
+                    _delay_ms(1);
                     printf_P(PSTR("Written block from address 0x%X to 0x%X - data checksum = 0x%04X.\n"), addr, addr + sz, sum1 | (sum2 << 8));
 #endif
             }
@@ -134,6 +138,7 @@ int main()
                     spi_done();
                     spi_swap(byte);
 #ifdef DEBUG_UART
+                    _delay_ms(1);
                     printf_P(PSTR("Read data bus, value 0x%02X.\n"), byte);
 #endif
                 }
@@ -145,6 +150,7 @@ int main()
                     _delay_us(30);
                     spi_done();
 #ifdef DEBUG_UART
+                    _delay_ms(1);
                     printf_P(PSTR("Written value 0x%02X to data bus.\n"), data);
 #endif
                 }
@@ -157,6 +163,7 @@ int main()
                     spi_swap(addr & 0xff);
                     spi_swap((addr >> 8) & 0xff);
 #ifdef DEBUG_UART
+                    _delay_ms(1);
                     printf_P(PSTR("Read data bus, value 0x%04X.\n"), addr);
 #endif
                 }
