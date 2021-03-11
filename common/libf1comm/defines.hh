@@ -1,6 +1,8 @@
 #ifndef LIBF1COMM_DEFINES_HH
 #define LIBF1COMM_DEFINES_HH
 
+#include <unordered_map>
+
 static constexpr uint8_t FinalByte      = 0xe4;
 static constexpr uint8_t InvalidCommand = 0xef;
 
@@ -10,6 +12,49 @@ enum MessageClass : uint8_t {
     MC_DebugInformation = 0xf2,
 };
 
+#define MESSAGE_TYPES      \
+    X(Nop,           0x00) \
+                           \
+    /* tests */            \
+    X(TestDebug,     0x01) \
+    X(TestDMA,       0x02) \
+                           \
+    /* general */          \
+    X(FreeMem,       0x0a) \
+    X(Reset,         0x0b) \
+                           \
+    /* RAM */              \
+    X(RamReadByte,   0x10) \
+    X(RamWriteByte,  0x11) \
+    X(RamReadBlock,  0x12) \
+    X(RamWriteBlock, 0x13) \
+    X(DataReadBus,   0x14) \
+    X(DataWriteBus,  0x15) \
+                           \
+    /* SDCARD */           \
+    X(SDCard_Status, 0x20) \
+    X(SDCard_Read,   0x21) \
+                           \
+    /* Z80 */              \
+    X(Z80_CpuInfo,   0x30) \
+                           \
+    X(Undefined,     0xff)
+
+enum MessageType : uint8_t {
+#define X(name, value) name = value,
+    MESSAGE_TYPES
+#undef X
+};
+
+#ifndef EMBEDDED
+inline const std::unordered_map<uint8_t, std::string> message_type_names = {
+#define X(name, value) { value, #name },
+   MESSAGE_TYPES
+#undef X
+};
+#endif
+
+/*
 enum MessageType : uint8_t {
     Nop             = 0x00,
     
@@ -38,6 +83,7 @@ enum MessageType : uint8_t {
     
     Undefined       = 0xff,
 };
+ */
 
 enum class DeserializationError {
     NoErrors, InvalidMessageClass, ChecksumDoesNotMatch, FinalByteNotReceived, BufferDataTooLarge,
