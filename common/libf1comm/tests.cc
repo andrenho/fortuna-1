@@ -40,6 +40,7 @@ void assert_eq(std::string const& description, T&& expected, U&& received)
         std::cout << "\e[0;31mAssertion error, expected " << expected << ", found " << received << ".\e[0m\n";
         exit(EXIT_FAILURE);
     }
+    printf("\n");
 }
 
 int main()
@@ -84,5 +85,15 @@ int main()
         buffer.data[1] = 0xfb;
         Reply r = assert_serialization("RAM reply", reply);
         assert_eq("Buffer size = 2", 2, buffer.sz);
+        printf("------------\n");
+    }
+    {
+        Reply reply(MessageType::Z80_Step, buffer);
+        reply.z80_info = { 4321, 0x1234 };
+        buffer.sz = 0;
+        Reply r = assert_serialization("Z80 step reply", reply);
+        assert_eq("Cycle count = 4321", 4321, r.z80_info.cycle_count);
+        assert_eq("PC = 0x1234", 0x1234, r.z80_info.pc);
+        printf("------------\n");
     }
 }

@@ -22,6 +22,7 @@ void Reply::serialize_detail(Message::SerializationFunction f, void* data) const
             sd_status.serialize(f, data);
             break;
         case Z80_CpuInfo:
+        case Z80_Step:
             z80_info.serialize(f, data);
             break;
         default:
@@ -46,6 +47,7 @@ void Reply::deserialize_detail(Message::DeserializationFunction f, void* data, u
             sd_status = SDCardStatus::unserialize(f, data, sum1, sum2);
             break;
         case Z80_CpuInfo:
+        case Z80_Step:
             z80_info = Z80_Info::unserialize(f, data, sum1, sum2);
             break;
         default:
@@ -79,6 +81,7 @@ bool Reply::compare(Message const& message) const
                 eq = false;
             break;
         case Z80_CpuInfo:
+        case Z80_Step:
             if (z80_info != other.z80_info)
                 eq = false;
         default:
@@ -103,6 +106,7 @@ void Reply::debug_detail() const
         case SDCard_Read:
             sd_status.debug_detail();
             break;
+        case Z80_Step:
         case Z80_CpuInfo:
             z80_info.debug_detail();
             break;
