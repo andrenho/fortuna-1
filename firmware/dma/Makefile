@@ -8,7 +8,7 @@ F_CPU=16000000UL
 CC=avr-gcc
 CPPFLAGS=-std=c11 -Wall -Wextra -O3 -DF_CPU=${F_CPU} -mmcu=${MCU} -ffunction-sections -fdata-sections -I../common
 # CPPFLAGS+=-DRUN_TESTS
-CPPFLAGS+=-DDEBUG_UART
+# CPPFLAGS+=-DDEBUG_UART
 
 all: ${PROJECT}.hex
 

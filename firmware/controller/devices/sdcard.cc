@@ -12,6 +12,12 @@
 #define MAX_READ_ATTEMPTS 20
 #define MAX_WRITE_ATTEMPTS 100
 
+SDCard::SDCard(SPI& spi)
+    : spi_(spi) 
+{
+    spi_.deactivate();
+}
+
 bool SDCard::initialize()
 {
     last_response_ = 0xff;

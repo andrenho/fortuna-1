@@ -14,7 +14,7 @@ enum SDCardStage {
 
 class SDCard {
 public:
-    explicit SDCard(SPI& spi) : spi_(spi) {}
+    explicit SDCard(SPI& spi);
     
     bool initialize();
     bool read_page(uint32_t block, Buffer& buffer);
