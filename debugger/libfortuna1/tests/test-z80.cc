@@ -32,4 +32,12 @@ int main(int argc, char* argv[])
     f->soft_reset();
     ASSERT_EQ("Soft reset: check that memory was kept [byte 0]", 0x42, f->ram_read_byte(0));
     ASSERT_EQ("Soft reset: check that memory was kept [byte 1]", 0xab, f->ram_read_byte(1));
+    
+    // three NOPs
+    f->ram_write_buffer(0, { 0x0, 0x0, 0xc3, 0xc3, 0xc3 });
+    ASSERT_EQ("Initial state: PC == 0", 0, f->z80_info().pc);
+    ASSERT_EQ("NOP: PC == 1", 1, f->z80_step().pc);
+    ASSERT_EQ("NOP: PC == 2", 2, f->z80_step().pc);
+    ASSERT_EQ("JP $C3C3: PC == 0xC3C3", 0xc3c3, f->z80_step().pc);
+    
 }

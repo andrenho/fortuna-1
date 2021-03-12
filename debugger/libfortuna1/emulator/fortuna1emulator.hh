@@ -32,6 +32,7 @@ public:
     std::array<uint8_t, 512> sdcard_read(uint32_t block) override;
     
     Z80_Info z80_info() const override;
+    Z80_Info z80_step() override;
     
     void increment_cycle_counter() { ++cycle_count_; }
 

@@ -31,6 +31,7 @@ public:
     virtual std::array<uint8_t, 512> sdcard_read(uint32_t block) = 0;
     
     virtual Z80_Info                 z80_info() const = 0;
+    virtual Z80_Info                 z80_step() = 0;
     
     virtual void set_log_bytes(bool) {}
     virtual void set_log_messages(bool) {}

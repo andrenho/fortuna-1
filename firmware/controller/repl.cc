@@ -211,6 +211,10 @@ Reply Repl::parse_request(Request const& request)
         case MessageType::Z80_CpuInfo:
             reply.z80_info = { fortuna1_.z80().cycle_count(), fortuna1_.z80().pc() };
             break;
+        case MessageType::Z80_Step:
+            fortuna1_.z80().step();
+            reply.z80_info = { fortuna1_.z80().cycle_count(), fortuna1_.z80().pc() };
+            break;
         default:
             reply.result = Result::InvalidRequest;
             break;

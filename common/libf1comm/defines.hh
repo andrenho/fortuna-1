@@ -36,6 +36,7 @@ enum MessageClass : uint8_t {
                            \
     /* Z80 */              \
     X(Z80_CpuInfo,   0x30) \
+    X(Z80_Step,      0x31) \
                            \
     X(Undefined,     0xff)
 

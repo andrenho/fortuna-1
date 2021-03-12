@@ -87,3 +87,9 @@ Z80_Info Fortuna1Emulator::z80_info() const
     return { cycle_count_, z80_.PC.W };
 }
 
+Z80_Info Fortuna1Emulator::z80_step()
+{
+    RunZ80(&z80_);
+    return z80_info();
+}
+

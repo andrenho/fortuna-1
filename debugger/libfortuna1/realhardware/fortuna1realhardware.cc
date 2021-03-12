@@ -123,3 +123,10 @@ Z80_Info Fortuna1RealHardware::z80_info() const
     Request request(MessageType::Z80_CpuInfo, buffer_);
     return serial_.request(request, buffer_).z80_info;
 }
+
+Z80_Info Fortuna1RealHardware::z80_step()
+{
+    buffer_.sz = 0;
+    Request request(MessageType::Z80_Step, buffer_);
+    return serial_.request(request, buffer_).z80_info;
+}
