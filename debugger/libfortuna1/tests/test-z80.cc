@@ -27,4 +27,9 @@ int main(int argc, char* argv[])
     ASSERT_EQ("Check that memory was written with CPU on [byte 0]", 0x42, f->ram_read_byte(0));
     ASSERT_EQ("Check that memory was written with CPU on [byte 1]", 0xab, f->ram_read_byte(1));
     printf("Z80 counter: %d\n", f->z80_info().cycle_count);
+    
+    // soft reset
+    f->soft_reset();
+    ASSERT_EQ("Soft reset: check that memory was kept [byte 0]", 0x42, f->ram_read_byte(0));
+    ASSERT_EQ("Soft reset: check that memory was kept [byte 1]", 0xab, f->ram_read_byte(1));
 }
