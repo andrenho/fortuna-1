@@ -10,11 +10,17 @@ Fortuna1Emulator::Fortuna1Emulator()
     emulator = this;
 }
 
-void Fortuna1Emulator::reset()
+void Fortuna1Emulator::hard_reset()
 {
     ResetZ80(&z80_);
     auto boot = sdcard_read(0);
     ram_write_buffer(0, std::vector<uint8_t>(boot.begin(), boot.end()));
+    emulator->cycle_count_ = 0;
+}
+
+void Fortuna1Emulator::soft_reset()
+{
+    ResetZ80(&z80_);
     emulator->cycle_count_ = 0;
 }
 

@@ -19,7 +19,8 @@ enum MessageClass : uint8_t {
                            \
     /* general */          \
     X(FreeMem,       0x0a) \
-    X(Reset,         0x0b) \
+    X(SoftReset,     0x0b) \
+    X(HardReset,     0x0c) \
                            \
     /* RAM */              \
     X(RamReadByte,   0x10) \

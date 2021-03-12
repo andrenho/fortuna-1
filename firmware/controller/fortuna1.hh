@@ -19,7 +19,8 @@ public:
     SDCard& sdcard() const { return sdcard_; }
     Z80&    z80() const { return z80_; }
     
-    void    reset(Buffer& buffer);
+    void    hard_reset(Buffer& buffer);
+    void    soft_reset();
 
 private:
     RAM& ram_;

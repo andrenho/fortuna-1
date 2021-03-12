@@ -66,7 +66,7 @@ void Repl::do_terminal(char cmd)
     switch (cmd) {
         case 'h':
         case '?':
-            printf_P(PSTR("Ctrl:   [f] bytes free   [R] reset\n"));
+            printf_P(PSTR("Ctrl:   [f] bytes free   [R] reset       [t] soft reset\n"));
             printf_P(PSTR("RAM:    [r] read byte    [w] write byte  [W] write multiple bytes  [d] dump memory\n"));
             printf_P(PSTR("SdCard: [l] last status  [s] dump block\n"));
             printf_P(PSTR("Z80:    [i] CPU info     [p] step\n"));
@@ -77,8 +77,12 @@ void Repl::do_terminal(char cmd)
         case 'f':
             printf_P(PSTR("%d bytes free.\n"), free_ram());
             break;
+        case 't':
+            fortuna1_.soft_reset();
+            printf_P(PSTR("System soft reset.\n"));
+            break;
         case 'R':
-            fortuna1_.reset(buffer_);
+            fortuna1_.hard_reset(buffer_);
             printf_P(PSTR("System reset.\n"));
             break;
         case 'r': {
@@ -146,8 +150,12 @@ Reply Repl::parse_request(Request const& request)
 {
     Reply reply(request.message_type(), buffer_);
     switch (request.message_type()) {
-        case MessageType::Reset:
-            fortuna1_.reset(buffer_);
+        case MessageType::SoftReset:
+            fortuna1_.soft_reset();
+            buffer_.sz = 0;
+            break;
+        case MessageType::HardReset:
+            fortuna1_.hard_reset(buffer_);
             buffer_.sz = 0;
             break;
         case MessageType::FreeMem:

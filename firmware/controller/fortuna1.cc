@@ -1,6 +1,6 @@
 #include "fortuna1.hh"
 
-void Fortuna1::reset(Buffer& buffer)
+void Fortuna1::hard_reset(Buffer& buffer)
 {
     z80_.powerdown();
     sdcard_.initialize();
@@ -8,6 +8,13 @@ void Fortuna1::reset(Buffer& buffer)
     sdcard_.read_page(0, buffer);
     ram_.write_block(0, 512, [](uint16_t idx, void* data) { return ((uint8_t*) data)[idx]; }, buffer.data);
     
+    z80_.startup();
+}
+
+void Fortuna1::soft_reset()
+{
+    z80_.powerdown();
+    sdcard_.initialize();
     z80_.startup();
 }
 

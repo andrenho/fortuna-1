@@ -17,7 +17,8 @@ public:
     void        test_debug_messages() const override;
     std::string test_dma() const override;
     
-    void reset() override;
+    void hard_reset() override;
+    void soft_reset() override;
     
     void                 ram_write_byte(uint16_t addr, uint8_t data) override;
     uint8_t              ram_read_byte(uint16_t addr) const override;

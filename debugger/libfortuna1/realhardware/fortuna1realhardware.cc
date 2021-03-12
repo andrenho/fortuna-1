@@ -103,10 +103,17 @@ std::array<uint8_t, 512> Fortuna1RealHardware::sdcard_read(uint32_t block)
     return data;
 }
 
-void Fortuna1RealHardware::reset()
+void Fortuna1RealHardware::hard_reset()
 {
     buffer_.sz = 0;
-    Request request(MessageType::Reset, buffer_);
+    Request request(MessageType::HardReset, buffer_);
+    serial_.request(request, buffer_);
+}
+
+void Fortuna1RealHardware::soft_reset()
+{
+    buffer_.sz = 0;
+    Request request(MessageType::SoftReset, buffer_);
     serial_.request(request, buffer_);
 }
 
