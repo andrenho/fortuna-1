@@ -141,8 +141,8 @@ int main()
                     uint8_t byte = ram_get_data();
                     spi_ready();
                     _delay_us(30);
-                    spi_done();
                     spi_swap(byte);
+                    spi_done();
 #ifdef DEBUG_UART
                     _delay_ms(1);
                     printf_P(PSTR("Read data bus, value 0x%02X.\n"), byte);
@@ -167,9 +167,9 @@ int main()
                     uint16_t addr = ram_get_addr();
                     spi_ready();
                     _delay_us(30);
-                    spi_done();
                     spi_swap(addr & 0xff);
                     spi_swap((addr >> 8) & 0xff);
+                    spi_done();
 #ifdef DEBUG_UART
                     _delay_ms(1);
                     printf_P(PSTR("Read data bus, value 0x%04X.\n"), addr);
@@ -181,8 +181,8 @@ int main()
                 struct MemoryBus mbus = ram_read_memory_bus();
                 spi_ready();
                 _delay_us(30);
-                spi_done();
                 spi_swap(*(uint8_t*) &mbus);
+                spi_done();
 #ifdef DEBUG_UART
                 _delay_ms(1);
                 printf_P(PSTR("Read memory bus:  MREQ: %d   WE: %d   RD:%d\n"), mbus.mreq, mbus.we, mbus.rd);
