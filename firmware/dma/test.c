@@ -13,10 +13,9 @@ uint8_t written[256];
 
 void run_tests()
 {
-    printf_P(PSTR("%04X - %02X\n"), ram_get_addr(), ram_get_data());
+    printf_P(PSTR("Buses: %04X - %02X\n"), ram_get_addr(), ram_get_data());
     struct MemoryBus mbus = ram_read_memory_bus();
     printf_P(PSTR("MREQ: %d   WE: %d   RD:%d\n"), mbus.mreq, mbus.we, mbus.rd);
-    return;
     
     // create a seed
     eeprom_busy_wait();

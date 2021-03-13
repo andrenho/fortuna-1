@@ -4,6 +4,7 @@
 
 #include <avr/io.h>
 #include <avr/cpufunc.h>
+#include <avr/pgmspace.h>
 #include <util/delay.h>
 
 #define DDR_RAM  DDRB
@@ -27,7 +28,7 @@ void ram_init()
 
 void ram_reset()
 {
-    DDR_RAM &= ~((1 << MREQ) | (1 << WE) | (1 << RD));   // set MREQ, WE and RD as outputs
+    DDR_RAM &= ~((1 << MREQ) | (1 << WE) | (1 << RD));   // set MREQ, WE and RD as inputs 
     PORT_RAM |= (1 << MREQ) | (1 << WE) | (1 << RD);  // set them as pull ups
     
     // set pins as high impedance
