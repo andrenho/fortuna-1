@@ -13,6 +13,7 @@
 #define CMD_READ_DATA   0x6
 #define CMD_WRITE_DATA  0x7
 #define CMD_READ_ADDR   0x8
+#define CMD_READ_MBUS   0x9
 
 const char* RAM::test()
 {
@@ -140,4 +141,15 @@ uint16_t RAM::addr_bus() const
     addr |= ((uint16_t) spi_.recv()) << 8;
     spi_.deactivate();
     return addr;
+}
+
+RAM::MemoryBus RAM::memory_bus() const
+{
+    spi_.activate(SPI::DMA);
+    spi_.send(CMD_READ_MBUS);
+    spi_.wait_dma_cs();
+    uint8_t byte = spi_.recv();
+    spi_.deactivate();
+    auto* mbus = (MemoryBus*) &byte;
+    return *mbus;
 }

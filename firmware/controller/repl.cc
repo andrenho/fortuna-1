@@ -142,6 +142,14 @@ void Repl::do_terminal(char cmd)
             fortuna1_.z80().step();
             printf_P(PSTR("PC = %04X\n"), fortuna1_.z80().pc());
             break;
+        case 'b': {
+                uint8_t data = fortuna1_.ram().data_bus();
+                uint16_t addr = fortuna1_.ram().addr_bus();
+                RAM::MemoryBus mbus = fortuna1_.ram().memory_bus();
+                printf_P(PSTR("DATA: %02X   ADDR: %04X   MREQ: %d   WE: %d   RD: %d\n"), data, addr, mbus.mreq, mbus.we, mbus.rd);
+                break;
+            }
+            break;
         default:
             error();
     }
