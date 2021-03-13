@@ -138,10 +138,9 @@ int main()
             }
                 break;
             case CMD_READ_DATA: {
-                    spi_ready();
-                    uint8_t byte = ram_get_data();
-                    _delay_us(30);
                     spi_done();
+                    uint8_t byte = ram_get_data();
+                    spi_ready();
                     spi_swap(byte);
 #ifdef DEBUG_UART
                     _delay_ms(1);
@@ -164,10 +163,9 @@ int main()
                 }
                 break;
             case CMD_READ_ADDR: {
-                    spi_ready();
-                    uint16_t addr = ram_get_addr();
-                    _delay_us(30);
                     spi_done();
+                    uint16_t addr = ram_get_addr();
+                    spi_ready();
                     spi_swap(addr & 0xff);
                     spi_swap((addr >> 8) & 0xff);
 #ifdef DEBUG_UART
@@ -178,10 +176,9 @@ int main()
                 }
                 break;
             case CMD_READ_MBUS: {
-                spi_ready();
-                struct MemoryBus mbus = ram_read_memory_bus();
-                _delay_us(30);
                 spi_done();
+                struct MemoryBus mbus = ram_read_memory_bus();
+                spi_ready();
                 spi_swap(*(uint8_t*) &mbus);
 #ifdef DEBUG_UART
                 _delay_ms(1);
