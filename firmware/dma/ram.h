@@ -6,7 +6,7 @@
 
 struct MemoryBus {
     bool mreq : 1;
-    bool wr   : 1;
+    bool we   : 1;
     bool rd   : 1;
 };
 

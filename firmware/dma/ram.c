@@ -8,6 +8,7 @@
 
 #define DDR_RAM  DDRB
 #define PORT_RAM PORTB
+#define PIN_RAM  PINB
 #define MREQ     PINB0
 #define WE       PINB1
 #define RD       PINB2
@@ -84,7 +85,10 @@ uint8_t ram_get_data()
 struct MemoryBus ram_read_memory_bus()
 {
     struct MemoryBus mbus = {};
-    
+    mbus.mreq = PINB & (1 << MREQ);
+    mbus.we = PINB & (1 << WE);
+    mbus.rd = PINB & (1 << RD);
+    return mbus;
 }
 
 uint8_t
