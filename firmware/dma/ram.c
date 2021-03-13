@@ -14,14 +14,21 @@
 
 #define WAIT     _delay_us(1)
 
-void ram_init()
+static void ram_takeover_bus()
 {
     DDR_RAM |= (1 << MREQ) | (1 << WE) | (1 << RD);   // set MREQ, WE and RD as outputs
     PORT_RAM |= (1 << MREQ) | (1 << WE) | (1 << RD);  // deactivate them (set to 1)
 }
 
+void ram_init()
+{
+}
+
 void ram_reset()
 {
+    DDR_RAM &= ~((1 << MREQ) | (1 << WE) | (1 << RD));   // set MREQ, WE and RD as outputs
+    PORT_RAM |= (1 << MREQ) | (1 << WE) | (1 << RD);  // set them as pull ups
+    
     // set pins as high impedance
     DDRB &= ~(1 << PINB3);  // A9
     DDRD &= ~0b11111101;    // A8, A10..15
@@ -74,10 +81,17 @@ uint8_t ram_get_data()
     return PINC;
 }
 
+struct MemoryBus ram_read_memory_bus()
+{
+    struct MemoryBus mbus = {};
+    
+}
+
 uint8_t
 ram_write_byte(uint16_t addr, uint8_t data)
 {
     uint8_t written, check_again;
+    ram_takeover_bus();
     do {
         ram_set_addr(addr);
         ram_set_data(data);
@@ -97,6 +111,7 @@ ram_write_byte(uint16_t addr, uint8_t data)
 
 uint8_t ram_read_byte(uint16_t addr)
 {
+    ram_takeover_bus();
     ram_set_addr(addr);
     DDRC = 0;
     PORT_RAM &= ~(1 << MREQ);
@@ -110,6 +125,7 @@ uint8_t ram_read_byte(uint16_t addr)
 
 void ram_write_stream_start()
 {
+    ram_takeover_bus();
 }
 
 void ram_write_byte_stream(uint16_t addr, uint8_t byte)
@@ -132,6 +148,7 @@ void ram_write_stream_end()
 void ram_read_stream_start()
 {
     DDRC = 0;
+    ram_takeover_bus();
 }
 
 uint8_t ram_read_byte_stream(uint16_t addr)
