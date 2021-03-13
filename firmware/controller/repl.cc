@@ -66,10 +66,11 @@ void Repl::do_terminal(char cmd)
     switch (cmd) {
         case 'h':
         case '?':
-            printf_P(PSTR("Ctrl:   [f] bytes free   [R] reset       [t] soft reset\n"));
-            printf_P(PSTR("RAM:    [r] read byte    [w] write byte  [W] write multiple bytes  [d] dump memory\n"));
-            printf_P(PSTR("SdCard: [l] last status  [s] dump block\n"));
-            printf_P(PSTR("Z80:    [i] CPU info     [p] step\n"));
+            printf_P(PSTR("Ctrl:    [f] bytes free   [R] reset       [t] soft reset\n"));
+            printf_P(PSTR("RAM:     [r] read byte    [w] write byte  [W] write multiple bytes  [d] dump memory\n"));
+            printf_P(PSTR("SdCard:  [l] last status  [s] dump block\n"));
+            printf_P(PSTR("Z80:     [i] CPU info     [p] step\n"));
+            printf_P(PSTR("Low lvl: [b] buses state\n"));
 #ifdef ENABLE_TESTS
             printf_P(tests_help());
 #endif
@@ -193,12 +194,6 @@ Reply Repl::parse_request(Request const& request)
                     reply.result = Result::WrongChecksumDMA;
                 }
             }
-            break;
-        case MessageType::DataReadBus:
-            reply.ram_byte = fortuna1_.ram().data_bus();
-            break;
-        case MessageType::DataWriteBus:
-            fortuna1_.ram().set_data_bus(request.ram_request.byte);
             break;
         case MessageType::SDCard_Status:
             reply.sd_status = { static_cast<uint8_t>(fortuna1_.sdcard().last_stage()), fortuna1_.sdcard().last_response() };

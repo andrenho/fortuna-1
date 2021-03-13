@@ -18,6 +18,7 @@
 #define CMD_READ_DATA   0x6
 #define CMD_WRITE_DATA  0x7
 #define CMD_READ_ADDR   0x8
+#define CMD_READ_MBUS   0x9
 
 int main()
 {
@@ -175,6 +176,19 @@ int main()
                     spi_done();
 #endif
                 }
+                break;
+            case CMD_READ_MBUS: {
+                struct MemoryBus mbus = ram_read_memory_bus();
+                spi_ready();
+                _delay_us(30);
+                spi_done();
+                spi_swap(*(uint8_t*) &mbus);
+#ifdef DEBUG_UART
+                _delay_ms(1);
+                printf_P(PSTR("Read memory bus:  MREQ: %d   WE: %d   RD:%d\n"), mbus.mreq, mbus.we, mbus.rd);
+                spi_done();
+#endif
+            }
                 break;
         }
         spi_deactivate();

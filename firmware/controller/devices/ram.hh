@@ -5,6 +5,12 @@
 
 class RAM {
 public:
+    struct MemoryBus {
+        bool mreq : 1;
+        bool we   : 1;
+        bool rd   : 1;
+    };
+    
     using ReadFunc = void (*)(uint16_t idx, uint8_t byte, void* data);
     using WriteFunc = uint8_t (*)(uint16_t idx, void* data);
     
@@ -22,6 +28,8 @@ public:
     void    set_data_bus(uint8_t data);
     
     uint16_t addr_bus() const;
+    
+    MemoryBus memory_bus() const;
 
     SPI& spi() const { return spi_; }
 
