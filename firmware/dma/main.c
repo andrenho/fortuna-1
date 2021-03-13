@@ -138,8 +138,8 @@ int main()
             }
                 break;
             case CMD_READ_DATA: {
-                    uint8_t byte = ram_get_data();
                     spi_ready();
+                    uint8_t byte = ram_get_data();
                     _delay_us(30);
                     spi_done();
                     spi_swap(byte);
@@ -164,8 +164,8 @@ int main()
                 }
                 break;
             case CMD_READ_ADDR: {
-                    uint16_t addr = ram_get_addr();
                     spi_ready();
+                    uint16_t addr = ram_get_addr();
                     _delay_us(30);
                     spi_done();
                     spi_swap(addr & 0xff);
@@ -178,8 +178,8 @@ int main()
                 }
                 break;
             case CMD_READ_MBUS: {
-                struct MemoryBus mbus = ram_read_memory_bus();
                 spi_ready();
+                struct MemoryBus mbus = ram_read_memory_bus();
                 _delay_us(30);
                 spi_done();
                 spi_swap(*(uint8_t*) &mbus);
