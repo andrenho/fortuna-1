@@ -24,8 +24,6 @@ public:
     uint8_t              ram_read_byte(uint16_t addr) const override;
     void                 ram_write_buffer(uint16_t addr, std::vector<uint8_t> const& bytes) override;
     std::vector<uint8_t> ram_read_buffer(uint16_t addr, uint16_t sz) const override;
-    uint8_t              data_bus() const override { return 0; }
-    void                 set_data_bus(uint8_t) override {}
     
     void                     sdcard_set_image(std::string const& filename);
     SDCardStatus             sdcard_status() const override;

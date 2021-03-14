@@ -27,8 +27,6 @@ enum MessageClass : uint8_t {
     X(RamWriteByte,  0x11) \
     X(RamReadBlock,  0x12) \
     X(RamWriteBlock, 0x13) \
-    X(DataReadBus,   0x14) \
-    X(DataWriteBus,  0x15) \
                            \
     /* SDCARD */           \
     X(SDCard_Status, 0x20) \

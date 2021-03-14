@@ -3,6 +3,20 @@
 
 #include "ram.hh"
 
+struct Z80Pins {
+    // inputs
+    bool int_  : 1;
+    bool nmi   : 1;
+    bool rst   : 1;
+    bool busrq : 1;
+    
+    // outputs
+    bool halt  : 1;
+    bool iorq  : 1;
+    bool m1    : 1;
+    bool busak : 1;
+};
+
 class Z80 {
 public:
     explicit Z80(RAM& ram);

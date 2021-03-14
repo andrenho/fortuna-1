@@ -71,21 +71,6 @@ std::vector<uint8_t> Fortuna1RealHardware::ram_read_buffer(uint16_t addr, uint16
     return vv;
 }
 
-uint8_t Fortuna1RealHardware::data_bus() const
-{
-    buffer_.sz = 0;
-    Request request(MessageType::DataReadBus, buffer_);
-    return serial_.request(request, buffer_).ram_byte;
-}
-
-void Fortuna1RealHardware::set_data_bus(uint8_t data)
-{
-    buffer_.sz = 0;
-    Request request(MessageType::DataWriteBus, buffer_);
-    request.ram_request.byte = data;
-    serial_.request(request, buffer_);
-}
-
 SDCardStatus Fortuna1RealHardware::sdcard_status() const
 {
     buffer_.sz = 0;

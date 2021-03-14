@@ -8,7 +8,6 @@ void Request::serialize_detail(Message::SerializationFunction f, void* data) con
         case RamWriteByte:
         case RamReadBlock:
         case RamWriteBlock:
-        case DataWriteBus:
             ram_request.serialize(f, data);
             break;
         case SDCard_Read:
@@ -26,7 +25,6 @@ void Request::deserialize_detail(Message::DeserializationFunction f, void* data,
         case RamWriteByte:
         case RamReadBlock:
         case RamWriteBlock:
-        case DataWriteBus:
             ram_request = RamRequest::unserialize(f, data, sum1, sum2);
             break;
         case SDCard_Read:
@@ -49,7 +47,6 @@ bool Request::compare(Message const& message) const
         case RamWriteByte:
         case RamReadBlock:
         case RamWriteBlock:
-        case DataWriteBus:
             if (ram_request != other.ram_request)
                 eq = false;
             break;
@@ -71,7 +68,6 @@ void Request::debug_detail() const
         case RamWriteByte:
         case RamReadBlock:
         case RamWriteBlock:
-        case DataWriteBus:
             ram_request.debug_detail();
             break;
         case SDCard_Read:
