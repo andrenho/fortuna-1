@@ -60,7 +60,7 @@ void Console::execute(char cmd)
             printf_P(PSTR("Ctrl:    [f] bytes free   [R] reset       [t] soft reset\n"));
             printf_P(PSTR("RAM:     [r] read byte    [w] write byte  [W] write multiple bytes  [d] dump memory\n"));
             printf_P(PSTR("SdCard:  [l] last status  [s] dump block\n"));
-            printf_P(PSTR("Z80:     [i] CPU info     [p] step\n"));
+            printf_P(PSTR("Z80:     [i] CPU info     [p] step        [P] step + print cycles\n"));
             printf_P(PSTR("Low lvl: [b] buses state  [c] Z80 cycle\n"));
 #ifdef ENABLE_TESTS
             printf_P(tests_help());
@@ -133,19 +133,34 @@ void Console::execute(char cmd)
             fortuna1_.z80().step();
             printf_P(PSTR("PC = %04X\n"), fortuna1_.z80().pc());
             break;
+        case 'P': {
+                struct Ptr {
+                    Console const& console;
+                    RAM const&     ram;
+                    Z80 const&     z80;
+                };
+                auto f_each_cycle = [](bool first, void* data) -> void {
+                    auto ptr = (Ptr*) data;
+                    ptr->console.print_z80_state(ptr->ram, ptr->z80, first);
+                };
+                Ptr ptr = { *this, fortuna1_.ram(), fortuna1_.z80() };
+                fortuna1_.z80().step(f_each_cycle, &ptr);
+                printf_P(PSTR("PC = %04X\n"), fortuna1_.z80().pc());
+            }
+            break;
         case 'b':
-            print_z80_state(fortuna1_.ram(), fortuna1_.z80());
+            print_z80_state(fortuna1_.ram(), fortuna1_.z80(), true);
             break;
         case 'c':
             fortuna1_.z80().cycle();
-            print_z80_state(fortuna1_.ram(), fortuna1_.z80());
+            print_z80_state(fortuna1_.ram(), fortuna1_.z80(), true);
             break;
         default:
             error();
     }
 }
 
-void Console::print_z80_state(RAM const& ram, Z80 const& z80) const
+void Console::print_z80_state(RAM const& ram, Z80 const& z80, bool add_header) const
 {
     uint8_t data = ram.data_bus();
     uint16_t addr = ram.addr_bus();
@@ -161,7 +176,8 @@ void Console::print_z80_state(RAM const& ram, Z80 const& z80) const
         sprintf(data_s, "--");
     }
     auto bit = [](bool v) { if (v) return "\e[0;32m1\e[0m"; else return "\e[0;31m0\e[0m"; };
-    printf_P(PSTR("ADDR DATA  MREQ WR RD  INT NMI RST BUSRQ  HALT IORQ M1 BUSAK  #CYCLE\n"));
+    if (add_header)
+        printf_P(PSTR("ADDR DATA  MREQ WR RD  INT NMI RST BUSRQ  HALT IORQ M1 BUSAK  #CYCLE\n"));
     printf_P(PSTR("%s  %s     %s   %s  %s   %s   %s   %s    %s      %s    %s   %s    %s  %-08d\n"),
              addr_s, data_s, bit(mbus.mreq), bit(mbus.we), bit(mbus.rd),
              bit(pins.int_), bit(pins.nmi), bit(pins.rst), bit(pins.busrq),

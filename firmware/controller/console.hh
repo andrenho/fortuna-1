@@ -14,7 +14,7 @@ private:
     Fortuna1& fortuna1_;
     Buffer&   buffer_;
     
-    void print_z80_state(RAM const& ram, Z80 const& z80) const;
+    void print_z80_state(RAM const& ram, Z80 const& z80, bool print_header) const;
 };
 
 

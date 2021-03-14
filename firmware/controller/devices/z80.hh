@@ -19,13 +19,15 @@ struct Z80Pins {
 
 class Z80 {
 public:
+    using EachCycle = void(*)(bool first, void* data);
+    
     explicit Z80(RAM& ram);
     
     void powerdown();
     void startup();
     
     void request_bus();
-    void step();
+    void step(EachCycle f_each_cycle = nullptr, void* data = nullptr);
     void cycle();
     
     bool powered() const { return power_; }

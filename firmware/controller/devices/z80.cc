@@ -78,14 +78,17 @@ void Z80::check_iorq()
 
 }
 
-void Z80::step()
+void Z80::step(Z80::EachCycle f_each_cycle, void* data)
 {
+    bool first = true;
     bool m1 = 1;
     
     // TODO - if next instruction is extended, run two cycles
     
     while (m1 == 1) {
         cycle();
+        f_each_cycle(first, data);
+        first = false;
         check_iorq();
         m1 = get_M1();
     }
