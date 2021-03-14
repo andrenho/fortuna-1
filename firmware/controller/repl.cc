@@ -146,10 +146,20 @@ void Repl::do_terminal(char cmd)
                 uint8_t data = fortuna1_.ram().data_bus();
                 uint16_t addr = fortuna1_.ram().addr_bus();
                 RAM::MemoryBus mbus = fortuna1_.ram().memory_bus();
-                Z80Pins pins = fortuna1_.z80().pins();
+                Z80Pins pins = fortuna1_.z80().state();
+                char addr_s[5] = { 0 };
+                char data_s[3] = { 0 };
+                if (mbus.mreq == 0) {
+                    sprintf(addr_s, "%04X", addr);
+                    sprintf(data_s, "%02X", data);
+                } else {
+                    sprintf(addr_s, "----");
+                    sprintf(data_s, "--");
+                }
+                auto bit = [](bool v) { if (v) return "\e[0;32m1\e[0m"; else return "\e[0;31m0\e[0m"; };
                 printf_P(PSTR("ADDR DATA  MREQ WR RD  INT NMI RST BUSRQ  HALT IORQ M1 BUSAK\n"));
-                printf_P(PSTR("0000  %s     1   1  1   1   1   1    1      1    1   1    1\n"),
-                        addr_s, data_s, bit(mbus.mreq), bit(mbus.wr), bit(mbus.rd),
+                printf_P(PSTR("%s  %s     %s   %s  %s   %s   %s   %s    %s      %s    %s   %s    %s\n"),
+                        addr_s, data_s, bit(mbus.mreq), bit(mbus.we), bit(mbus.rd),
                         bit(pins.int_), bit(pins.nmi), bit(pins.rst), bit(pins.busrq),
                         bit(pins.halt), bit(pins.iorq), bit(pins.m1), bit(pins.busak));
                 break;

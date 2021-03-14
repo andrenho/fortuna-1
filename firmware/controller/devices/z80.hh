@@ -30,6 +30,8 @@ public:
     bool powered() const { return power_; }
     uint32_t cycle_count() const { return cycle_count_; }
     uint16_t pc() const { return pc_; }
+    
+    Z80Pins state() const;
 
 private:
     RAM&     ram_;
@@ -39,8 +41,7 @@ private:
     
     void cycle();
     void check_iorq();
-
-    Z80Pins state() const;
+    
 };
 
 #endif
