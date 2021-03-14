@@ -8,6 +8,9 @@
 
 #define P(name, port, pin)                                 \
     static bool p_ ## name = false;                        \
+    bool get_last_ ## name() {                             \
+        return p_ ## name;                                 \
+    }                                                      \
     void set_ ## name(uint8_t v)                           \
     {                                                      \
         if (v)                                             \

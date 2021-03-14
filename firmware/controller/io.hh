@@ -22,7 +22,9 @@ void io_init();
     P(MISO,    B, 4)    \
     P(DMA_RDY, B, 1)    \
     P(BUSACK,  C, 0)    \
-    P(M1,      D, 4)
+    P(M1,      D, 4)    \
+    P(HALT,    B, 0)    \
+    P(IORQ,    D, 6)
     
 // ports both read and written by the microcontroller (get_XXX, set_XXX)
 //    (the SPI ports are here so that they can be disabled)
@@ -30,15 +32,16 @@ void io_init();
     P(MOSI,   B, 3)     \
     P(SCLK,   B, 5)
     
-#define P(name, port, pin) \
-    void set_ ## name(uint8_t v); \
+#define P(name, port, pin)             \
+    bool get_last_ ## name();          \
+    void set_ ## name(uint8_t v);      \
     void set_ ## name ## _as_output();
 OUTPUT_PORTS
 IO_PORTS
 #undef P
 
-#define P(name, port, pin) \
-    bool get_ ## name(); \
+#define P(name, port, pin)            \
+    bool get_ ## name();              \
     void set_ ## name ## _as_input(); \
     void set_ ## name ## _as_pullup();
 INPUT_PORTS

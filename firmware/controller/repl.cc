@@ -146,7 +146,12 @@ void Repl::do_terminal(char cmd)
                 uint8_t data = fortuna1_.ram().data_bus();
                 uint16_t addr = fortuna1_.ram().addr_bus();
                 RAM::MemoryBus mbus = fortuna1_.ram().memory_bus();
-                printf_P(PSTR("DATA: %02X   ADDR: %04X   MREQ: %d   WE: %d   RD: %d\n"), data, addr, mbus.mreq, mbus.we, mbus.rd);
+                Z80Pins pins = fortuna1_.z80().pins();
+                printf_P(PSTR("ADDR DATA  MREQ WR RD  INT NMI RST BUSRQ  HALT IORQ M1 BUSAK\n"));
+                printf_P(PSTR("0000  %s     1   1  1   1   1   1    1      1    1   1    1\n"),
+                        addr_s, data_s, bit(mbus.mreq), bit(mbus.wr), bit(mbus.rd),
+                        bit(pins.int_), bit(pins.nmi), bit(pins.rst), bit(pins.busrq),
+                        bit(pins.halt), bit(pins.iorq), bit(pins.m1), bit(pins.busak));
                 break;
             }
             break;

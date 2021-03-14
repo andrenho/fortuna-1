@@ -59,6 +59,20 @@ void Z80::cycle()
     ++cycle_count_;
 }
 
+Z80Pins Z80::state() const
+{
+    return (Z80Pins) {
+        get_last_INT(),
+        get_last_NMI(),
+        get_last_ZRST(),
+        get_last_BUSREQ(),
+        get_HALT(),
+        get_IORQ(),
+        get_M1(),
+        get_BUSACK(),
+    };
+}
+
 void Z80::check_iorq()
 {
 

@@ -39,6 +39,8 @@ private:
     
     void cycle();
     void check_iorq();
+
+    Z80Pins state() const;
 };
 
 #endif
