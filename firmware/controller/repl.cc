@@ -270,7 +270,7 @@ void Repl::print_z80_state(RAM const& ram, Z80 const& z80) const
     Z80Pins pins = z80.state();
     char addr_s[5] = { 0 };
     char data_s[3] = { 0 };
-    if (mbus.mreq == 0) {
+    if (mbus.mreq == 0 && (mbus.we == 0 || mbus.rd == 0 || pins.iorq == 0)) {
         sprintf(addr_s, "%04X", addr);
         sprintf(data_s, "%02X", data);
     } else {
