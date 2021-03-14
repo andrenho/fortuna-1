@@ -26,6 +26,8 @@ private:
     Serial& serial_;
     Fortuna1& fortuna1_;
     Buffer  buffer_ { {0}, 0 };
+    
+    void print_z80_state(RAM const& ram, Z80 const& z80) const;
 };
 
 #endif

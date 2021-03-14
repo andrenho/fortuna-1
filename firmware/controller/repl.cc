@@ -70,7 +70,7 @@ void Repl::do_terminal(char cmd)
             printf_P(PSTR("RAM:     [r] read byte    [w] write byte  [W] write multiple bytes  [d] dump memory\n"));
             printf_P(PSTR("SdCard:  [l] last status  [s] dump block\n"));
             printf_P(PSTR("Z80:     [i] CPU info     [p] step\n"));
-            printf_P(PSTR("Low lvl: [b] buses state\n"));
+            printf_P(PSTR("Low lvl: [b] buses state  [c] Z80 cycle\n"));
 #ifdef ENABLE_TESTS
             printf_P(tests_help());
 #endif
@@ -142,28 +142,12 @@ void Repl::do_terminal(char cmd)
             fortuna1_.z80().step();
             printf_P(PSTR("PC = %04X\n"), fortuna1_.z80().pc());
             break;
-        case 'b': {
-                uint8_t data = fortuna1_.ram().data_bus();
-                uint16_t addr = fortuna1_.ram().addr_bus();
-                RAM::MemoryBus mbus = fortuna1_.ram().memory_bus();
-                Z80Pins pins = fortuna1_.z80().state();
-                char addr_s[5] = { 0 };
-                char data_s[3] = { 0 };
-                if (mbus.mreq == 0) {
-                    sprintf(addr_s, "%04X", addr);
-                    sprintf(data_s, "%02X", data);
-                } else {
-                    sprintf(addr_s, "----");
-                    sprintf(data_s, "--");
-                }
-                auto bit = [](bool v) { if (v) return "\e[0;32m1\e[0m"; else return "\e[0;31m0\e[0m"; };
-                printf_P(PSTR("ADDR DATA  MREQ WR RD  INT NMI RST BUSRQ  HALT IORQ M1 BUSAK\n"));
-                printf_P(PSTR("%s  %s     %s   %s  %s   %s   %s   %s    %s      %s    %s   %s    %s\n"),
-                        addr_s, data_s, bit(mbus.mreq), bit(mbus.we), bit(mbus.rd),
-                        bit(pins.int_), bit(pins.nmi), bit(pins.rst), bit(pins.busrq),
-                        bit(pins.halt), bit(pins.iorq), bit(pins.m1), bit(pins.busak));
-                break;
-            }
+        case 'b':
+            print_z80_state(fortuna1_.ram(), fortuna1_.z80());
+            break;
+        case 'c':
+            fortuna1_.z80().cycle();
+            print_z80_state(fortuna1_.ram(), fortuna1_.z80());
             break;
         default:
             error();
@@ -277,3 +261,27 @@ void Repl::execute()
     else
         serial_.send(InvalidCommand);
 }
+
+void Repl::print_z80_state(RAM const& ram, Z80 const& z80) const
+{
+    uint8_t data = ram.data_bus();
+    uint16_t addr = ram.addr_bus();
+    RAM::MemoryBus mbus = ram.memory_bus();
+    Z80Pins pins = z80.state();
+    char addr_s[5] = { 0 };
+    char data_s[3] = { 0 };
+    if (mbus.mreq == 0) {
+        sprintf(addr_s, "%04X", addr);
+        sprintf(data_s, "%02X", data);
+    } else {
+        sprintf(addr_s, "----");
+        sprintf(data_s, "--");
+    }
+    auto bit = [](bool v) { if (v) return "\e[0;32m1\e[0m"; else return "\e[0;31m0\e[0m"; };
+    printf_P(PSTR("ADDR DATA  MREQ WR RD  INT NMI RST BUSRQ  HALT IORQ M1 BUSAK  #CYCLE\n"));
+    printf_P(PSTR("%s  %s     %s   %s  %s   %s   %s   %s    %s      %s    %s   %s    %s  %-08d\n"),
+             addr_s, data_s, bit(mbus.mreq), bit(mbus.we), bit(mbus.rd),
+             bit(pins.int_), bit(pins.nmi), bit(pins.rst), bit(pins.busrq),
+             bit(pins.halt), bit(pins.iorq), bit(pins.m1), bit(pins.busak), z80.cycle_count());
+}
+
