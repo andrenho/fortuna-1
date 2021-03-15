@@ -33,7 +33,7 @@ void Z80::startup()
     power_ = true;
     cycle_count_ = 0;
     pc_ = 0;
-    // step();
+    step();
 }
 
 void Z80::request_bus()
@@ -94,6 +94,13 @@ void Z80::step(Z80::EachCycle f_each_cycle, void* data)
     }
     pc_ = ram_.addr_bus();
     
+    while (m1 == 0) {
+        cycle();
+        f_each_cycle(false, data);
+        check_iorq();
+        m1 = get_M1();
+    }
+
 //    if (mode == M_CONTINUE && (last_printed_char != 0 || bkp_hit))
 //        return 0;  // we wait until the last event is consumed by the client
 //

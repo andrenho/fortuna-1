@@ -149,15 +149,19 @@ void Console::execute(char cmd)
             }
             break;
         case 'b':
-            print_z80_state(fortuna1_.ram(), fortuna1_.z80(), true);
-            break;
+            printf_P(PSTR("\e[1A"));
+            print_z80_state(fortuna1_.ram(), fortuna1_.z80(), !last_was_cycle_);
+            last_was_cycle_ = true;
         case 'c':
+            printf_P(PSTR("\e[1A"));
             fortuna1_.z80().cycle();
-            print_z80_state(fortuna1_.ram(), fortuna1_.z80(), true);
-            break;
+            print_z80_state(fortuna1_.ram(), fortuna1_.z80(), !last_was_cycle_);
+            last_was_cycle_ = true;
+            return;
         default:
             error();
     }
+    last_was_cycle_ = false;
 }
 
 void Console::print_z80_state(RAM const& ram, Z80 const& z80, bool add_header) const
