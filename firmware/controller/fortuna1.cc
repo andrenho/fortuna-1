@@ -1,8 +1,5 @@
 #include "fortuna1.hh"
 
-#include <avr/interrupt.h>
-#include <avr/wdt.h>
-
 void Fortuna1::hard_reset(Buffer& buffer)
 {
     z80_.powerdown();
@@ -21,11 +18,10 @@ void Fortuna1::soft_reset()
     z80_.startup();
 }
 
-[[noreturn]] void Fortuna1::system_reset()
+void Fortuna1::system_reset()
 {
-    cli();
-    wdt_enable(WDTO_15MS);
-    while(true) {}
+    void (*f)() = 0;
+    f();
 }
 
 uint8_t Fortuna1::write_byte(uint16_t addr, uint8_t data)

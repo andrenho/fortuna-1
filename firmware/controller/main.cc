@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <avr/pgmspace.h>
+#include <avr/interrupt.h>
 
 #include "devices/z80.hh"
 #include "io.hh"
@@ -22,6 +23,8 @@ int main()
     Fortuna1 fortuna1(ram, sdcard, z80);
 
     Repl repl(serial, fortuna1);
+
+    // printf_P(PSTR("System initialized.\n"));
 
     // serial.clrscr();
     while (true)

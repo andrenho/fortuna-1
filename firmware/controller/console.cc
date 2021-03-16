@@ -121,6 +121,9 @@ void Console::execute(char cmd)
             print_z80_state(fortuna1_.ram(), fortuna1_.z80(), !last_was_cycle_);
             last_was_cycle_ = true;
             return;
+        case '!':
+            fortuna1_.system_reset();
+            break;
         default:
             error();
     }

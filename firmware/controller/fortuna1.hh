@@ -21,7 +21,7 @@ public:
     
     void    hard_reset(Buffer& buffer);
     void    soft_reset();
-    [[noreturn]] void system_reset();
+    void    system_reset();
 
 private:
     RAM& ram_;
