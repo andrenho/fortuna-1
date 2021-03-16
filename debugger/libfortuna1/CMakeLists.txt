@@ -26,6 +26,7 @@ add_library(libfortuna1 ${LIBRARY_SOURCES} ${EMULATOR_SOURCES} ${LIBF1COMM_SOURC
 
 file(COPY tests/run_tests.sh DESTINATION ${PROJECT_BINARY_DIR}
      FILE_PERMISSIONS OWNER_EXECUTE OWNER_READ OWNER_WRITE WORLD_WRITE)
+add_custom_target(run_tests.sh DEPENDS ${PROJECT_BINARY_DIR}/run_tests.sh)
 
 foreach(F IN ITEMS test-basic test-load test-memory test-sdcard test-z80)
     add_executable(${F} EXCLUDE_FROM_ALL tests/${F}.cc tests/tsupport.cc tests/tsupport.hh)
