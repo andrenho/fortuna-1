@@ -21,11 +21,6 @@ Reply Repl::parse_request(Request const& request)
             fortuna1_.hard_reset(buffer_);
             buffer_.sz = 0;
             break;
-        case MessageType::SystemReset:
-            buffer_.sz = 0;
-            send_reply(reply);
-            fortuna1_.system_reset();
-            break;
         case MessageType::FreeMem:
             reply.free_mem = free_ram();
             break;
@@ -118,6 +113,8 @@ void Repl::execute()
         do_message();
     else if (cmd >= ' ' && cmd <= '~')
         console_.execute(cmd);
+    else if (cmd == SYSTEM_RESET)
+        fortuna1_.system_reset();
     else
         serial_.send(InvalidCommand);
 }

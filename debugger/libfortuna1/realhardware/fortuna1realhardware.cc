@@ -109,10 +109,8 @@ void Fortuna1RealHardware::soft_reset()
 
 void Fortuna1RealHardware::system_reset()
 {
-    buffer_.sz = 0;
-    Request request(MessageType::SystemReset, buffer_);
-    serial_.request(request, buffer_);
-    std::this_thread::sleep_for(50ms);
+    serial_.send_byte(SYSTEM_RESET);
+    std::this_thread::sleep_for(100ms);
 }
 
 Z80_Info Fortuna1RealHardware::z80_info() const

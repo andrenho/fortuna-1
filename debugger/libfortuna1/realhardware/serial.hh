@@ -14,6 +14,8 @@ public:
 
     void set_log_bytes(bool v) { log_bytes_ = v; }
     void set_log_message(bool v) { log_message_ = v; }
+    
+    void send_byte(uint8_t byte) const;
 
 private:
     int  fd = -1;

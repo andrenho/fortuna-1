@@ -198,3 +198,12 @@ void Serial::check_deserialization_error(Message const& message)
             break;
     }
 }
+
+void Serial::send_byte(uint8_t byte) const
+{
+    int n = write(fd, &byte, 1);
+    if (n == 0)
+        throw std::runtime_error("Byte could not be sent.");
+    else if (n < 0)
+        throw std::runtime_error("Error sending byte: "s + strerror(errno));
+}

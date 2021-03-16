@@ -21,7 +21,6 @@ enum MessageClass : uint8_t {
     X(FreeMem,       0x0a) \
     X(SoftReset,     0x0b) \
     X(HardReset,     0x0c) \
-    X(SystemReset,   0x0d) \
                            \
     /* RAM */              \
     X(RamReadByte,   0x10) \
@@ -97,5 +96,7 @@ enum Result : uint8_t {
     DeserializationErrorInController = 3,
     SDCardError                      = 4,
 };
+
+#define SYSTEM_RESET 0xdd
 
 #endif //LIBF1COMM_DEFINES_HH
