@@ -9,6 +9,11 @@ int main(int argc, char* argv[])
     
     auto status = f->sdcard_status();
     printf("Last SD card stage: 0x%02X, response: 0x%02X\n", status.last_stage, status.last_response);
+
+    f->hard_reset();
+
+    status = f->sdcard_status();
+    printf("Last SD card stage after reset: 0x%02X, response: 0x%02X\n", status.last_stage, status.last_response);
     
     auto bytes = f->sdcard_read(0);
     printf("SDCard read. Last two bytes of block 0: %02X %02X\n", bytes[510], bytes[511]);
