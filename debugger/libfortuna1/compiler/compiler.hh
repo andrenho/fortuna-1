@@ -12,11 +12,11 @@ struct CompilerResult {
     Debug                      debug;
 };
 
-struct Source {
+struct SourceFile {
     std::string filename;
     uint16_t    expected_address;
 };
 
-CompilerResult compile(std::vector<Source> const& sources);
+CompilerResult compile(std::vector<SourceFile> const& sources);
 
 #endif //LIBFORTUNA1_COMPILER_HH

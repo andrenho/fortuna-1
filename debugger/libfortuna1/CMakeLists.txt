@@ -28,7 +28,7 @@ file(COPY tests/run_tests.sh DESTINATION ${PROJECT_BINARY_DIR}
      FILE_PERMISSIONS OWNER_EXECUTE OWNER_READ OWNER_WRITE WORLD_WRITE)
 add_custom_target(run_tests.sh DEPENDS ${PROJECT_BINARY_DIR}/run_tests.sh)
 
-foreach(F IN ITEMS test-basic test-load test-memory test-sdcard test-z80)
+foreach(F IN ITEMS test-basic test-load test-memory test-sdcard test-z80 test-compiler)
     add_executable(${F} EXCLUDE_FROM_ALL tests/${F}.cc tests/tsupport.cc tests/tsupport.hh)
     target_compile_options(${F} PUBLIC -I ..)
     target_link_libraries(${F} libfortuna1 ${Protobuf_LIBRARIES})
