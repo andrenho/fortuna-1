@@ -1,4 +1,9 @@
 #include "fortuna1realhardware.hh"
+
+#include <chrono>
+#include <thread>
+using namespace std::chrono_literals;
+
 #include "../replyexception.hh"
 #include "../libf1comm/messages/request.hh"
 
@@ -107,6 +112,7 @@ void Fortuna1RealHardware::system_reset()
     buffer_.sz = 0;
     Request request(MessageType::SystemReset, buffer_);
     serial_.request(request, buffer_);
+    std::this_thread::sleep_for(50ms);
 }
 
 Z80_Info Fortuna1RealHardware::z80_info() const

@@ -52,6 +52,7 @@ std::unique_ptr<Fortuna1> TestArgs::create_fortuna() const
     f->set_log_bytes(log_bytes);
     f->set_log_messages(log_messages);
     f->system_reset();
+    std::cout << "System reset.\n";
     return f;
 }
 

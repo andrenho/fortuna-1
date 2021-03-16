@@ -22,8 +22,9 @@ Reply Repl::parse_request(Request const& request)
             buffer_.sz = 0;
             break;
         case MessageType::SystemReset:
-            fortuna1_.system_reset();
             buffer_.sz = 0;
+            send_reply(reply);
+            fortuna1_.system_reset();
             break;
         case MessageType::FreeMem:
             reply.free_mem = free_ram();
