@@ -19,6 +19,7 @@ public:
     
     virtual void                     hard_reset() = 0;
     virtual void                     soft_reset() = 0;
+    virtual void                     system_reset() = 0;
     
     virtual void                     ram_write_byte(uint16_t addr, uint8_t data) = 0;
     virtual uint8_t                  ram_read_byte(uint16_t addr) const = 0;

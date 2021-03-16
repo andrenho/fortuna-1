@@ -24,6 +24,11 @@ void Fortuna1Emulator::soft_reset()
     emulator->cycle_count_ = 0;
 }
 
+void Fortuna1Emulator::system_reset()
+{
+    hard_reset();
+}
+
 void Fortuna1Emulator::test_debug_messages() const
 {
     for (int i = 0; i < 3; ++i)

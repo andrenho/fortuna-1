@@ -102,6 +102,13 @@ void Fortuna1RealHardware::soft_reset()
     serial_.request(request, buffer_);
 }
 
+void Fortuna1RealHardware::system_reset()
+{
+    buffer_.sz = 0;
+    Request request(MessageType::SystemReset, buffer_);
+    serial_.request(request, buffer_);
+}
+
 Z80_Info Fortuna1RealHardware::z80_info() const
 {
     buffer_.sz = 0;

@@ -15,6 +15,7 @@ public:
     
     void hard_reset() override;
     void soft_reset() override;
+    void system_reset() override;
     
     size_t free_mem() const override;
     

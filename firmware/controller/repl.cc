@@ -21,6 +21,10 @@ Reply Repl::parse_request(Request const& request)
             fortuna1_.hard_reset(buffer_);
             buffer_.sz = 0;
             break;
+        case MessageType::SystemReset:
+            fortuna1_.system_reset();
+            buffer_.sz = 0;
+            break;
         case MessageType::FreeMem:
             reply.free_mem = free_ram();
             break;
