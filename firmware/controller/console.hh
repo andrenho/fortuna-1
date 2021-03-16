@@ -16,6 +16,16 @@ private:
     bool      last_was_cycle_ = false;
     
     void print_z80_state(RAM const& ram, Z80 const& z80, bool print_header) const;
+    
+    struct Question {
+        const char* question;
+        uint8_t     size;
+        uint32_t    response = 0;
+    
+        Question(char const* question, uint8_t size) : question(question), size(size) {}
+    };
+    static bool ask_question_P(Question* question, size_t n_questions);
+    static bool ask_question_P(const char* question, uint8_t size, uint32_t* response);
 };
 
 

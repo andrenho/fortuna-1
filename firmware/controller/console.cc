@@ -1,5 +1,6 @@
 #include <limits.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 #include <avr/pgmspace.h>
 
@@ -9,44 +10,7 @@
 
 void Console::execute(char cmd)
 {
-    const int ERROR = INT_MIN;
-    
     auto error = [](){ printf_P(PSTR("Syntax error.\n")); };
-    
-    auto ask_value_P = [&](const char* question) -> int {
-        int value = 0;
-        printf_P(question);
-        putchar('?');
-        putchar(' ');
-        serial_.set_echo(true);
-        int n = scanf("%i", &value);
-        serial_.set_echo(true);
-        if (n != 1) {
-            error();
-            return ERROR;
-        } else {
-            putchar('\n');
-            return value;
-        }
-    };
-    
-    struct Values { int v1, v2; };
-    auto ask_two_values_P = [&](const char* question) -> Values {
-        Values values = { 0, 0 };
-        printf_P(question);
-        putchar('?');
-        putchar(' ');
-        serial_.set_echo(true);
-        int n = scanf("%i %i", &values.v1, &values.v2);
-        serial_.set_echo(true);
-        if (n != 2) {
-            error();
-            return { ERROR, 0 };
-        } else {
-            putchar('\n');
-            return values;
-        }
-    };
     
     putchar(cmd);
     putchar('\n');
@@ -78,21 +42,20 @@ void Console::execute(char cmd)
             printf_P(PSTR("System reset.\n"));
             break;
         case 'r': {
-            int addr = ask_value_P(PSTR("Addr"));
-            if (addr != ERROR)
+            uint32_t addr;
+            if (ask_question_P(PSTR("Address"), 2, &addr))
                 printf_P(PSTR("0x%02X\n"), fortuna1_.read_byte(addr));
         }
             break;
         case 'w': {
-            Values vv = ask_two_values_P(PSTR("Addr Data"));
-            if (vv.v1 != ERROR) {
-                printf_P(PSTR("0x%02X\n"), fortuna1_.write_byte(vv.v1, vv.v2));
-            }
+            Question q[] = { { PSTR("Address"), 4 }, { PSTR("Data"), 2 } };
+            if (ask_question_P(q, 2))
+                printf_P(PSTR("0x%02X\n"), fortuna1_.write_byte(q[0].response, q[1].response));
         }
             break;
         case 'd': {
-            int page = ask_value_P(PSTR("Page (0x100)"));
-            if (page != ERROR) {
+            uint32_t page;
+            if (ask_question_P(PSTR("Page (0x100)"), 2, &page)) {
                 if (!fortuna1_.read_block(page * 0x100, 0x100, [](uint16_t addr, uint8_t byte, void* page) {
                     if (addr % 0x10 == 0)
                         printf_P(PSTR("%04X : "), addr + (*(int*)page * 0x100));
@@ -108,8 +71,8 @@ void Console::execute(char cmd)
             printf_P(PSTR("Last stage: 0x%02X   last response: 0x%02X\n"), fortuna1_.sdcard().last_stage(), fortuna1_.sdcard().last_response());
             break;
         case 's': {
-            int block = ask_value_P(PSTR("Block"));
-            if (block == ERROR)
+            uint32_t block;
+            if (!ask_question_P(PSTR("Block"), 8, &block))
                 return;
             if (!fortuna1_.sdcard().read_page(block, buffer_)) {
                 printf_P(PSTR("Error reading SDCard.\n"));
@@ -186,5 +149,54 @@ void Console::print_z80_state(RAM const& ram, Z80 const& z80, bool add_header) c
              addr_s, data_s, bit(mbus.mreq), bit(mbus.we), bit(mbus.rd),
              bit(pins.int_), bit(pins.nmi), bit(pins.rst), bit(pins.busrq),
              bit(pins.halt), bit(pins.iorq), bit(pins.m1), bit(pins.busak), z80.cycle_count());
+}
+
+bool Console::ask_question_P(char const* question, uint8_t size, uint32_t* response)
+{
+    Question q[] = { { question, size } };
+    bool v = ask_question_P(q, 1);
+    *response = q[0].response;
+    return v;
+}
+
+bool Console::ask_question_P(Question* question, size_t n_questions)
+{
+    for (size_t i = 0; i < n_questions; ++i) {
+        printf_P(question[i].question);
+        printf_P(PSTR("? 0x"));
+        
+        size_t p = 0;
+        char buffer[9] = { 0 };
+        while (true) {
+            char c = getchar();
+            if (c >= 'a' && c <= 'f')
+                c += 'A' - 'a';  // convert to uppercase
+            if (c == '\n') {
+                putchar('\n');
+                break;
+            } else if (c == '\e') {
+                putchar('\n');
+                goto error;
+            } else if (((c >= '0' && c <= '9') || (c >= 'A' && c <= 'F')) && p <= question->size) {
+                putchar(c);
+                buffer[p++] = c;
+            } else if (c == '\b' && p > 0) {
+                putchar('\b');
+                buffer[p--] = '\0';
+            }
+        }
+        
+        // convert value
+        uint32_t value = strtoul(buffer, NULL, 16);
+        if (value == ULONG_MAX)
+            goto error;
+        else
+            question[i].response = value;
+    }
+    return true;
+    
+error:
+    printf_P(PSTR("Error.\n"));
+    return false;
 }
 
