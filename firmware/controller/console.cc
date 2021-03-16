@@ -180,7 +180,7 @@ bool Console::ask_question_P(Question* question, size_t n_questions)
             } else if (((c >= '0' && c <= '9') || (c >= 'A' && c <= 'F')) && p < question->size) {
                 putchar(c);
                 buffer[p++] = c;
-            } else if (c == '\b' && p > 0) {
+            } else if ((c == '\b' || c == 127) && p > 0) {
                 putchar('\b');
                 buffer[p--] = '\0';
             }
