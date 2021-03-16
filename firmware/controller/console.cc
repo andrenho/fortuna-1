@@ -171,13 +171,13 @@ bool Console::ask_question_P(Question* question, size_t n_questions)
             char c = getchar();
             if (c >= 'a' && c <= 'f')
                 c += 'A' - 'a';  // convert to uppercase
-            if (c == '\n') {
+            if (c == '\r') {
                 putchar('\n');
                 break;
             } else if (c == '\e') {
                 putchar('\n');
                 goto error;
-            } else if (((c >= '0' && c <= '9') || (c >= 'A' && c <= 'F')) && p <= question->size) {
+            } else if (((c >= '0' && c <= '9') || (c >= 'A' && c <= 'F')) && p < question->size) {
                 putchar(c);
                 buffer[p++] = c;
             } else if (c == '\b' && p > 0) {
