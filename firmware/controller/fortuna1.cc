@@ -1,5 +1,8 @@
 #include "fortuna1.hh"
 
+#include <stdio.h>
+#include <avr/pgmspace.h>
+
 void Fortuna1::hard_reset(Buffer& buffer)
 {
     z80_.powerdown();

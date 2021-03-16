@@ -87,7 +87,8 @@ void Z80::step(Z80::EachCycle f_each_cycle, void* data)
     
     while (m1 == 1) {
         cycle();
-        f_each_cycle(first, data);
+        if (f_each_cycle)
+            f_each_cycle(first, data);
         first = false;
         check_iorq();
         m1 = get_M1();
@@ -96,7 +97,8 @@ void Z80::step(Z80::EachCycle f_each_cycle, void* data)
     
     while (m1 == 0) {
         cycle();
-        f_each_cycle(false, data);
+        if (f_each_cycle)
+            f_each_cycle(false, data);
         check_iorq();
         m1 = get_M1();
     }

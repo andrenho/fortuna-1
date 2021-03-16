@@ -1,3 +1,6 @@
+#include <stdio.h>
+#include <avr/pgmspace.h>
+
 #include "devices/z80.hh"
 #include "io.hh"
 #include "devices/ram.hh"
@@ -19,7 +22,7 @@ int main()
     Fortuna1 fortuna1(ram, sdcard, z80);
 
     Repl repl(serial, fortuna1);
-    
+
     // serial.clrscr();
     while (true)
         repl.execute();
