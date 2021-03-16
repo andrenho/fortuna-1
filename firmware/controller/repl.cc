@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <avr/pgmspace.h>
+#include <avr/wdt.h>
 
 #include <libf1comm/defines.hh>
 #include <libf1comm/messages/request.hh>
@@ -11,7 +12,10 @@
 
 Reply Repl::parse_request(Request const& request)
 {
+    wdt_enable(WDTO_2S);
     Reply reply(request.message_type(), buffer_);
+    wdt_disable();
+
     switch (request.message_type()) {
         case MessageType::SoftReset:
             fortuna1_.soft_reset();
