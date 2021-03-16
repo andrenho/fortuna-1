@@ -36,8 +36,8 @@ Serial::Serial(const char* port)
     tty.c_iflag &= ~IGNBRK;
     tty.c_lflag = 0;
     tty.c_oflag = 0;
-    tty.c_cc[VMIN] = 1;   // should block
-    tty.c_cc[VTIME] = 0;
+    tty.c_cc[VMIN] = 0;    // should not block
+    tty.c_cc[VTIME] = 20;  // block for 20 seconds
     tty.c_iflag &= ~(IXON | IXOFF | IXANY);
     tty.c_cflag |= (CLOCAL | CREAD);
     tty.c_cflag &= ~(PARENB | PARODD);
@@ -102,7 +102,7 @@ Serial::send_request(Request const& request) const
 
 static int check(int n) {
     if (n == 0)
-        throw std::runtime_error("Unexpected end-of-file when receiving message");
+        throw std::runtime_error("Timeout: controller did not respond in 2 seconds.");
     else if (n < 0)
         throw std::runtime_error("Error receiving message: "s + strerror(errno));
     return n;
@@ -143,7 +143,9 @@ next_message:
 uint8_t Serial::input_byte(void* data) {
     auto* s = (Serial*) data;
     uint8_t byte;
-    read(s->fd, &byte, 1);
+    int n = read(s->fd, &byte, 1);
+    if (n == 0)
+        throw std::runtime_error("Timeout: controller did not respond in 2 seconds.");
     if (s->log_bytes_) {
         printf("%02X ", byte);
         fflush(stdout);
