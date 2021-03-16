@@ -181,7 +181,7 @@ bool Console::ask_question_P(Question* question, size_t n_questions)
                 putchar(c);
                 buffer[p++] = c;
             } else if ((c == '\b' || c == 127) && p > 0) {
-                putchar('\b');
+                printf_P(PSTR("\b \b"));
                 buffer[p--] = '\0';
             }
         }
