@@ -5,6 +5,7 @@
 #include <fstream>
 #include <unistd.h>
 #include <climits>
+#include <iostream>
 
 static std::string compiler_full_path()
 {
@@ -54,7 +55,7 @@ static void load_binary(std::string const& path, SourceFile const& file, Compile
         result.binary[i + file.expected_address] = data[i];
 }
 
-static std::unordered_map<size_t, std::string> find_filenames(std::string const& path)
+static std::unordered_map<size_t, std::string> find_filenames(std::string const& path, CompilerResult& result)
 {
     std::ifstream f(path + "/listing.txt");
     if (f.fail())
@@ -74,6 +75,7 @@ static std::unordered_map<size_t, std::string> find_filenames(std::string const&
                 std::string file_number_s = line.substr(1, 2);
                 size_t file_number = strtoul(file_number_s.c_str(), nullptr, 10);
                 ret[file_number] = line.substr(5);
+                result.debug.files[line.substr(5)] = 0;
             } else {
                 section = Other;
             }
@@ -116,15 +118,13 @@ static void load_listing(std::string const& path, SourceFile const& source, std:
             } catch (std::out_of_range&) {
                 throw std::runtime_error("Error in listing.txt: a sourceline line refers to a file number " + std::to_string(file_number) + ", which doesn't exist.");
             }
-            
-            // store line in `debug.source[filename]`
-            auto [it, _] = result.debug.source.insert_or_assign(filename, std::vector<SourceAddress>());
-            SourceAddresses& addresses = it->second;
-            if (addresses.size() < file_line) {
-                addresses.resize(file_line + 1, { "XXX" });
-            }
-            result.debug.source.at(filename)[file_line] = { sourceline };
     
+            // store line in `debug.source[filename]`
+            result.debug.files.at(filename) = std::max(result.debug.files.at(filename), file_line);
+            if (result.debug.source.find(filename) == result.debug.source.end())
+                result.debug.source.insert({ filename, SourceAddresses {} });
+            result.debug.source.at(filename).insert({ file_line, { sourceline } });
+            
         } else if (section == Source && line[0] == ' ') {  // address
             // read line
             std::string addr_s = line.substr(23, 4);
@@ -170,7 +170,7 @@ CompilerResult compile(std::vector<SourceFile> const& sources)
             break;
         }
         load_binary(path, source, compiler_result);
-        auto filenames = find_filenames(path);
+        auto filenames = find_filenames(path, compiler_result);
         load_listing(path, source, filenames, compiler_result);
         cleanup(path);
     }
