@@ -120,9 +120,10 @@ static void load_listing(std::string const& path, SourceFile const& source, std:
             // store line in `debug.source[filename]`
             auto [it, _] = result.debug.source.insert_or_assign(filename, std::vector<SourceAddress>());
             SourceAddresses& addresses = it->second;
-            if (addresses.size() < file_line)
-                addresses.resize(file_line + 1, { "" });
-            addresses[file_line] = { sourceline };
+            if (addresses.size() < file_line) {
+                addresses.resize(file_line + 1, { "XXX" });
+            }
+            result.debug.source.at(filename)[file_line] = { sourceline };
     
         } else if (section == Source && line[0] == ' ') {  // address
             // read line
@@ -135,7 +136,7 @@ static void load_listing(std::string const& path, SourceFile const& source, std:
             // store in source and location
             std::string const& filename = filenames.at(file_number);
             result.debug.source.at(filename)[file_line].address = addr;
-            result.debug.location[addr] = { filename, file_line };
+            result.debug.location.insert({ addr, { filename, file_line } });
             
             // add bytes
             size_t pos = 30;

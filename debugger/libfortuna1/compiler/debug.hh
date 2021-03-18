@@ -17,8 +17,8 @@ struct SourceAddress {
     
     friend std::ostream& operator<<(std::ostream& os, SourceAddress const& address_)
     {
-        os << "source: " << address_.source << " address_: " << address_.address.value_or(-1) << " bytes: ";
         os << std::hex << std::uppercase << std::setfill('0') << std::setw(2);
+        os << "source: \"" << address_.source << "\" address: " << address_.address.value_or(-1) << " bytes: ";
         for (uint8_t b: address_.bytes)
             os << (int) b << ' ';
         return os;

@@ -7,10 +7,10 @@
 #include "debug.hh"
 
 struct CompilerResult {
-    std::optional<std::string> error;
-    std::string                message;
-    std::vector<uint8_t>       binary;
-    Debug                      debug;
+    std::optional<std::string> error   {};
+    std::string                message {};
+    std::vector<uint8_t>       binary  {};
+    Debug                      debug   {};
 };
 
 struct SourceFile {
