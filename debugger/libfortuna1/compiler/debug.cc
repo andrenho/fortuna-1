@@ -1,6 +1,5 @@
 #include "debug.hh"
 
-
 bool
 SourceAddress::operator==(SourceAddress const& rhs) const
 {

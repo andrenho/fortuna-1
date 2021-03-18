@@ -142,6 +142,8 @@ static void load_listing(std::string const& path, SourceFile const& source, std:
             size_t pos = 30;
             std::vector<uint8_t>& bytes = result.debug.source.at(filename)[file_line].bytes;
             while (line.size() >= pos + 2) {
+                if (!isxdigit(line[pos]))
+                    break;
                 unsigned long byte = strtoul(line.substr(pos, 2).c_str(), nullptr, 16);
                 if (byte == ULONG_MAX)
                     break;
