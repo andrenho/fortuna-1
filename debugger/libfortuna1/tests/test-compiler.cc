@@ -44,10 +44,28 @@ main:
     std::cout << "Compilation error: ";
     r = compile({ { create_code(" invalid"), 0x0 } });
     ASSERT_Q(true, r.error.has_value());
-    ASSERT_Q(true, r.error.value().size() > 0);
+    ASSERT_Q(true, !r.error.value().empty());
     std::cout << '\n';
     
-    // TODO - test import files
+    // test import files
+    std::cout << "Import files: ";
+    create_code(R"(
+dest:
+    ret
+    )", 2);
+    r = compile({ { create_code(R"(
+    jp dest
+    include sample2.z80
+    )"), 0x0 } });
+    if (r.error.has_value()) {
+        std::cerr << r.error.value() << "\n";
+        exit(EXIT_FAILURE);
+    }
+    ASSERT_Q((std::vector<uint8_t>{ 0xc3, 0x3, 0x0, 0xc9 }), r.binary);
+    ASSERT_Q((Files { { "sample1.z80", 4 }, { "sample2.z80", 4 } }), r.debug.files);
+    ASSERT_Q((SourceAddress  { "dest:", {}, {} }), r.debug.source.at("sample2.z80").at(2));
+    ASSERT_Q((SourceAddress  { "    jp dest", 0, { 0xc3, 0x3, 0x0 } }), r.debug.source.at("sample1.z80").at(2));
+    ASSERT_Q((SourceLine { "sample2.z80", 3 }), r.debug.location.at(3));
     
     // TODO - test multiple files
 }
