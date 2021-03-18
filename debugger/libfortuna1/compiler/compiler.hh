@@ -6,11 +6,16 @@
 #include <vector>
 #include "debug.hh"
 
+struct Binary {
+    std::vector<uint8_t> data;
+    uint16_t             address;
+};
+
 struct CompilerResult {
-    std::optional<std::string> error   {};
-    std::string                message {};
-    std::vector<uint8_t>       binary  {};
-    Debug                      debug   {};
+    std::optional<std::string>              error    {};
+    std::string                             message  {};
+    std::unordered_map<std::string, Binary> binaries {};
+    Debug                                   debug    {};
 };
 
 struct SourceFile {

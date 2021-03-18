@@ -43,16 +43,19 @@ static std::pair<std::string, std::string> find_project_path(std::string const& 
     return { pname, bname };
 }
 
-static void load_binary(std::string const& path, SourceFile const& file, CompilerResult& result)
+static void load_binary(std::string const& path, std::string const& file, SourceFile const& source, CompilerResult& result)
 {
     std::ifstream instream(path + "/rom.bin", std::ios::in | std::ios::binary);
     if (instream.fail())
         throw std::runtime_error("File rom.bin could not be open.");
     std::vector<uint8_t> data((std::istreambuf_iterator<char>(instream)), std::istreambuf_iterator<char>());
-    if (result.binary.size() < data.size() + file.expected_address)
-        result.binary.resize(data.size() + file.expected_address);
+    
+    Binary& binary = result.binaries[file] = {};
+    if (binary.data.size() < data.size())
+        binary.data.resize(data.size());
     for (size_t i = 0; i < data.size(); ++i)
-        result.binary[i + file.expected_address] = data[i];
+        binary.data[i] = data[i];
+    binary.address = source.expected_address;
 }
 
 static std::unordered_map<size_t, std::string> find_filenames(std::string const& path, CompilerResult& result)
@@ -171,7 +174,7 @@ CompilerResult compile(std::vector<SourceFile> const& sources)
             compiler_result.error = e.what();
             break;
         }
-        load_binary(path, source, compiler_result);
+        load_binary(path, file, source, compiler_result);
         auto filenames = find_filenames(path, compiler_result);
         load_listing(path, source, filenames, compiler_result);
         cleanup(path);
