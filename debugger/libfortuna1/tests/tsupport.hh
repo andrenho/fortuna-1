@@ -30,14 +30,14 @@ std::ostream& operator<<(std::ostream& os, std::vector<uint8_t> const& bytes);
 #define ASSERT_Q(expected, received) { \
     auto __e = expected;                       \
     auto __r = received;                       \
-    if (__e == __r) { std::cout << "\e[0;32m✔\e[0m"; fflush(stdout); } else { std::cout << "\e[0;31mX\e[0m   Expected: " << __e << "  Received: " << __r << "\n"; exit(1); } \
+    if (std::tie(__e) == std::tie(__r)) { std::cout << "\e[0;32m✔\e[0m"; fflush(stdout); } else { std::cout << "\e[0;31mX\e[0m   Expected: " << __e << "  Received: " << __r << "\n"; exit(1); } \
 }
 
 #define ASSERT_EQ(msg, expected, received) { \
     std::cout << msg << "... ";              \
     auto __e = expected;                       \
     auto __r = received;                       \
-    if (__e == __r) { std::cout << "\e[0;32m✔\e[0m\n"; } else { std::cout << "\e[0;31mX\e[0m   Expected: " << __e << "  Received: " << __r << "\n"; exit(1); } \
+    if (std::tie(__e) == std::tie(__r)) { std::cout << "\e[0;32m✔\e[0m\n"; } else { std::cout << "\e[0;31mX\e[0m   Expected: " << __e << "  Received: " << __r << "\n"; exit(1); } \
 }
 
 #endif //LIBFORTUNA1_TSUPPORT_HH

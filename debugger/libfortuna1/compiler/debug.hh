@@ -6,16 +6,21 @@
 #include <vector>
 #include <unordered_map>
 #include <ostream>
+#include <iomanip>
 
 struct SourceAddress {
     std::string             source;
-    std::optional<uint16_t> address;
+    std::optional<uint16_t> address {};
+    std::vector<uint8_t>    bytes   {};
     
-    bool operator==(SourceAddress const& rhs) const { return std::tie(source, address) == std::tie(rhs.source, rhs.address); }
+    bool operator==(SourceAddress const& rhs) const { return std::tie(source, address, bytes) == std::tie(rhs.source, rhs.address, rhs.bytes); }
     
     friend std::ostream& operator<<(std::ostream& os, SourceAddress const& address_)
     {
-        os << "source: " << address_.source << " address_: " << address_.address.value_or(-1);
+        os << "source: " << address_.source << " address_: " << address_.address.value_or(-1) << " bytes: ";
+        os << std::hex << std::uppercase << std::setfill('0') << std::setw(2);
+        for (uint8_t b: address_.bytes)
+            os << (int) b << ' ';
         return os;
     }
 };
