@@ -40,7 +40,12 @@ main:
     ASSERT_Q((SourceLine { "sample1.z80", 5 }), r.debug.location.at(2));
     std::cout << '\n';
     
-    // TODO - compilation error
+    // compilation error
+    std::cout << "Compilation error: ";
+    r = compile({ { create_code(" invalid"), 0x0 } });
+    ASSERT_Q(true, r.error.has_value());
+    ASSERT_Q(true, r.error.value().size() > 0);
+    std::cout << '\n';
     
     // TODO - test import files
     
