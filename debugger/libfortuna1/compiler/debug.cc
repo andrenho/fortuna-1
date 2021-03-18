@@ -31,3 +31,10 @@ std::ostream& operator<<(std::ostream& os, Files const& files)
         os << file.first << ": " << file.second << ", ";
     return os;
 }
+
+std::ostream& operator<<(std::ostream& os, Symbols const& symbols)
+{
+    for (auto const& symbol: symbols)
+        os << symbol.first << ": " << symbol.second << ", ";
+    return os;
+}

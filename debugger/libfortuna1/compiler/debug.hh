@@ -41,5 +41,6 @@ struct Debug {
 };
 
 std::ostream& operator<<(std::ostream& os, Files const& files);
+std::ostream& operator<<(std::ostream& os, Symbols const& symbols);
 
 #endif

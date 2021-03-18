@@ -38,6 +38,7 @@ main:
     ASSERT_Q((SourceAddress  { "main:", {}, {} }), r.debug.source.at("sample1.z80").at(3));
     ASSERT_Q((SourceAddress  { "    jp main", 2, { 0xc3, 0x1, 0x0 } }), r.debug.source.at("sample1.z80").at(5));
     ASSERT_Q((SourceLine { "sample1.z80", 5 }), r.debug.location.at(2));
+    ASSERT_Q((Symbols { { "main", 1 } }), r.debug.symbols);
     std::cout << '\n';
     
     // compilation error
@@ -66,6 +67,7 @@ dest:
     ASSERT_Q((SourceAddress  { "dest:", {}, {} }), r.debug.source.at("sample2.z80").at(2));
     ASSERT_Q((SourceAddress  { "    jp dest", 0, { 0xc3, 0x3, 0x0 } }), r.debug.source.at("sample1.z80").at(2));
     ASSERT_Q((SourceLine { "sample2.z80", 3 }), r.debug.location.at(3));
+    ASSERT_Q((Symbols { { "dest", 3 } }), r.debug.symbols);
     std::cout << '\n';
     
     // test multiple files
