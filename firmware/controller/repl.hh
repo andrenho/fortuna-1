@@ -23,6 +23,7 @@ private:
     void    send_reply(Reply& reply);
     Request recv_request(bool* status);
     Reply   parse_request(Request const& request);
+    void    print_reset_result(ResetResult result);
 
     Serial&   serial_;
     Fortuna1& fortuna1_;

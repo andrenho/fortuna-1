@@ -18,11 +18,11 @@ Reply Repl::parse_request(Request const& request)
 
     switch (request.message_type()) {
         case MessageType::SoftReset:
-            fortuna1_.soft_reset();
+            print_reset_result(fortuna1_.soft_reset());
             buffer_.sz = 0;
             break;
         case MessageType::HardReset:
-            fortuna1_.hard_reset(buffer_);
+            print_reset_result(fortuna1_.hard_reset(buffer_));
             buffer_.sz = 0;
             break;
         case MessageType::FreeMem:
@@ -66,7 +66,7 @@ Reply Repl::parse_request(Request const& request)
             break;
         case MessageType::SDCard_Read:
             if (!fortuna1_.sdcard().read_page(request.sdcard_block, buffer_))
-                reply.result = SDCardError;
+                reply.result = SDCardReadError;
             reply.sd_status = { static_cast<uint8_t>(fortuna1_.sdcard().last_stage()), fortuna1_.sdcard().last_response() };
             break;
         case MessageType::Z80_CpuInfo:
@@ -121,5 +121,23 @@ void Repl::execute()
         fortuna1_.system_reset();
     else
         serial_.send(InvalidCommand);
+}
+
+void Repl::print_reset_result(ResetResult result)
+{
+    switch (result) {
+        case ResetResult::Ok:
+            printf_P(PSTR("Ok.\n"));
+            break;
+        case ResetResult::SDCardInitializationError:
+            printf_P(PSTR("SD card initialization error.\n"));
+            break;
+        case ResetResult::SDCardReadError:
+            printf_P(PSTR("SD card boot read error.\n"));
+            break;
+        case ResetResult::DiskNotBootable:
+            printf_P(PSTR("Ok (disk not bootable).\n"));
+            break;
+    }
 }
 

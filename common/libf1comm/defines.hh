@@ -94,7 +94,8 @@ enum Result : uint8_t {
     InvalidRequest                   = 1,
     WrongChecksumDMA                 = 2,
     DeserializationErrorInController = 3,
-    SDCardError                      = 4,
+    SDCardInitializationError        = 4,
+    SDCardReadError                  = 5,
 };
 
 #define SYSTEM_RESET 0xdd
