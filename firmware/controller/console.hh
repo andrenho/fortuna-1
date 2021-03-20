@@ -16,6 +16,7 @@ private:
     bool      last_was_cycle_ = false;
     
     void print_z80_state(RAM const& ram, Z80 const& z80, bool print_header) const;
+    void print_reset_status(ResetStatus r) const;
     
     struct Question {
         const char* question;

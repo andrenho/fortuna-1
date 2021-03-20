@@ -21,7 +21,7 @@ void Console::execute(char cmd)
     switch (cmd) {
         case 'h':
         case '?':
-            printf_P(PSTR("Ctrl:    [f] bytes free   [R] reset       [t] soft reset\n"));
+            printf_P(PSTR("Ctrl:    [f] bytes free   [R] reset       [t] soft reset            [!] system reset\n"));
             printf_P(PSTR("RAM:     [r] read byte    [w] write byte  [W] write multiple bytes  [d] dump memory\n"));
             printf_P(PSTR("SdCard:  [l] last status  [s] dump block\n"));
             printf_P(PSTR("Z80:     [i] CPU info     [p] step        [P] step + print cycles\n"));
@@ -34,12 +34,10 @@ void Console::execute(char cmd)
             printf_P(PSTR("%d bytes free.\n"), free_ram());
             break;
         case 't':
-            fortuna1_.soft_reset();
-            printf_P(PSTR("System soft reset.\n"));
+            print_reset_status(fortuna1_.soft_reset());
             break;
         case 'R':
-            fortuna1_.hard_reset(buffer_);
-            printf_P(PSTR("System reset.\n"));
+            print_reset_status(fortuna1_.hard_reset(buffer_));
             break;
         case 'r': {
             uint32_t addr;
@@ -203,3 +201,20 @@ error:
     return false;
 }
 
+void Console::print_reset_status(ResetStatus r) const
+{
+    switch (r) {
+        case ResetStatus::Ok:
+            printf_P(PSTR("Ok.\n"));
+            break;
+        case ResetStatus::SDCardInitError:
+            printf_P(PSTR("SDCard initialization error.\n"));
+            break;
+        case ResetStatus::SDCardReadError:
+            printf_P(PSTR("SDCard read error.\n"));
+            break;
+        case ResetStatus::SDCardNotBootable:
+            printf_P(PSTR("SDCard not bootable.\n"));
+            break;
+    }
+}

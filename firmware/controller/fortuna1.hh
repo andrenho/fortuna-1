@@ -5,6 +5,10 @@
 #include "devices/sdcard.hh"
 #include "devices/z80.hh"
 
+enum class ResetStatus {
+    Ok, SDCardInitError, SDCardReadError, SDCardNotBootable,
+};
+
 class Fortuna1 {
 public:
     Fortuna1(RAM& ram, SDCard& sdcard, Z80& z80) : ram_(ram), sdcard_(sdcard), z80_(z80) {}
@@ -19,9 +23,9 @@ public:
     SDCard& sdcard() const { return sdcard_; }
     Z80&    z80() const { return z80_; }
     
-    void    hard_reset(Buffer& buffer);
-    void    soft_reset();
-    void    system_reset();
+    ResetStatus hard_reset(Buffer& buffer);
+    ResetStatus soft_reset();
+    void        system_reset();
 
 private:
     RAM& ram_;

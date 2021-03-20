@@ -1,21 +1,39 @@
 #include "fortuna1.hh"
 
-void Fortuna1::hard_reset(Buffer& buffer)
+ResetStatus Fortuna1::hard_reset(Buffer& buffer)
 {
+    bool sdcard_read_ok = false;
+    bool bootable = false;
+
     z80_.powerdown();
-    sdcard_.initialize();
-    
-    sdcard_.read_page(0, buffer);
-    ram_.write_block(0, 512, [](uint16_t idx, void* data) { return ((uint8_t*) data)[idx]; }, buffer.data);
+
+    bool sdcard_init_ok = sdcard_.initialize();
+    if (sdcard_init_ok)
+        sdcard_read_ok = sdcard_.read_page(0, buffer);
+
+    if (sdcard_read_ok) {
+        bootable = (buffer.data[0x1fe] == 0x55 && buffer.data[0x1ff] == 0xaa);
+        if (bootable)
+            ram_.write_block(0, 512, [](uint16_t idx, void* data) { return ((uint8_t*) data)[idx]; }, buffer.data);
+    }
     
     z80_.startup();
+
+    if (!sdcard_init_ok)
+        return ResetStatus::SDCardInitError;
+    else if (!sdcard_read_ok)
+        return ResetStatus::SDCardReadError;
+    else if (!bootable)
+        return ResetStatus::SDCardNotBootable;
+    return ResetStatus::Ok;
 }
 
-void Fortuna1::soft_reset()
+ResetStatus Fortuna1::soft_reset()
 {
     z80_.powerdown();
     sdcard_.initialize();
     z80_.startup();
+    return ResetStatus::Ok;
 }
 
 void Fortuna1::system_reset()
