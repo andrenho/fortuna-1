@@ -40,4 +40,6 @@ std::ostream& operator<<(std::ostream& os, std::vector<uint8_t> const& bytes);
     if (std::tie(__e) == std::tie(__r)) { std::cout << "\e[0;32m✔\e[0m\n"; } else { std::cout << "\e[0;31mX\e[0m   Expected: " << __e << "  Received: " << __r << "\n"; exit(1); } \
 }
 
+void run_code(std::unique_ptr<Fortuna1>& f, std::string const& code, size_t num_steps);
+
 #endif //LIBFORTUNA1_TSUPPORT_HH

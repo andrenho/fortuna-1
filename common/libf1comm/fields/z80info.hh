@@ -7,6 +7,7 @@
 struct Z80_Info {
     uint32_t cycle_count;
     uint16_t pc;
+    uint8_t  last_printed_char;
     
     void serialize(Message::SerializationFunction f, void* data) const;
     static Z80_Info unserialize(Message::DeserializationFunction f, void* data, uint16_t* sum1, uint16_t* sum2);

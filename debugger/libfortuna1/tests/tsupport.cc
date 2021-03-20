@@ -1,11 +1,13 @@
 #include "tsupport.hh"
 
-#include <getopt.h>
-
-#include <realhardware/fortuna1realhardware.hh>
-#include <emulator/fortuna1emulator.hh>
 #include <iostream>
 #include <iomanip>
+#include <getopt.h>
+#include <unistd.h>
+
+#include "realhardware/fortuna1realhardware.hh"
+#include "emulator/fortuna1emulator.hh"
+#include "compiler/compiler.hh"
 
 std::ostream& operator<<(std::ostream& os, std::vector<uint8_t> const& bytes)
 {
@@ -63,4 +65,22 @@ void TestArgs::show_help(const char* program)
     std::cout << "    -h                 This help\n";
     std::cout << "    -b                 Log bytes\n";
     std::cout << "    -m                 Log messages\n";
+}
+
+void run_code(std::unique_ptr<Fortuna1>& f, std::string const& code, size_t num_steps)
+{
+    std::string filename = "/tmp/testcode.z80";
+    std::ofstream file(filename);
+    file.write(code.data(), code.size());
+    file.close();
+    
+    CompilerResult r = compile({ { filename, 0x0 } });
+    if (r.error.has_value())
+        throw std::runtime_error(r.error.value());
+    f->ram_write_buffer(0x0, r.binaries.at("testcode.z80").data);
+    f->soft_reset();
+    for (size_t i = 0; i < num_steps; ++i)
+        f->z80_step();
+    
+    unlink("/tmp/testcode.z80");
 }

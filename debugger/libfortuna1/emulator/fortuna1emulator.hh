@@ -34,6 +34,7 @@ public:
     Z80_Info z80_step() override;
     
     void increment_cycle_counter() { ++cycle_count_; }
+    void set_last_printed_char(uint8_t c) { last_printed_char_ = c; }
 
 private:
     uint8_t                     ram_[64 * 1024] = {0};
@@ -41,6 +42,7 @@ private:
     std::optional<std::fstream> sd_image_stream_ {};
     Z80                         z80_ {};
     uint32_t                    cycle_count_ = 0;
+    uint8_t                     last_printed_char_ = 0;
 };
 
 #endif

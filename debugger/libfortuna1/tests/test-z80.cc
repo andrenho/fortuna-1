@@ -38,4 +38,10 @@ int main(int argc, char* argv[])
     ASSERT_EQ("NOP: PC == 2", 2, f->z80_step().pc);
     ASSERT_EQ("JP $C3C3: PC == 0xC3C3", 0xc3c3, f->z80_step().pc);
     
+    // last printed char
+    run_code(f, R"(
+        ld a, 'H'
+        out (1), a)", 1);
+    Z80_Info info = f->z80_step();
+    ASSERT_EQ("Write to string: check last printed char = 'H'", 'H', info.last_printed_char);
 }

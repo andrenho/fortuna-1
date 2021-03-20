@@ -1,5 +1,7 @@
 #include "z80/Z80.h"
 
+#define DEVICE_TERMINAL   0x1
+
 #include "fortuna1emulator.hh"
 
 extern Fortuna1Emulator* emulator;
@@ -23,7 +25,11 @@ byte RdZ80(word Addr)
 
 void OutZ80(word Port, byte Value)
 {
-    (void) Port; (void) Value;
+    switch (Port & 0xff) {
+        case DEVICE_TERMINAL:
+            emulator->set_last_printed_char(Value);
+            break;
+    }
 }
 
 byte InZ80(word Port)
