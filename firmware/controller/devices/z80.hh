@@ -2,6 +2,7 @@
 #define CONTROLLER_Z80_HH
 
 #include "ram.hh"
+#include "terminal.hh"
 
 struct Z80Pins {
     // inputs
@@ -21,7 +22,7 @@ class Z80 {
 public:
     using EachCycle = void(*)(bool first, void* data);
     
-    explicit Z80(RAM& ram);
+    Z80(RAM& ram, Terminal& terminal);
     
     void powerdown();
     void startup();
@@ -37,12 +38,17 @@ public:
     Z80Pins state() const;
 
 private:
-    RAM&     ram_;
-    bool     power_ = false;
-    uint32_t cycle_count_ = 0;
-    uint16_t pc_ = 0;
+    RAM&      ram_;
+    Terminal& terminal_;
+    bool      power_ = false;
+    uint32_t  cycle_count_ = 0;
+    uint16_t  pc_ = 0;
     
     void check_iorq();
+    
+    void out(uint16_t addr, uint8_t data);
+    
+    uint8_t in(uint16_t addr);
 };
 
 #endif

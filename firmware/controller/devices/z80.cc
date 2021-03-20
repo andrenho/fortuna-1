@@ -1,9 +1,10 @@
 #include "z80.hh"
 
 #include "io.hh"
+#include "ram.hh"
 
-Z80::Z80(RAM& ram)
-        : ram_(ram)
+Z80::Z80(RAM& ram, Terminal& terminal)
+        : ram_(ram), terminal_(terminal)
 {
     set_BUSREQ(1);
     set_NMI(1);
@@ -75,11 +76,34 @@ Z80Pins Z80::state() const
 
 void Z80::check_iorq()
 {
-
+    if (get_IORQ() == 0) {
+        uint16_t addr = ram_.addr_bus();
+        auto m = ram_.memory_bus();
+        if (m.we == 0) {  // OUT
+            uint8_t data = ram_.data_bus();
+            out(addr, data);
+        } else if (m.rd == 0) {  // IN
+            ram_.set_data_bus(in(addr));
+        } else {  // INTERRUPT
+            /*
+            if (last_interrupt != -1) {
+                data_bus_takeover();
+                memory_set_data(last_interrupt);
+                last_interrupt = -1;
+                set_INT(1);
+            }
+            */
+        }
+        
+        while (get_IORQ() == 0)
+            cycle();
+    }
 }
 
 void Z80::step(Z80::EachCycle f_each_cycle, void* data)
 {
+    terminal_.set_last_printed_char(0);
+    
     bool first = true;
     bool m1 = 1;
     
@@ -145,5 +169,17 @@ void Z80::step(Z80::EachCycle f_each_cycle, void* data)
 //    uint8_t c = last_printed_char;
 //    last_printed_char = 0;
 //    return c;
+}
+
+void Z80::out(uint16_t addr, uint8_t data)
+{
+    if ((addr & 0xff) == 0x1) {     // video OUT (print char)
+        terminal_.set_last_printed_char(data);
+    }
+}
+
+uint8_t Z80::in(uint16_t addr)
+{
+    return 0;
 }
 

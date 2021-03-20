@@ -90,9 +90,13 @@ void Console::execute(char cmd)
                      fortuna1_.z80().powered() ? "yes" : "no",
                      fortuna1_.z80().cycle_count(), fortuna1_.z80().pc());
             break;
-        case 'p':
-            fortuna1_.z80().step();
-            printf_P(PSTR("PC = %04X\n"), fortuna1_.z80().pc());
+        case 'p': {
+                fortuna1_.z80().step();
+                printf_P(PSTR("PC = %04X\n"), fortuna1_.z80().pc());
+                uint8_t lpc = fortuna1_.terminal().last_printed_char();
+                if (lpc != 0)
+                    printf_P(PSTR("Printed char: %02X %c\n"), lpc, lpc > 32 && lpc < 127 ? lpc : ' ');
+            }
             break;
         case 'P': {
                 struct Ptr {

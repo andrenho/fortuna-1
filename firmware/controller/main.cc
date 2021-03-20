@@ -1,7 +1,3 @@
-#include <stdio.h>
-#include <avr/pgmspace.h>
-#include <avr/interrupt.h>
-
 #include "devices/z80.hh"
 #include "io.hh"
 #include "devices/ram.hh"
@@ -19,8 +15,9 @@ int main()
 
     RAM ram(spi);
     SDCard sdcard(spi);
-    Z80 z80(ram);
-    Fortuna1 fortuna1(ram, sdcard, z80);
+    Terminal terminal;
+    Z80 z80(ram, terminal);
+    Fortuna1 fortuna1(ram, sdcard, z80, terminal);
 
     Repl repl(serial, fortuna1);
 

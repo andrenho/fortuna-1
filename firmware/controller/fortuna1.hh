@@ -1,6 +1,7 @@
 #ifndef CONTROLLER_FORTUNA1_HH
 #define CONTROLLER_FORTUNA1_HH
 
+#include "devices/terminal.hh"
 #include "devices/ram.hh"
 #include "devices/sdcard.hh"
 #include "devices/z80.hh"
@@ -8,7 +9,8 @@
 
 class Fortuna1 {
 public:
-    Fortuna1(RAM& ram, SDCard& sdcard, Z80& z80) : ram_(ram), sdcard_(sdcard), z80_(z80) {}
+    Fortuna1(RAM& ram, SDCard& sdcard, Z80& z80, Terminal& terminal)
+        : ram_(ram), sdcard_(sdcard), terminal_(terminal), z80_(z80) {}
     
     uint8_t write_byte(uint16_t addr, uint8_t data);
     uint8_t read_byte(uint16_t addr) const;
@@ -18,6 +20,7 @@ public:
     
     RAM&    ram() const { return ram_; }
     SDCard& sdcard() const { return sdcard_; }
+    Terminal& terminal() const { return terminal_; }
     Z80&    z80() const { return z80_; }
     
     ResetStatus hard_reset(Buffer& buffer);
@@ -27,6 +30,7 @@ public:
 private:
     RAM& ram_;
     SDCard& sdcard_;
+    Terminal& terminal_;
     Z80& z80_;
 };
 
