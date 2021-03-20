@@ -15,6 +15,7 @@ public:
         uint8_t      ram_byte;
         SDCardStatus sd_status;
         Z80_Info     z80_info;
+        ResetStatus  reset_status;
     };
     
     void deserialize_detail(DeserializationFunction f, void* data, uint16_t* sum1, uint16_t* sum2) override;

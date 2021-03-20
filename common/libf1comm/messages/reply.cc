@@ -20,6 +20,10 @@ void Reply::serialize_detail(Message::SerializationFunction f, void* data) const
         case SDCard_Read:
             sd_status.serialize(f, data);
             break;
+        case SoftReset:
+        case HardReset:
+            serialize_u8(reset_status, f, data);
+            break;
         case Z80_CpuInfo:
         case Z80_Step:
             z80_info.serialize(f, data);
@@ -43,6 +47,10 @@ void Reply::deserialize_detail(Message::DeserializationFunction f, void* data, u
         case SDCard_Status:
         case SDCard_Read:
             sd_status = SDCardStatus::unserialize(f, data, sum1, sum2);
+            break;
+        case SoftReset:
+        case HardReset:
+            reset_status = static_cast<ResetStatus>(unserialize_u8(f, data, sum1, sum2));
             break;
         case Z80_CpuInfo:
         case Z80_Step:
@@ -77,6 +85,11 @@ bool Reply::compare(Message const& message) const
             if (sd_status != other.sd_status)
                 eq = false;
             break;
+        case SoftReset:
+        case HardReset:
+            if (reset_status != other.reset_status)
+                eq = false;
+            break;
         case Z80_CpuInfo:
         case Z80_Step:
             if (z80_info != other.z80_info)
@@ -101,6 +114,10 @@ void Reply::debug_detail() const
         case SDCard_Status:
         case SDCard_Read:
             sd_status.debug_detail();
+            break;
+        case SoftReset:
+        case HardReset:
+            std::cout << "  reset_status: " << reset_status_names.at(reset_status) << "\n";
             break;
         case Z80_Step:
         case Z80_CpuInfo:

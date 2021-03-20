@@ -54,37 +54,6 @@ inline const std::unordered_map<uint8_t, std::string> message_type_names = {
 };
 #endif
 
-/*
-enum MessageType : uint8_t {
-    Nop             = 0x00,
-    
-    // tests
-    TestDebug       = 0x01,
-    TestDMA         = 0x02,
-    
-    // general
-    FreeMem         = 0x0a,
-    Reset           = 0x0b,
-    
-    // RAM
-    RamReadByte     = 0x10,
-    RamWriteByte    = 0x11,
-    RamReadBlock    = 0x12,
-    RamWriteBlock   = 0x13,
-    DataReadBus     = 0x14,
-    DataWriteBus    = 0x15,
-    
-    // SDCard
-    SDCard_Status   = 0x20,
-    SDCard_Read     = 0x21,
-    
-    // Z80
-    Z80_CpuInfo     = 0x30,
-    
-    Undefined       = 0xff,
-};
- */
-
 enum class DeserializationError {
     NoErrors, InvalidMessageClass, ChecksumDoesNotMatch, FinalByteNotReceived, BufferDataTooLarge,
 };
@@ -96,6 +65,27 @@ enum Result : uint8_t {
     DeserializationErrorInController = 3,
     SDCardError                      = 4,
 };
+
+#define RESET_STATUS           \
+    X(Ok,                0xa0) \
+    X(SDCardInitError,   0xa1) \
+    X(SDCardReadError,   0xa2) \
+    X(SDCardNotBootable, 0xa3)
+
+enum ResetStatus : uint8_t {
+#define X(name, value) name = value,
+    RESET_STATUS
+#undef X
+};
+
+#ifndef EMBEDDED
+
+inline const std::unordered_map<uint8_t, std::string> reset_status_names = {
+#define X(name, value) { value, #name },
+    RESET_STATUS
+#undef X
+};
+#endif
 
 #define SYSTEM_RESET 0xdd
 

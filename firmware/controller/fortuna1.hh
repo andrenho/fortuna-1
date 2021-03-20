@@ -4,10 +4,7 @@
 #include "devices/ram.hh"
 #include "devices/sdcard.hh"
 #include "devices/z80.hh"
-
-enum class ResetStatus {
-    Ok, SDCardInitError, SDCardReadError, SDCardNotBootable,
-};
+#include "libf1comm/defines.hh"
 
 class Fortuna1 {
 public:

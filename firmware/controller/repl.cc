@@ -18,11 +18,11 @@ Reply Repl::parse_request(Request const& request)
 
     switch (request.message_type()) {
         case MessageType::SoftReset:
-            fortuna1_.soft_reset();
+            reply.reset_status = fortuna1_.soft_reset();
             buffer_.sz = 0;
             break;
         case MessageType::HardReset:
-            fortuna1_.hard_reset(buffer_);
+            reply.reset_status = fortuna1_.hard_reset(buffer_);
             buffer_.sz = 0;
             break;
         case MessageType::FreeMem:
