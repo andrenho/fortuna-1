@@ -10,18 +10,27 @@ Fortuna1Emulator::Fortuna1Emulator()
     emulator = this;
 }
 
-void Fortuna1Emulator::hard_reset()
+ResetStatus Fortuna1Emulator::hard_reset()
 {
     ResetZ80(&z80_);
-    auto boot = sdcard_read(0);
-    ram_write_buffer(0, std::vector<uint8_t>(boot.begin(), boot.end()));
     emulator->cycle_count_ = 0;
+    try {
+        auto boot = sdcard_read(0);
+        ram_write_buffer(0, std::vector<uint8_t>(boot.begin(), boot.end()));
+        return (boot[0x1fe] == 0x55 && boot[0x1ff] == 0xaa) ? ResetStatus::Ok : ResetStatus::SDCardNotBootable;
+    } catch (std::runtime_error&) {
+        return ResetStatus::SDCardInitError;
+    }
 }
 
-void Fortuna1Emulator::soft_reset()
+ResetStatus Fortuna1Emulator::soft_reset()
 {
     ResetZ80(&z80_);
     emulator->cycle_count_ = 0;
+    if (sd_image_stream_.has_value())
+        return ResetStatus::Ok;
+    else
+        return ResetStatus::SDCardInitError;
 }
 
 void Fortuna1Emulator::system_reset()

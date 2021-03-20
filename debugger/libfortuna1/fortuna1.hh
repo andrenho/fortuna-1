@@ -17,8 +17,8 @@ public:
     virtual void        test_debug_messages() const = 0;
     virtual std::string test_dma() const = 0;
     
-    virtual void                     hard_reset() = 0;
-    virtual void                     soft_reset() = 0;
+    virtual ResetStatus              hard_reset() = 0;
+    virtual ResetStatus              soft_reset() = 0;
     virtual void                     system_reset() = 0;
     
     virtual void                     ram_write_byte(uint16_t addr, uint8_t data) = 0;

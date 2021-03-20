@@ -10,7 +10,7 @@ int main(int argc, char* argv[])
     // reset
     f->ram_write_byte(0x1fe, 0x0);
     f->ram_write_byte(0x1ff, 0x0);
-    f->hard_reset();
+    ASSERT_EQ("Hard reset = OK", ResetStatus::Ok, f->hard_reset());
     printf("Z80 counter: %d\n", f->z80_info().cycle_count);
     ASSERT_EQ("Check that the boot sector was loaded correctly (byte 0x1fe)", 0x55, f->ram_read_byte(0x1fe));
     printf("Z80 counter: %d\n", f->z80_info().cycle_count);
