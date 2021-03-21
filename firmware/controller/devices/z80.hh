@@ -27,9 +27,9 @@ public:
     void powerdown();
     void startup();
     
-    void request_bus();
+    void request_bus(EachCycle f_each_cycle = nullptr, void* data = nullptr);
     void step(EachCycle f_each_cycle = nullptr, void* data = nullptr);
-    void cycle();
+    void cycle(bool check_iorq = false, EachCycle f_each_cycle = nullptr, void* data = nullptr);
     
     bool powered() const { return power_; }
     uint32_t cycle_count() const { return cycle_count_; }
@@ -44,7 +44,7 @@ private:
     uint32_t  cycle_count_ = 0;
     uint16_t  pc_ = 0;
     
-    void check_iorq();
+    void check_iorq(EachCycle f_each_cycle = nullptr, void* data = nullptr);
     
     void out(uint16_t addr, uint8_t data);
     

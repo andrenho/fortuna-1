@@ -37,7 +37,7 @@ void Z80::startup()
     step();
 }
 
-void Z80::request_bus()
+void Z80::request_bus(EachCycle f_each_cycle, void* data)
 {
     if (!power_ || get_BUSACK() == 0)
         return;
@@ -46,17 +46,20 @@ void Z80::request_bus()
     
     set_BUSREQ(0);
     while (busack == 1) {
-        cycle();
-        check_iorq();
+        cycle(true, f_each_cycle, data);
         busack = get_BUSACK();
     }
     set_BUSREQ(1);
 }
 
-void Z80::cycle()
+void Z80::cycle(bool check_iorq, EachCycle f_each_cycle, void* data)
 {
     set_ZCLK(1);
     set_ZCLK(0);
+    if (f_each_cycle)
+        f_each_cycle(false, data);
+    if (check_iorq)
+        this->check_iorq(f_each_cycle, data);
     ++cycle_count_;
 }
 
@@ -74,14 +77,14 @@ Z80Pins Z80::state() const
     };
 }
 
-void Z80::check_iorq()
+void Z80::check_iorq(EachCycle f_each_cycle, void* data)
 {
     if (get_IORQ() == 0) {
         uint16_t addr = ram_.addr_bus();
         auto m = ram_.memory_bus();
         if (m.we == 0) {  // OUT
-            uint8_t data = ram_.data_bus();
-            out(addr, data);
+            uint8_t ldata = ram_.data_bus();
+            out(addr, ldata);
         } else if (m.rd == 0) {  // IN
             ram_.set_data_bus(in(addr));
         } else {  // INTERRUPT
@@ -96,7 +99,7 @@ void Z80::check_iorq()
         }
         
         while (get_IORQ() == 0)
-            cycle();
+            cycle(false, f_each_cycle, data);
     }
 }
 
@@ -104,26 +107,18 @@ void Z80::step(Z80::EachCycle f_each_cycle, void* data)
 {
     terminal_.set_last_printed_char(0);
     
-    bool first = true;
     bool m1 = 1;
     
     // TODO - if next instruction is extended, run two cycles
     
     while (m1 == 1) {
-        cycle();
-        if (f_each_cycle)
-            f_each_cycle(first, data);
-        first = false;
-        check_iorq();
+        cycle(true, f_each_cycle, data);
         m1 = get_M1();
     }
     pc_ = ram_.addr_bus();
     
     while (m1 == 0) {
-        cycle();
-        if (f_each_cycle)
-            f_each_cycle(false, data);
-        check_iorq();
+        cycle(true, f_each_cycle, data);
         m1 = get_M1();
     }
 
@@ -180,6 +175,7 @@ void Z80::out(uint16_t addr, uint8_t data)
 
 uint8_t Z80::in(uint16_t addr)
 {
+    (void) addr;
     return 0;
 }
 
