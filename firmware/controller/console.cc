@@ -46,13 +46,19 @@ void Console::execute(char cmd)
             }
             break;
         case 'w': {
+                Question q[] = { { PSTR("Address"), 4 }, { PSTR("Data"), 2 } };
+                if (ask_question_P(q, 2))
+                    printf_P(PSTR("0x%02X\n"), fortuna1_.write_byte(q[0].response, q[1].response));
+            }
+            break;
+        case 'W': {
                 uint32_t addr = 0;
                 if (!ask_question_P(PSTR("Address"), 2, &addr))
                     break;
                 while (true) {
                     uint32_t data;
                     printf_P(PSTR("[0x%04X]"), addr);
-                    if (!ask_question_P(PSTR(" = "), 2, &data))
+                    if (!ask_question_P(PSTR(""), 2, &data))
                         break;
                     fortuna1_.write_byte(addr, data);
                 }
