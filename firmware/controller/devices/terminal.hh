@@ -1,6 +1,8 @@
 #ifndef CONTROLLER_TERMINAL_HH
 #define CONTROLLER_TERMINAL_HH
 
+#include <stdint.h>
+
 class Terminal {
 public:
     uint8_t last_printed_char() const { return last_printed_char_; }

@@ -70,11 +70,11 @@ Reply Repl::parse_request(Request const& request)
             reply.sd_status = { static_cast<uint8_t>(fortuna1_.sdcard().last_stage()), fortuna1_.sdcard().last_response() };
             break;
         case MessageType::Z80_CpuInfo:
-            reply.z80_info = { fortuna1_.z80().cycle_count(), fortuna1_.z80().pc() };
+            reply.z80_info = { fortuna1_.z80().cycle_count(), fortuna1_.z80().pc(), fortuna1_.terminal().last_printed_char() };
             break;
         case MessageType::Z80_Step:
             fortuna1_.z80().step();
-            reply.z80_info = { fortuna1_.z80().cycle_count(), fortuna1_.z80().pc() };
+            reply.z80_info = { fortuna1_.z80().cycle_count(), fortuna1_.z80().pc(), fortuna1_.terminal().last_printed_char() };
             break;
         default:
             reply.result = Result::InvalidRequest;
