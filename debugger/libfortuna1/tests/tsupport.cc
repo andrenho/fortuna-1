@@ -67,7 +67,16 @@ void TestArgs::show_help(const char* program)
     std::cout << "    -m                 Log messages\n";
 }
 
-void run_code(std::unique_ptr<Fortuna1>& f, std::string const& code, size_t num_steps)
+void title(std::string const& text)
+{
+    std::cout << "\e[0;31m";
+    std::cout << "--\n";
+    std::cout << "-- " << text << "\n";
+    std::cout << "--\n";
+    std::cout << "\e[0m";
+}
+
+Z80_Info run_code(std::unique_ptr<Fortuna1>& f, std::string const& code, size_t num_steps)
 {
     std::string filename = "/tmp/testcode.z80";
     std::ofstream file(filename);
@@ -79,8 +88,10 @@ void run_code(std::unique_ptr<Fortuna1>& f, std::string const& code, size_t num_
         throw std::runtime_error(r.error.value());
     f->ram_write_buffer(0x0, r.binaries.at("testcode.z80").data);
     f->soft_reset();
+    Z80_Info info {};
     for (size_t i = 0; i < num_steps; ++i)
-        f->z80_step();
+        info = f->z80_step();
     
     unlink("/tmp/testcode.z80");
+    return info;
 }

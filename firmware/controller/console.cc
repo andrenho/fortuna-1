@@ -40,50 +40,57 @@ void Console::execute(char cmd)
             print_reset_status(fortuna1_.hard_reset(buffer_));
             break;
         case 'r': {
-            uint32_t addr;
-            if (ask_question_P(PSTR("Address"), 2, &addr))
-                printf_P(PSTR("0x%02X\n"), fortuna1_.read_byte(addr));
-        }
+                uint32_t addr;
+                if (ask_question_P(PSTR("Address"), 2, &addr))
+                    printf_P(PSTR("[0x%04X] = 0x%02X\n"), addr, fortuna1_.read_byte(addr));
+            }
             break;
         case 'w': {
-            Question q[] = { { PSTR("Address"), 4 }, { PSTR("Data"), 2 } };
-            if (ask_question_P(q, 2))
-                printf_P(PSTR("0x%02X\n"), fortuna1_.write_byte(q[0].response, q[1].response));
-        }
+                uint32_t addr = 0;
+                if (!ask_question_P(PSTR("Address"), 2, &addr))
+                    break;
+                while (true) {
+                    uint32_t data;
+                    printf_P(PSTR("[0x%04X]"), addr);
+                    if (!ask_question_P(PSTR(" = "), 2, &data))
+                        break;
+                    fortuna1_.write_byte(addr, data);
+                }
+            }
             break;
         case 'd': {
-            uint32_t page;
-            if (ask_question_P(PSTR("Page (0x100)"), 2, &page)) {
-                if (!fortuna1_.read_block(page * 0x100, 0x100, [](uint16_t addr, uint8_t byte, void* page) {
-                    if (addr % 0x10 == 0)
-                        printf_P(PSTR("%04X : "), addr + (*(int*)page * 0x100));
-                    printf_P(PSTR("%02X "), byte);
-                    if (addr % 0x10 == 0xf)
-                        putchar('\n');
-                }, &page))
-                    printf_P(PSTR("Checksum error\n"));
+                uint32_t page;
+                if (ask_question_P(PSTR("Page (0x100)"), 2, &page)) {
+                    if (!fortuna1_.read_block(page * 0x100, 0x100, [](uint16_t addr, uint8_t byte, void* page) {
+                        if (addr % 0x10 == 0)
+                            printf_P(PSTR("%04X : "), addr + (*(int*)page * 0x100));
+                        printf_P(PSTR("%02X "), byte);
+                        if (addr % 0x10 == 0xf)
+                            putchar('\n');
+                    }, &page))
+                        printf_P(PSTR("Checksum error\n"));
+                }
             }
-        }
             break;
         case 'l':
             printf_P(PSTR("Last stage: 0x%02X   last response: 0x%02X\n"), fortuna1_.sdcard().last_stage(), fortuna1_.sdcard().last_response());
             break;
         case 's': {
-            uint32_t block;
-            if (!ask_question_P(PSTR("Block"), 8, &block))
-                return;
-            if (!fortuna1_.sdcard().read_page(block, buffer_)) {
-                printf_P(PSTR("Error reading SDCard.\n"));
-                return;
+                uint32_t block;
+                if (!ask_question_P(PSTR("Block"), 8, &block))
+                    return;
+                if (!fortuna1_.sdcard().read_page(block, buffer_)) {
+                    printf_P(PSTR("Error reading SDCard.\n"));
+                    return;
+                }
+                for (size_t i = 0; i < 512; ++i) {
+                    if (i % 0x10 == 0)
+                        printf_P(PSTR("%08X : "), block * 512 + i);
+                    printf_P(PSTR("%02X "), buffer_.data[i]);
+                    if (i % 0x10 == 0xf)
+                        putchar('\n');
+                }
             }
-            for (size_t i = 0; i < 512; ++i) {
-                if (i % 0x10 == 0)
-                    printf_P(PSTR("%08X : "), block * 512 + i);
-                printf_P(PSTR("%02X "), buffer_.data[i]);
-                if (i % 0x10 == 0xf)
-                    putchar('\n');
-            }
-        }
             break;
         case 'i':
             printf_P(PSTR("Powered: %s   Cycle: %d   PC: 0x%04X\n"),
