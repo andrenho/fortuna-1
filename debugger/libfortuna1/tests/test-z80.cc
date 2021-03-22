@@ -43,4 +43,6 @@ int main(int argc, char* argv[])
     info = f->z80_step();
     ASSERT_Q(8, info.pc);
     ASSERT_EQ("Write to string: check last printed char = 'W'", 'W', info.last_printed_char);
+    
+    
 }

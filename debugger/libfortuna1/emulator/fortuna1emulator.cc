@@ -104,6 +104,7 @@ Z80_Info Fortuna1Emulator::z80_info() const
 
 Z80_Info Fortuna1Emulator::z80_step()
 {
+    last_printed_char_ = 0;
     RunZ80(&z80_);
     return z80_info();
 }
