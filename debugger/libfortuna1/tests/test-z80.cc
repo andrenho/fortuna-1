@@ -29,10 +29,17 @@ int main(int argc, char* argv[])
     title("Last printed char");
     Z80_Info info = run_code(f, R"(
         ld a, 'H'
+        out (1), a
+        ld a, 'W'
         out (1), a)", 1);
     ASSERT_Q(2, info.pc);
     info = f->z80_step();
     ASSERT_Q(4, info.pc);
     std::cout << "\n";
     ASSERT_EQ("Write to string: check last printed char = 'H'", 'H', info.last_printed_char);
+    info = f->z80_step();
+    ASSERT_Q(6, info.pc);
+    ASSERT_EQ("Last printed message was cleared", 0, info.last_printed_char);
+    ASSERT_Q(8, info.pc);
+    ASSERT_EQ("Write to string: check last printed char = 'W'", 'W', info.last_printed_char);
 }
