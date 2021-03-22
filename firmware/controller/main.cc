@@ -15,8 +15,9 @@ int main()
 
     RAM ram(spi);
     SDCard sdcard(spi);
-    Terminal terminal;
+    Terminal terminal {};
     Z80 z80(ram, terminal);
+    terminal.set_z80(z80);
     Fortuna1 fortuna1(ram, sdcard, z80, terminal);
 
     Repl repl(serial, fortuna1);
