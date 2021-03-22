@@ -21,11 +21,12 @@ void Console::execute(char cmd)
     switch (cmd) {
         case 'h':
         case '?':
-            printf_P(PSTR("Ctrl:    [f] bytes free   [R] reset       [t] soft reset            [!] system reset\n"));
-            printf_P(PSTR("RAM:     [r] read byte    [w] write byte  [W] write multiple bytes  [d] dump memory\n"));
-            printf_P(PSTR("SdCard:  [l] last status  [s] dump block\n"));
-            printf_P(PSTR("Z80:     [i] CPU info     [p] step        [P] step + print cycles\n"));
-            printf_P(PSTR("Low lvl: [b] buses state  [c] Z80 cycle\n"));
+            printf_P(PSTR("Ctrl:     [f] bytes free   [R] reset       [t] soft reset            [!] system reset\n"));
+            printf_P(PSTR("RAM:      [r] read byte    [w] write byte  [W] write multiple bytes  [d] dump memory\n"));
+            printf_P(PSTR("SdCard:   [l] last status  [s] dump block\n"));
+            printf_P(PSTR("Z80:      [i] CPU info     [p] step        [@] change debug mode\n"));
+            printf_P(PSTR("Terminal: [k] keypress\n"));
+            printf_P(PSTR("Low lvl:  [b] buses state  [c] Z80 cycle\n"));
 #ifdef ENABLE_TESTS
             printf_P(tests_help());
 #endif
@@ -111,65 +112,29 @@ void Console::execute(char cmd)
                     printf_P(PSTR("Printed char: %02X %c\n"), lpc, lpc > 32 && lpc < 127 ? lpc : ' ');
             }
             break;
-        case 'P': {
-                struct Ptr {
-                    Console const& console;
-                    RAM const&     ram;
-                    Z80 const&     z80;
-                };
-                auto f_each_cycle = [](bool first, void* data) -> void {
-                    auto ptr = (Ptr*) data;
-                    ptr->console.print_z80_state(ptr->ram, ptr->z80, first);
-                };
-                Ptr ptr = { *this, fortuna1_.ram(), fortuna1_.z80() };
-                fortuna1_.z80().step(f_each_cycle, &ptr);
-                printf_P(PSTR("PC = %04X\n"), fortuna1_.z80().pc());
-                uint8_t lpc = fortuna1_.terminal().last_printed_char();
-                if (lpc != 0)
-                    printf_P(PSTR("Printed char: %02X %c\n"), lpc, lpc > 32 && lpc < 127 ? lpc : ' ');
-            }
-            break;
         case 'b':
             printf_P(PSTR("\e[1A"));
-            print_z80_state(fortuna1_.ram(), fortuna1_.z80(), !last_was_cycle_);
-            last_was_cycle_ = true;
+            fortuna1_.z80().print_pin_state();
         case 'c':
             printf_P(PSTR("\e[1A"));
             fortuna1_.z80().cycle();
-            print_z80_state(fortuna1_.ram(), fortuna1_.z80(), !last_was_cycle_);
-            last_was_cycle_ = true;
             return;
         case '!':
             fortuna1_.system_reset();
             break;
+        case 'k': {
+                uint32_t key;
+                if (ask_question_P(PSTR("Key (in hex)"), 2, &key))
+                    fortuna1_.terminal().keypress(key);
+            }
+            break;
+        case '@':
+            fortuna1_.z80().set_debug_mode(!fortuna1_.z80().debug_mode());
+            printf_P(PSTR("Debug mode is %s.\n"), fortuna1_.z80().debug_mode() ? "on" : "off");
+            break;
         default:
             error();
     }
-    last_was_cycle_ = false;
-}
-
-void Console::print_z80_state(RAM const& ram, Z80 const& z80, bool add_header) const
-{
-    uint8_t data = ram.data_bus();
-    uint16_t addr = ram.addr_bus();
-    RAM::MemoryBus mbus = ram.memory_bus();
-    Z80Pins pins = z80.state();
-    char addr_s[5] = { 0 };
-    char data_s[3] = { 0 };
-    if (mbus.mreq == 0 && (mbus.we == 0 || mbus.rd == 0 || pins.iorq == 0)) {
-        sprintf(addr_s, "%04X", addr);
-        sprintf(data_s, "%02X", data);
-    } else {
-        sprintf(addr_s, "----");
-        sprintf(data_s, "--");
-    }
-    auto bit = [](bool v) { if (v) return "\e[0;32m1\e[0m"; else return "\e[0;31m0\e[0m"; };
-    if (add_header)
-        printf_P(PSTR("ADDR DATA  MREQ WR RD  INT NMI RST BUSRQ  HALT IORQ M1 BUSAK  #CYCLE\n"));
-    printf_P(PSTR("%s  %s     %s   %s  %s   %s   %s   %s    %s      %s    %s   %s    %s  %-08d\n"),
-             addr_s, data_s, bit(mbus.mreq), bit(mbus.we), bit(mbus.rd),
-             bit(pins.int_), bit(pins.nmi), bit(pins.rst), bit(pins.busrq),
-             bit(pins.halt), bit(pins.iorq), bit(pins.m1), bit(pins.busak), z80.cycle_count());
 }
 
 bool Console::ask_question_P(char const* question, uint8_t size, uint32_t* response)

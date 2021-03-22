@@ -1,5 +1,8 @@
 #include "z80.hh"
 
+#include <avr/pgmspace.h>
+#include <stdio.h>
+
 #include "io.hh"
 #include "ram.hh"
 
@@ -27,8 +30,11 @@ void Z80::startup()
     
     set_ZRST(0);
     
+    bool stored = debug_mode_;
+    debug_mode_ = false;
     for (int i = 0; i < 50; ++i)
         cycle();
+    debug_mode_ = stored;
     
     set_ZRST(1);
     power_ = true;
@@ -36,14 +42,9 @@ void Z80::startup()
     pc_ = 0;
     
     step();
-    /*
-    do {
-        cycle();
-    } while (get_M1() != 0);
-    */
 }
 
-void Z80::request_bus(EachCycle f_each_cycle, void* data)
+void Z80::request_bus()
 {
     if (!power_ || get_BUSACK() == 0)
         return;
@@ -52,20 +53,20 @@ void Z80::request_bus(EachCycle f_each_cycle, void* data)
     
     set_BUSREQ(0);
     while (busack == 1) {
-        cycle(true, f_each_cycle, data);
+        cycle(true);
         busack = get_BUSACK();
     }
     set_BUSREQ(1);
 }
 
-void Z80::cycle(bool check_iorq, EachCycle f_each_cycle, void* data)
+void Z80::cycle(bool check_iorq)
 {
     set_ZCLK(1);
     set_ZCLK(0);
-    if (f_each_cycle)
-        f_each_cycle(false, data);
+    if (debug_mode_)
+        print_pin_state();
     if (check_iorq)
-        this->check_iorq(f_each_cycle, data);
+        this->check_iorq();
     ++cycle_count_;
 }
 
@@ -83,7 +84,7 @@ Z80Pins Z80::state() const
     };
 }
 
-void Z80::check_iorq(EachCycle f_each_cycle, void* data)
+void Z80::check_iorq()
 {
     if (get_IORQ() == 0) {
         uint16_t addr = ram_.addr_bus();
@@ -104,11 +105,11 @@ void Z80::check_iorq(EachCycle f_each_cycle, void* data)
         }
         
         while (get_IORQ() == 0)
-            cycle(false, f_each_cycle, data);
+            cycle(false);
     }
 }
 
-void Z80::step(Z80::EachCycle f_each_cycle, void* data)
+void Z80::step()
 {
     terminal_.set_last_printed_char(0);
     
@@ -117,13 +118,13 @@ void Z80::step(Z80::EachCycle f_each_cycle, void* data)
     // TODO - if next instruction is extended, run two cycles
     
     while (m1 == 1) {
-        cycle(true, f_each_cycle, data);
+        cycle(true);
         m1 = get_M1();
     }
     pc_ = ram_.addr_bus();
     
     while (m1 == 0) {
-        cycle(true, f_each_cycle, data);
+        cycle(true);
         m1 = get_M1();
     }
 
@@ -189,5 +190,29 @@ void Z80::interrupt(uint8_t int_value)
     next_interrupt_data_ = int_value;
     set_INT(0);
     cycle(true);
+}
+
+void Z80::print_pin_state() const
+{
+    uint8_t data = ram_.data_bus();
+    uint16_t addr = ram_.addr_bus();
+    RAM::MemoryBus mbus = ram_.memory_bus();
+    Z80Pins pins = state();
+    char addr_s[5] = { 0 };
+    char data_s[3] = { 0 };
+    if (mbus.mreq == 0 && (mbus.we == 0 || mbus.rd == 0 || pins.iorq == 0)) {
+        sprintf(addr_s, "%04X", addr);
+        sprintf(data_s, "%02X", data);
+    } else {
+        sprintf(addr_s, "----");
+        sprintf(data_s, "--");
+    }
+    auto bit = [](bool v) { if (v) return "\e[0;32m1\e[0m"; else return "\e[0;31m0\e[0m"; };
+    if (cycle_count_ % 16 == 0)
+        printf_P(PSTR("ADDR DATA  MREQ WR RD  INT NMI RST BUSRQ  HALT IORQ M1 BUSAK  #CYCLE\n"));
+    printf_P(PSTR("%s  %s     %s   %s  %s   %s   %s   %s    %s      %s    %s   %s    %s  %-08d\n"),
+             addr_s, data_s, bit(mbus.mreq), bit(mbus.we), bit(mbus.rd),
+             bit(pins.int_), bit(pins.nmi), bit(pins.rst), bit(pins.busrq),
+             bit(pins.halt), bit(pins.iorq), bit(pins.m1), bit(pins.busak), cycle_count());
 }
 

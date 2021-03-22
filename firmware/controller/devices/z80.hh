@@ -20,25 +20,27 @@ struct Z80Pins {
 
 class Z80 {
 public:
-    using EachCycle = void(*)(bool first, void* data);
-    
     Z80(RAM& ram, Terminal& terminal);
-    
-    void powerdown();
-    void startup();
-    
-    void request_bus(EachCycle f_each_cycle = nullptr, void* data = nullptr);
-    void step(EachCycle f_each_cycle = nullptr, void* data = nullptr);
-    void cycle(bool check_iorq = false, EachCycle f_each_cycle = nullptr, void* data = nullptr);
     
     bool powered() const { return power_; }
     uint32_t cycle_count() const { return cycle_count_; }
     uint16_t pc() const { return pc_; }
     
+    bool debug_mode() const { return debug_mode_; }
+    void set_debug_mode(bool debug_mode) { debug_mode_ = debug_mode; }
+    
+    void powerdown();
+    void startup();
+    
+    void request_bus();
+    void step();
+    void cycle(bool check_iorq = false);
+    
     Z80Pins state() const;
+    void    print_pin_state() const;
     
     void interrupt(uint8_t int_value);
-
+    
 private:
     RAM&      ram_;
     Terminal& terminal_;
@@ -46,11 +48,11 @@ private:
     uint32_t  cycle_count_ = 0;
     uint16_t  pc_ = 0;
     int       next_interrupt_data_ = -1;
+    bool      debug_mode_ = false;
     
-    void check_iorq(EachCycle f_each_cycle = nullptr, void* data = nullptr);
+    void    check_iorq();
     
-    void out(uint16_t addr, uint8_t data);
-    
+    void    out(uint16_t addr, uint8_t data);
     uint8_t in(uint16_t addr);
 };
 
