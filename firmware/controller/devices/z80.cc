@@ -94,14 +94,13 @@ void Z80::check_iorq(EachCycle f_each_cycle, void* data)
         } else if (m.rd == 0) {  // IN
             ram_.set_data_bus(in(addr));
         } else {  // INTERRUPT
-            /*
-            if (last_interrupt != -1) {
-                data_bus_takeover();
-                memory_set_data(last_interrupt);
-                last_interrupt = -1;
+            if (next_interrupt_data_ != -1) {
+                ram_.set_data_bus(next_interrupt_data_ & 0xff);
+                cycle();
+                ram_.release_bus();
+                next_interrupt_data_ = -1;
                 set_INT(1);
             }
-            */
         }
         
         while (get_IORQ() == 0)
@@ -183,5 +182,12 @@ uint8_t Z80::in(uint16_t addr)
 {
     (void) addr;
     return 0;
+}
+
+void Z80::interrupt(uint8_t int_value)
+{
+    next_interrupt_data_ = int_value;
+    set_INT(0);
+    cycle(true);
 }
 

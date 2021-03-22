@@ -19,6 +19,7 @@
 #define CMD_WRITE_DATA  0x7
 #define CMD_READ_ADDR   0x8
 #define CMD_READ_MBUS   0x9
+#define CMD_RELEASE_BUS 0xa
 
 int main()
 {
@@ -187,6 +188,16 @@ int main()
 #endif
             }
                 break;
+            case CMD_RELEASE_BUS: {
+                spi_done();
+                ram_reset();
+                spi_ready();
+#ifdef DEBUG_UART
+                _delay_ms(1);
+                printf_P(PSTR("Bus released.\n"));
+                spi_done();
+#endif
+            }
         }
         spi_deactivate();
         wdt_disable();

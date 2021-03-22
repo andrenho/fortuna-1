@@ -36,6 +36,8 @@ public:
     uint16_t pc() const { return pc_; }
     
     Z80Pins state() const;
+    
+    void interrupt(uint8_t int_value);
 
 private:
     RAM&      ram_;
@@ -43,6 +45,7 @@ private:
     bool      power_ = false;
     uint32_t  cycle_count_ = 0;
     uint16_t  pc_ = 0;
+    int       next_interrupt_data_ = -1;
     
     void check_iorq(EachCycle f_each_cycle = nullptr, void* data = nullptr);
     

@@ -14,6 +14,7 @@
 #define CMD_WRITE_DATA  0x7
 #define CMD_READ_ADDR   0x8
 #define CMD_READ_MBUS   0x9
+#define CMD_RELEASE_BUS 0xa
 
 const char* RAM::test()
 {
@@ -152,4 +153,12 @@ RAM::MemoryBus RAM::memory_bus() const
     spi_.deactivate();
     auto* mbus = (MemoryBus*) &byte;
     return *mbus;
+}
+
+void RAM::release_bus()
+{
+    spi_.activate(SPI::DMA);
+    spi_.send(CMD_RELEASE_BUS);
+    spi_.wait_dma_cs();
+    spi_.deactivate();
 }

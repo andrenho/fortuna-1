@@ -11,10 +11,11 @@ public:
     
     void set_z80(Z80& z80) { z80_ = &z80; }
     
-    // void send_keypress(uint8_t key) { z80_.input(key); }
+    void keypress(uint8_t key);
 
 private:
     uint8_t last_printed_char_ = 0;
+    uint8_t last_keypress_ = 0;
     Z80*    z80_ = nullptr;
 };
 

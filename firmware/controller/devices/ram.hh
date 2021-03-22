@@ -26,6 +26,7 @@ public:
     
     uint8_t data_bus() const;
     void    set_data_bus(uint8_t data);
+    void    release_bus();
     
     uint16_t addr_bus() const;
     
