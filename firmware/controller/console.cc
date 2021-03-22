@@ -60,7 +60,7 @@ void Console::execute(char cmd)
                     printf_P(PSTR("[0x%04X]"), addr);
                     if (!ask_question_P(PSTR(""), 2, &data))
                         break;
-                    fortuna1_.write_byte(addr, data);
+                        fortuna1_.write_byte(addr++, data);
                 }
             }
             break;
@@ -124,6 +124,9 @@ void Console::execute(char cmd)
                 Ptr ptr = { *this, fortuna1_.ram(), fortuna1_.z80() };
                 fortuna1_.z80().step(f_each_cycle, &ptr);
                 printf_P(PSTR("PC = %04X\n"), fortuna1_.z80().pc());
+                uint8_t lpc = fortuna1_.terminal().last_printed_char();
+                if (lpc != 0)
+                    printf_P(PSTR("Printed char: %02X %c\n"), lpc, lpc > 32 && lpc < 127 ? lpc : ' ');
             }
             break;
         case 'b':

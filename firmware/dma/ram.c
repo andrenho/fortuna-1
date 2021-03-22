@@ -16,6 +16,16 @@
 
 #define WAIT     _delay_us(1)
 
+static unsigned char lookup[16] = {
+    0x0, 0x8, 0x4, 0xc, 0x2, 0xa, 0x6, 0xe,
+    0x1, 0x9, 0x5, 0xd, 0x3, 0xb, 0x7, 0xf,
+};
+
+static uint8_t reverse(uint8_t n) {
+   // Reverse the top and bottom nibble then swap them.
+   return (lookup[n&0b1111] << 4) | lookup[n>>4];
+}
+
 static void ram_takeover_bus()
 {
     DDR_RAM |= (1 << MREQ) | (1 << WE) | (1 << RD);   // set MREQ, WE and RD as outputs
@@ -75,12 +85,12 @@ uint16_t ram_get_addr()
 void ram_set_data(uint8_t data)
 {
     DDRC = 0xff;
-    PORTC = data;
+    PORTC = reverse(data);
 }
 
 uint8_t ram_get_data()
 {
-    return PINC;
+    return reverse(PINC);
 }
 
 struct MemoryBus ram_read_memory_bus()

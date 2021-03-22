@@ -34,7 +34,13 @@ void Z80::startup()
     power_ = true;
     cycle_count_ = 0;
     pc_ = 0;
+    
     step();
+    /*
+    do {
+        cycle();
+    } while (get_M1() != 0);
+    */
 }
 
 void Z80::request_bus(EachCycle f_each_cycle, void* data)
