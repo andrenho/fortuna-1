@@ -24,14 +24,21 @@ int main(int argc, char* argv[])
     f->soft_reset();
     ASSERT_EQ("Initial state: PC == 0", 0, f->z80_info().pc);
     ASSERT_EQ("After step: PC == 2", 2, f->z80_step().pc);
+    
+    // compile and execute step
+    ASSERT_Q(5, run_code(f, R"(
+        ld a, 0x42
+        ld (0x8300), a
+    )", 2).pc);
+    ASSERT_EQ("[0x8300] = 0x42", 0x42, f->ram_read_byte(0x8300));
 
     // last printed char
     title("Last printed char");
     Z80_Info info = run_code(f, R"(
         ld a, 'H'
-        out (1), a
+        out (0x1), a
         ld a, 'W'
-        out (1), a)", 1);
+        out (0x1), a)", 1);
     ASSERT_Q(2, info.pc);
     info = f->z80_step();
     ASSERT_Q(4, info.pc);
@@ -44,5 +51,17 @@ int main(int argc, char* argv[])
     ASSERT_Q(8, info.pc);
     ASSERT_EQ("Write to string: check last printed char = 'W'", 'W', info.last_printed_char);
     
+    // keypress
+    run_code(f, R"(
+        nop
+        in a, (0x1)
+        ld (0x8500), a
+        nop
+    )", 0);
+    f->keypress('r');
+    for (size_t i = 0; i < 4; ++i)
+        f->z80_step();
+    ASSERT_EQ("Receive keypress", 'r', f->ram_read_byte(0x8500));
     
+    // TODO - keypress interrupt
 }

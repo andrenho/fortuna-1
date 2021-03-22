@@ -5,7 +5,7 @@ find_package(Protobuf REQUIRED)
 include_directories(common)
 
 set(CMAKE_CXX_STANDARD 17)
-add_compile_options(-Wall -Wextra -I. -I${PROJECT_BINARY_DIR})
+add_compile_options(-Wall -Wextra -I. -I${PROJECT_BINARY_DIR} -DLSB_FIRST)
 
 set(LIBRARY_SOURCES
     fortuna1.hh realhardware/fortuna1realhardware.cc realhardware/fortuna1realhardware.hh realhardware/serial.cc realhardware/serial.hh
