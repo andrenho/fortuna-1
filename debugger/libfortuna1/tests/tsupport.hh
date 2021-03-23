@@ -7,7 +7,8 @@
 struct TestArgs {
    TestArgs(int argc, char** argv);
    
-   std::unique_ptr<Fortuna1> create_fortuna() const;
+   std::unique_ptr<Fortuna1> create_fortuna();
+   Z80_Info run_code(std::string const& code, size_t num_steps);
    
    bool real_hardware_mode = false;
    std::string serial_port = "";
@@ -15,7 +16,8 @@ struct TestArgs {
    bool log_messages = false;
 
 private:
-    static void show_help(const char* program) ;
+    static void show_help(const char* program);
+    Fortuna1* fortuna1_ = nullptr;
 };
 
 std::ostream& operator<<(std::ostream& os, std::vector<uint8_t> const& bytes);
@@ -41,6 +43,5 @@ std::ostream& operator<<(std::ostream& os, std::vector<uint8_t> const& bytes);
 }
 
 void title(std::string const& text);
-Z80_Info run_code(std::unique_ptr<Fortuna1>& f, std::string const& code, size_t num_steps);
 
 #endif //LIBFORTUNA1_TSUPPORT_HH

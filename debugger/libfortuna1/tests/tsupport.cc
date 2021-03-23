@@ -42,7 +42,7 @@ TestArgs::TestArgs(int argc, char** argv)
     }
 }
 
-std::unique_ptr<Fortuna1> TestArgs::create_fortuna() const
+std::unique_ptr<Fortuna1> TestArgs::create_fortuna()
 {
     std::unique_ptr<Fortuna1> f;
     if (real_hardware_mode) {
@@ -51,6 +51,7 @@ std::unique_ptr<Fortuna1> TestArgs::create_fortuna() const
         f = std::make_unique<Fortuna1Emulator>();
         dynamic_cast<Fortuna1Emulator*>(f.get())->sdcard_set_image("../tests/sdcard.img");
     }
+    fortuna1_ = f.get();
     f->set_log_bytes(log_bytes);
     f->set_log_messages(log_messages);
     f->system_reset();
@@ -67,16 +68,7 @@ void TestArgs::show_help(const char* program)
     std::cout << "    -m                 Log messages\n";
 }
 
-void title(std::string const& text)
-{
-    std::cout << "\e[0;31m";
-    std::cout << "--\n";
-    std::cout << "-- " << text << "\n";
-    std::cout << "--\n";
-    std::cout << "\e[0m";
-}
-
-Z80_Info run_code(std::unique_ptr<Fortuna1>& f, std::string const& code, size_t num_steps)
+Z80_Info TestArgs::run_code(std::string const& code, size_t num_steps)
 {
     std::string filename = "/tmp/testcode.z80";
     std::ofstream file(filename);
@@ -86,12 +78,29 @@ Z80_Info run_code(std::unique_ptr<Fortuna1>& f, std::string const& code, size_t 
     CompilerResult r = compile({ { filename, 0x0 } });
     if (r.error.has_value())
         throw std::runtime_error(r.error.value());
-    f->ram_write_buffer(0x0, r.binaries.at("testcode.z80").data);
-    f->soft_reset();
+    
+    if (log_messages) {
+        std::cout << "Compiled code: ";
+        for (uint8_t b: r.binaries.at("testcode.z80").data)
+            std::cout << std::hex << std::setfill('0') << std::setw(2) << std::uppercase << (int) b << ' ';
+        std::cout << '\n';
+    }
+    
+    fortuna1_->ram_write_buffer(0x0, r.binaries.at("testcode.z80").data);
+    fortuna1_->soft_reset();
     Z80_Info info {};
     for (size_t i = 0; i < num_steps; ++i)
-        info = f->z80_step();
+        info = fortuna1_->z80_step();
     
     unlink("/tmp/testcode.z80");
     return info;
+}
+
+void title(std::string const& text)
+{
+    std::cout << "\e[0;31m";
+    std::cout << "--\n";
+    std::cout << "-- " << text << "\n";
+    std::cout << "--\n";
+    std::cout << "\e[0m";
 }

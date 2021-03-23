@@ -4,8 +4,8 @@
 
 int main(int argc, char* argv[])
 {
-    TestArgs test_args(argc, argv);
-    auto f = test_args.create_fortuna();
+    TestArgs t(argc, argv);
+    auto f = t.create_fortuna();
     
     // two NOPs, a JP and a RST
     title("NOPs");
@@ -26,7 +26,7 @@ int main(int argc, char* argv[])
     ASSERT_EQ("After step: PC == 2", 2, f->z80_step().pc);
     
     // compile and execute step
-    ASSERT_Q(5, run_code(f, R"(
+    ASSERT_Q(5, t.run_code(R"(
         ld a, 0x42
         ld (0x8300), a
     )", 2).pc);
@@ -34,7 +34,7 @@ int main(int argc, char* argv[])
 
     // last printed char
     title("Last printed char");
-    Z80_Info info = run_code(f, R"(
+    Z80_Info info = t.run_code(R"(
         ld a, 'H'
         out (0x1), a
         ld a, 'W'
@@ -52,15 +52,18 @@ int main(int argc, char* argv[])
     ASSERT_EQ("Write to string: check last printed char = 'W'", 'W', info.last_printed_char);
     
     // keypress
-    run_code(f, R"(
+    t.run_code(R"(
         nop
         in a, (0x1)
         ld (0x8500), a
         nop
     )", 0);
-    f->keypress('r');
-    for (size_t i = 0; i < 4; ++i)
-        f->z80_step();
+    // f->keypress('r');
+    ASSERT_Q(0, f->z80_info().pc);
+    ASSERT_Q(1, f->z80_step().pc);
+    ASSERT_Q(3, f->z80_step().pc);
+    ASSERT_Q(6, f->z80_step().pc);
+    ASSERT_Q(7, f->z80_step().pc);
     ASSERT_EQ("Receive keypress", 'r', f->ram_read_byte(0x8500));
     
     // TODO - keypress interrupt
