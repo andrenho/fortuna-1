@@ -78,6 +78,9 @@ Reply Repl::parse_request(Request const& request)
             fortuna1_.z80().step();
             reply.z80_info = { fortuna1_.z80().cycle_count(), fortuna1_.z80().pc(), fortuna1_.terminal().last_printed_char() };
             break;
+        case MessageType::Keypress:
+            fortuna1_.terminal().keypress(request.keypress);
+            break;
         default:
             reply.result = Result::InvalidRequest;
             break;

@@ -36,6 +36,9 @@ enum MessageClass : uint8_t {
     X(Z80_CpuInfo,   0x30) \
     X(Z80_Step,      0x31) \
                            \
+    /* Terminal */         \
+    X(Keypress,      0x40) \
+                           \
     X(Undefined,     0xff)
 
 enum MessageType : uint8_t {

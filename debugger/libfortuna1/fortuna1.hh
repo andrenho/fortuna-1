@@ -32,7 +32,7 @@ public:
     virtual Z80_Info                 z80_info() const = 0;
     virtual Z80_Info                 z80_step() = 0;
     
-    virtual void                     keypress(uint8_t key) = 0;
+    virtual void                     keypress(uint16_t key) = 0;
     
     virtual void set_log_bytes(bool) {}
     virtual void set_log_messages(bool) {}
