@@ -94,6 +94,8 @@ void Z80::check_iorq()
             out(addr, ldata);
         } else if (m.rd == 0) {  // IN
             ram_.set_data_bus(in(addr));
+            cycle();
+            ram_.release_bus();
         } else {  // INTERRUPT
             if (next_interrupt_data_ != -1) {
                 ram_.set_data_bus(next_interrupt_data_ & 0xff);
