@@ -49,6 +49,7 @@ try_again:
     spi_.send(addr & 0xff);
     spi_.send(addr >> 8);
     spi_.wait_dma_cs();
+    _delay_us(10);
     uint8_t r = spi_.recv();
     uint8_t r2 = spi_.recv();
     if (r != r2)

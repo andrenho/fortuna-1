@@ -16,6 +16,8 @@ Reply Repl::parse_request(Request const& request)
     Reply reply(request.message_type(), buffer_);
     wdt_disable();
 
+    fortuna1_.z80().set_debug_mode(false);
+
     switch (request.message_type()) {
         case MessageType::SoftReset:
             reply.reset_status = fortuna1_.soft_reset();
