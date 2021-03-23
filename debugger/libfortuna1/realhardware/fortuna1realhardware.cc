@@ -126,3 +126,8 @@ Z80_Info Fortuna1RealHardware::z80_step()
     Request request(MessageType::Z80_Step, buffer_);
     return serial_.request(request, buffer_).z80_info;
 }
+
+void Fortuna1RealHardware::keypress(uint8_t key)
+{
+    throw std::runtime_error("Not implemented");  // TODO
+}

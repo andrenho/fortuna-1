@@ -30,11 +30,15 @@ public:
     SDCardStatus             sdcard_status() const override;
     std::array<uint8_t, 512> sdcard_read(uint32_t block) override;
     
+    void keypress(uint8_t key) override;
+    
     Z80_Info z80_info() const override;
     Z80_Info z80_step() override;
     
     void increment_cycle_counter() { ++cycle_count_; }
     void set_last_printed_char(uint8_t c) { last_printed_char_ = c; }
+    
+    uint8_t last_keypress() const { return last_keypress_; }
 
 private:
     uint8_t                     ram_[64 * 1024] = {0};
@@ -43,6 +47,7 @@ private:
     Z80                         z80_ {};
     uint32_t                    cycle_count_ = 0;
     uint8_t                     last_printed_char_ = 0;
+    uint8_t                     last_keypress_ = 0;
 };
 
 #endif

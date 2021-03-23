@@ -34,7 +34,8 @@ void OutZ80(word Port, byte Value)
 
 byte InZ80(word Port)
 {
-    (void) Port;
+    if ((Port & 0xff) == DEVICE_TERMINAL)  // keyboard
+        return emulator->last_keypress();
     return 0;
 }
 

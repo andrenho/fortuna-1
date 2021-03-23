@@ -104,7 +104,13 @@ Z80_Info Fortuna1Emulator::z80_info() const
 
 Z80_Info Fortuna1Emulator::z80_step()
 {
+    last_printed_char_ = 0;
     RunZ80(&z80_);
     return z80_info();
+}
+
+void Fortuna1Emulator::keypress(uint8_t key)
+{
+    last_keypress_ = key;
 }
 
