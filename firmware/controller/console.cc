@@ -42,7 +42,7 @@ void Console::execute(char cmd)
             break;
         case 'r': {
                 uint32_t addr;
-                if (ask_question_P(PSTR("Address"), 2, &addr))
+                if (ask_question_P(PSTR("Address"), 4, &addr))
                     printf_P(PSTR("[0x%04X] = 0x%02X\n"), addr, fortuna1_.read_byte(addr));
             }
             break;
