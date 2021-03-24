@@ -213,7 +213,7 @@ void Z80::print_pin_state() const
     Z80Pins pins = state();
     char addr_s[5] = { 0 };
     char data_s[3] = { 0 };
-    if (mbus.mreq == 0 && (mbus.we == 0 || mbus.rd == 0 || pins.iorq == 0)) {
+    if ((mbus.mreq == 0 && (mbus.we == 0 || mbus.rd == 0)) || pins.iorq == 0) {
         sprintf(addr_s, "%04X", addr);
         sprintf(data_s, "%02X", data);
     } else {
