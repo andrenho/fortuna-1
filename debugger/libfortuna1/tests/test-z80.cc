@@ -96,6 +96,7 @@ int main(int argc, char* argv[])
     // NMI
     title("NMI");
     t.run_code(" nop\n nop\n nop\n", 2);
-    info = f->z80_nmi();
+    f->z80_nmi();
+    info = f->z80_step();
     ASSERT_EQ("NMI executed", 0x66, info.pc);
 }

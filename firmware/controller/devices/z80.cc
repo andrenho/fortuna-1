@@ -238,6 +238,7 @@ void Z80::nmi()
 {
     set_NMI(0);
     step();
+    step();
     set_NMI(1);
 }
 
