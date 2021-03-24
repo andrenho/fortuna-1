@@ -93,15 +93,19 @@ void Z80::check_iorq()
         auto m = ram_.memory_bus();
         if (m.we == 0) {  // OUT
             uint8_t ldata = ram_.data_bus();
+            if (debug_mode_)
+                printf_P(PSTR("Writing to port 0x%04X (data = %02X).\n"), addr, ldata);
             out(addr, ldata);
         } else if (m.rd == 0) {  // IN
             uint8_t data = in(addr);
+            if (debug_mode_)
+                printf_P(PSTR("Reading from port 0x%04X (data = %02X).\n"), addr, data);
             ram_.set_data_bus(data);
             cycle();
             ram_.release_bus();
         } else {  // INTERRUPT
             if (debug_mode_)
-                printf_P(PSTR("Interrupt!\n"));
+                printf_P(PSTR("Interrupt! Data = 0x%02X\n"), next_interrupt_data_);
             if (next_interrupt_data_ != -1) {
                 ram_.set_data_bus(next_interrupt_data_ & 0xff);
                 cycle();
