@@ -88,6 +88,8 @@ int main(int argc, char* argv[])
     
     // extended instructions
     title("Extended instructions");
-    info = t.run_code(" ei", 1);
-    ASSERT_EQ("Step over extended instructions", 2, info.pc);
+    info = t.run_code(" nop\n im 0", 2);
+    ASSERT_EQ("Step over extended instructions", 3, info.pc);
+    info = t.run_code(" nop\n ei", 2);
+    ASSERT_EQ("Step over EI", 3, info.pc);
 }
