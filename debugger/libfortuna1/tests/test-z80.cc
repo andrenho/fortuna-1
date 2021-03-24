@@ -52,6 +52,8 @@ int main(int argc, char* argv[])
     ASSERT_EQ("Write to string: check last printed char = 'W'", 'W', info.last_printed_char);
     
     // keypress
+    title("Keypress");
+    f->ram_write_byte(0x8500, 0);
     t.run_code(R"(
         nop
         in a, (0x1)
@@ -66,5 +68,21 @@ int main(int argc, char* argv[])
     ASSERT_Q(7, f->z80_step().pc);
     ASSERT_EQ("Receive keypress", 'r', f->ram_read_byte(0x8500));
     
-    // TODO - keypress interrupt
+    // keypress interrupt
+    title("Keypress interrupt");
+    f->ram_write_byte(0x8400, 0);
+    t.run_code(R"(
+        jp  main
+    org 0x8
+        in  a, (0x1)
+        ld  (0x8400), a
+    main:
+        im 0
+        ei
+    cc: jp cc
+    )", 6);
+    f->keypress('k');
+    for (size_t i = 0; i < 6; ++i)
+        f->z80_step();
+    ASSERT_EQ("Keyboard interrupt was received", 'k', f->ram_read_byte(0x8400));
 }

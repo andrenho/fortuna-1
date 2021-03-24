@@ -39,6 +39,9 @@ public:
     void set_last_printed_char(uint8_t c) { last_printed_char_ = c; }
     
     uint8_t last_keypress() const { return last_keypress_; }
+    
+    bool interrupt() const { return interrupt_; }
+    void set_interrupt(bool interrupt) { interrupt_ = interrupt; }
 
 private:
     uint8_t                     ram_[64 * 1024] = {0};
@@ -48,6 +51,7 @@ private:
     uint32_t                    cycle_count_ = 0;
     uint8_t                     last_printed_char_ = 0;
     uint8_t                     last_keypress_ = 0;
+    bool                        interrupt_ = false;
 };
 
 #endif

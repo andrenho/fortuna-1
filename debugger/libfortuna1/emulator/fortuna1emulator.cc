@@ -112,5 +112,6 @@ Z80_Info Fortuna1Emulator::z80_step()
 void Fortuna1Emulator::keypress(uint16_t key)
 {
     last_keypress_ = key;
+    interrupt_ = true;
 }
 
