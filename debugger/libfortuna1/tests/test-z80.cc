@@ -85,4 +85,9 @@ int main(int argc, char* argv[])
     for (size_t i = 0; i < 6; ++i)
         f->z80_step();
     ASSERT_EQ("Keyboard interrupt was received", 'k', f->ram_read_byte(0x8400));
+    
+    // extended instructions
+    title("Extended instructions");
+    info = t.run_code(" ei", 1);
+    ASSERT_EQ("Step over extended instructions", 2, info.pc);
 }

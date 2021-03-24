@@ -52,6 +52,8 @@ private:
     uint8_t                     last_printed_char_ = 0;
     uint8_t                     last_keypress_ = 0;
     bool                        interrupt_ = false;
+    
+    void basic_reset();
 };
 
 #endif

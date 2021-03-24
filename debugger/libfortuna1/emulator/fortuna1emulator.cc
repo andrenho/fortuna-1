@@ -12,9 +12,7 @@ Fortuna1Emulator::Fortuna1Emulator()
 
 ResetStatus Fortuna1Emulator::hard_reset()
 {
-    ResetZ80(&z80_);
-    cycle_count_ = 0;
-    last_printed_char_ = 0;
+    basic_reset();
     try {
         auto boot = sdcard_read(0);
         ram_write_buffer(0, std::vector<uint8_t>(boot.begin(), boot.end()));
@@ -26,12 +24,20 @@ ResetStatus Fortuna1Emulator::hard_reset()
 
 ResetStatus Fortuna1Emulator::soft_reset()
 {
-    ResetZ80(&z80_);
-    cycle_count_ = 0;
+    basic_reset();
     if (sd_image_stream_.has_value())
         return ResetStatus::Ok;
     else
         return ResetStatus::SDCardInitError;
+}
+
+void Fortuna1Emulator::basic_reset()
+{
+    ResetZ80(&z80_);
+    cycle_count_ = 0;
+    last_printed_char_ = 0;
+    last_keypress_ = 0;
+    interrupt_ = false;
 }
 
 void Fortuna1Emulator::system_reset()

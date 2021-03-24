@@ -126,7 +126,9 @@ void Z80::step()
     
     bool m1 = 1;
     
-    // TODO - if next instruction is extended, run two cycles
+again:
+    uint8_t next_instruction = ram_.read_byte(pc_);
+    bool is_extended = (next_instruction == 0xcb || next_instruction == 0xdd || next_instruction == 0xed || next_instruction == 0xfd);
     
     while (m1 == 1) {
         cycle(true);
@@ -138,6 +140,9 @@ void Z80::step()
         cycle(true);
         m1 = get_M1();
     }
+    
+    if (is_extended)
+        goto again;
 
 //    if (mode == M_CONTINUE && (last_printed_char != 0 || bkp_hit))
 //        return 0;  // we wait until the last event is consumed by the client
