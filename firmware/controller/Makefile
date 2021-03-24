@@ -3,7 +3,7 @@ OBJECTS=main.o repl.o tests.o util.o io.o fortuna1.o console.o protocol/serial.o
     devices/ram.o devices/sdcard.o devices/z80.o devices/terminal.o \
 	libf1comm/message.o libf1comm/serialization.o libf1comm/messages/request.o libf1comm/messages/reply.o \
 	libf1comm/fields/ramrequest.o libf1comm/fields/sdcardstatus.o libf1comm/fields/z80info.o
-AVRDUDE_FLAGS=-p m328p -C ./avrdude_gpio.conf -c pi_1 #-V
+AVRDUDE_FLAGS=-p m328p -C ./avrdude_gpio.conf -c pi_1 -V
 FUSES=-U lfuse:w:0xDE:m	-U hfuse:w:0xD9:m -U efuse:w:0xFF:m -U lock:w:0xFF:m
 MCU=atmega328p
 F_CPU=16000000UL   # running at 16 Mhz

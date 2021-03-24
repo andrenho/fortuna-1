@@ -95,10 +95,13 @@ void Z80::check_iorq()
             uint8_t ldata = ram_.data_bus();
             out(addr, ldata);
         } else if (m.rd == 0) {  // IN
-            ram_.set_data_bus(in(addr));
+            uint8_t data = in(addr);
+            ram_.set_data_bus(data);
             cycle();
             ram_.release_bus();
         } else {  // INTERRUPT
+            if (debug_mode_)
+                printf_P(PSTR("Interrupt!\n"));
             if (next_interrupt_data_ != -1) {
                 ram_.set_data_bus(next_interrupt_data_ & 0xff);
                 cycle();
