@@ -191,6 +191,7 @@ int main()
             case CMD_RELEASE_BUS: {
                 spi_done();
                 ram_reset();
+                _delay_us(20);
                 spi_ready();
 #ifdef DEBUG_UART
                 _delay_ms(1);

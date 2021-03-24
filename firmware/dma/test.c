@@ -30,6 +30,11 @@ void run_tests()
     ram_write_byte(0x200, 0xfe);
     printf_P(PSTR("0x%02X == 0x42\n"), ram_read_byte(0));
 
+    printf_P(PSTR("Setting data bus..."));
+    ram_set_data(0x69);
+    ram_reset();
+    printf_P(PSTR("ok."));
+
     // read/write memory byte
     for (int i = 0; i < 512; ++i) {
         uint16_t addr = random() & 0xffff;
