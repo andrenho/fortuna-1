@@ -234,3 +234,10 @@ void Z80::print_pin_state() const
              bit(pins.halt), bit(pins.iorq), bit(pins.m1), bit(pins.busak), cycle_count());
 }
 
+void Z80::nmi()
+{
+    set_NMI(0);
+    step();
+    set_NMI(1);
+}
+

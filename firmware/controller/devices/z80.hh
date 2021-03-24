@@ -40,6 +40,7 @@ public:
     void    print_pin_state() const;
     
     void interrupt(uint8_t int_value);
+    void nmi();
     
 private:
     RAM&      ram_;

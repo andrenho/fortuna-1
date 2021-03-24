@@ -24,7 +24,7 @@ void Console::execute(char cmd)
             printf_P(PSTR("Ctrl:     [f] bytes free   [R] reset       [t] soft reset            [!] system reset\n"));
             printf_P(PSTR("RAM:      [r] read byte    [w] write byte  [W] write multiple bytes  [d] dump memory\n"));
             printf_P(PSTR("SdCard:   [l] last status  [s] dump block\n"));
-            printf_P(PSTR("Z80:      [i] CPU info     [p] step        [@] change debug mode\n"));
+            printf_P(PSTR("Z80:      [i] CPU info     [p] step        [@] change debug mode     [n] NMI\n"));
             printf_P(PSTR("Terminal: [k] keypress\n"));
             printf_P(PSTR("Low lvl:  [b] buses state  [c] Z80 cycle\n"));
 #ifdef ENABLE_TESTS
@@ -131,6 +131,9 @@ void Console::execute(char cmd)
         case '@':
             fortuna1_.z80().set_debug_mode(!fortuna1_.z80().debug_mode());
             printf_P(PSTR("Debug mode is %s.\n"), fortuna1_.z80().debug_mode() ? "on" : "off");
+            break;
+        case 'n':
+            fortuna1_.z80().nmi();
             break;
         default:
             error();
