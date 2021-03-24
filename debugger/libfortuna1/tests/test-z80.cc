@@ -97,5 +97,9 @@ int main(int argc, char* argv[])
     title("NMI");
     t.run_code(" nop\n nop\n nop\n", 2);
     info = f->z80_nmi();
-    ASSERT_EQ("NMI executed", 0x66, info.pc);
+    if (t.real_hardware_mode) {
+        ASSERT_EQ("NMI executed", 0x66, info.pc);
+    } else {
+        ASSERT_EQ("NMI executed", 0x67, info.pc);
+    }
 }

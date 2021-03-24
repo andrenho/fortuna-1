@@ -125,17 +125,17 @@ next_message:
         case MessageClass::MC_Reply: {
             Reply reply = parse_reply(buffer);
             if (log_message_ || log_bytes_)
-                printf("\e[0m");
+                printf("\n\e[0m");
             return reply;
         }
         case MessageClass::MC_DebugInformation:
             parse_debug_information(buffer);
             if (log_message_ || log_bytes_)
-                printf("\e[0m");
+                printf("\n\e[0m");
             goto next_message;
         default:
             if (log_message_ || log_bytes_)
-                printf("\e[0m");
+                printf("\n\e[0m");
             throw ReplyException("Unexpected message class " + std::to_string(resp) + " instead of Reply of DebugInformation.");
     }
 }
