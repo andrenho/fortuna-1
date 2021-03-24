@@ -26,6 +26,7 @@ void Reply::serialize_detail(Message::SerializationFunction f, void* data) const
             break;
         case Z80_CpuInfo:
         case Z80_Step:
+        case Z80_NMI:
             z80_info.serialize(f, data);
             break;
         default:
@@ -54,6 +55,7 @@ void Reply::deserialize_detail(Message::DeserializationFunction f, void* data, u
             break;
         case Z80_CpuInfo:
         case Z80_Step:
+        case Z80_NMI:
             z80_info = Z80_Info::unserialize(f, data, sum1, sum2);
             break;
         default:
@@ -92,6 +94,7 @@ bool Reply::compare(Message const& message) const
             break;
         case Z80_CpuInfo:
         case Z80_Step:
+        case Z80_NMI:
             if (z80_info != other.z80_info)
                 eq = false;
         default:
@@ -121,6 +124,7 @@ void Reply::debug_detail() const
             break;
         case Z80_Step:
         case Z80_CpuInfo:
+        case Z80_NMI:
             z80_info.debug_detail();
             break;
         default:

@@ -31,6 +31,7 @@ public:
     
     virtual Z80_Info                 z80_info() const = 0;
     virtual Z80_Info                 z80_step() = 0;
+    virtual Z80_Info                 z80_nmi() = 0;
     
     virtual void                     keypress(uint16_t key) = 0;
     

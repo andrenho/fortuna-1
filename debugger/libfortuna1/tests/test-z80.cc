@@ -92,4 +92,10 @@ int main(int argc, char* argv[])
     ASSERT_EQ("Step over extended instructions", 3, info.pc);
     info = t.run_code(" nop\n ei", 2);
     ASSERT_EQ("Step over EI", 3, info.pc);
+    
+    // NMI
+    title("NMI");
+    t.run_code(" nop\n nop\n nop\n", 2);
+    info = f->z80_nmi();
+    ASSERT_EQ("NMI executed", 0x66, info.pc);
 }

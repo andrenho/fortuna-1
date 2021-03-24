@@ -115,6 +115,14 @@ Z80_Info Fortuna1Emulator::z80_step()
     return z80_info();
 }
 
+Z80_Info Fortuna1Emulator::z80_nmi()
+{
+    last_printed_char_ = 0;
+    nmi_ = true;
+    RunZ80(&z80_);
+    return z80_info();
+}
+
 void Fortuna1Emulator::keypress(uint16_t key)
 {
     last_keypress_ = key;

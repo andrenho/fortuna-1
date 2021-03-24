@@ -34,6 +34,7 @@ public:
     
     Z80_Info z80_info() const override;
     Z80_Info z80_step() override;
+    Z80_Info z80_nmi() override;
 
 private:
     mutable Buffer buffer_ { {0}, 0 };

@@ -127,6 +127,13 @@ Z80_Info Fortuna1RealHardware::z80_step()
     return serial_.request(request, buffer_).z80_info;
 }
 
+Z80_Info Fortuna1RealHardware::z80_nmi()
+{
+    buffer_.sz = 0;
+    Request request(MessageType::Z80_NMI, buffer_);
+    return serial_.request(request, buffer_).z80_info;
+}
+
 void Fortuna1RealHardware::keypress(uint16_t key)
 {
     buffer_.sz = 0;

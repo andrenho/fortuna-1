@@ -34,6 +34,7 @@ public:
     
     Z80_Info z80_info() const override;
     Z80_Info z80_step() override;
+    Z80_Info z80_nmi() override;
     
     void increment_cycle_counter() { ++cycle_count_; }
     void set_last_printed_char(uint8_t c) { last_printed_char_ = c; }
@@ -42,6 +43,9 @@ public:
     
     bool interrupt() const { return interrupt_; }
     void set_interrupt(bool interrupt) { interrupt_ = interrupt; }
+    
+    bool nmi() const { return nmi_; }
+    void set_nmi(bool b) { nmi_ = b; }
 
 private:
     uint8_t                     ram_[64 * 1024] = {0};
@@ -52,6 +56,7 @@ private:
     uint8_t                     last_printed_char_ = 0;
     uint8_t                     last_keypress_ = 0;
     bool                        interrupt_ = false;
+    bool                        nmi_ = false;
     
     void basic_reset();
 };

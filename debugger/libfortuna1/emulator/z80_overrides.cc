@@ -11,6 +11,11 @@ word LoopZ80(Z80 *R)
     (void) R;
     emulator->increment_cycle_counter();
     
+    if (emulator->nmi()) {
+        emulator->set_nmi(false);
+        return INT_NMI;
+    }
+    
     if (R->IFF && emulator->interrupt()) {
         emulator->set_interrupt(false);
         return 0xcf;  // rst 0x8
