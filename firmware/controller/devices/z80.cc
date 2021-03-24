@@ -128,7 +128,7 @@ void Z80::step()
     
 again:
     uint8_t next_instruction = ram_.read_byte(pc_);
-    bool is_extended = (next_instruction == 0xcb || next_instruction == 0xdd || next_instruction == 0xed || next_instruction == 0xfd);
+    bool is_extended = (next_instruction == 0xcb || next_instruction == 0xdd || next_instruction == 0xed || next_instruction == 0xfd || next_instruction == 0xfb);
     
     while (m1 == 1) {
         cycle(true);
