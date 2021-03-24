@@ -58,7 +58,7 @@ int main(int argc, char* argv[])
         ld (0x8500), a
         nop
     )", 0);
-    // f->keypress('r');
+    f->keypress('r');
     ASSERT_Q(0, f->z80_info().pc);
     ASSERT_Q(1, f->z80_step().pc);
     ASSERT_Q(3, f->z80_step().pc);
