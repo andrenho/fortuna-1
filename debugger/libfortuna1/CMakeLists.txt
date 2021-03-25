@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.13)
+cmake_minimum_required(VERSION 3.17)
 project(libfortuna1)
 
 find_package(Protobuf REQUIRED)
@@ -27,6 +27,9 @@ add_library(libfortuna1 ${LIBRARY_SOURCES} ${EMULATOR_SOURCES} ${LIBF1COMM_SOURC
 file(COPY tests/run_tests.sh DESTINATION ${PROJECT_BINARY_DIR}
      FILE_PERMISSIONS OWNER_EXECUTE OWNER_READ OWNER_WRITE WORLD_WRITE)
 add_custom_target(run_tests.sh DEPENDS ${PROJECT_BINARY_DIR}/run_tests.sh)
+
+file(CREATE_LINK ${PROJECT_SOURCE_DIR}/fortuna1.z80 ${PROJECT_BINARY_DIR}/fortuna1.z80 SYMBOLIC)
+add_custom_target(fortuna1.z80 DEPENDS ${PROJECT_BINARY_DIR}/fortuna1.z80)
 
 foreach(F IN ITEMS test-basic test-load test-memory test-sdcard test-z80 test-compiler test-reset)
     add_executable(${F} EXCLUDE_FROM_ALL tests/${F}.cc tests/tsupport.cc tests/tsupport.hh)

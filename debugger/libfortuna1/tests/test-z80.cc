@@ -35,10 +35,11 @@ int main(int argc, char* argv[])
     // last printed char
     title("Last printed char");
     Z80_Info info = t.run_code(R"(
+        include fortuna1.z80
         ld a, 'H'
-        out (0x1), a
+        out (TERMINAL), a
         ld a, 'W'
-        out (0x1), a)", 1);
+        out (TERMINAL), a)", 1);
     ASSERT_Q(2, info.pc);
     info = f->z80_step();
     ASSERT_Q(4, info.pc);
@@ -55,8 +56,9 @@ int main(int argc, char* argv[])
     title("Keypress");
     f->ram_write_byte(0x8500, 0);
     t.run_code(R"(
+        include fortuna1.z80
         nop
-        in a, (0x1)
+        in a, (TERMINAL)
         ld (0x8500), a
         nop
     )", 0);
@@ -72,9 +74,10 @@ int main(int argc, char* argv[])
     title("Keypress interrupt");
     f->ram_write_byte(0x8400, 0);
     t.run_code(R"(
+        include fortuna1.z80
         jp  main
     org 0x8
-        in  a, (0x1)
+        in  a, (TERMINAL)
         ld  (0x8400), a
     main:
         im 0

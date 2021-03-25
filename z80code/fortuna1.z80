@@ -1,0 +1,10 @@
+; devices
+
+TERMINAL equ 01h
+SD_CARD  equ 02h
+
+; device registers
+
+SD_BLOCK  equ 1B0h
+SD_RAM    equ 1B4h
+SD_STATUS equ 1B5h

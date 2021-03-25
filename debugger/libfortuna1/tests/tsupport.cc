@@ -70,6 +70,13 @@ void TestArgs::show_help(const char* program)
 
 Z80_Info TestArgs::run_code(std::string const& code, size_t num_steps)
 {
+    // copy fortuna1.z80
+    {
+        std::ifstream src("fortuna1.z80");
+        std::ofstream to("/tmp/fortuna1.z80");
+        to << src.rdbuf();
+    }
+    
     std::string filename = "/tmp/testcode.z80";
     std::ofstream file(filename);
     file.write(code.data(), code.size());
