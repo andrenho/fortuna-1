@@ -6,7 +6,7 @@
 #include "io.hh"
 #include "ram.hh"
 
-#define DEVICE_TERMINAL 0x1
+#include "libf1comm/fortuna1def.hh"
 
 Z80::Z80(RAM& ram, Terminal& terminal)
         : ram_(ram), terminal_(terminal)
@@ -190,14 +190,14 @@ again:
 
 void Z80::out(uint16_t addr, uint8_t data)
 {
-    if ((addr & 0xff) == DEVICE_TERMINAL) {     // video OUT (print char)
+    if ((addr & 0xff) == TERMINAL) {     // video OUT (print char)
         terminal_.set_last_printed_char(data);
     }
 }
 
 uint8_t Z80::in(uint16_t addr)
 {
-    if ((addr & 0xff) == DEVICE_TERMINAL) {     // keyboard IN (last key pressed)
+    if ((addr & 0xff) == TERMINAL) {     // keyboard IN (last key pressed)
         return terminal_.last_keypress();
     }
     return 0;

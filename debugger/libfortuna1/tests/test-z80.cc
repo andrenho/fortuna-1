@@ -1,12 +1,14 @@
 #include <iostream>
 
 #include "tsupport.hh"
+#include "libf1comm/fortuna1def.hh"
 
 int main(int argc, char* argv[])
 {
     TestArgs t(argc, argv);
     auto f = t.create_fortuna();
-    
+
+#if 0
     // two NOPs, a JP and a RST
     title("NOPs");
     f->ram_write_buffer(0, { 0x0, 0x0, 0xc3, 0xc3, 0xc3 });  // NOP, NOP, JP C3C3H
@@ -105,4 +107,55 @@ int main(int argc, char* argv[])
     } else {
         ASSERT_EQ("NMI executed", 0x67, info.pc);
     }
+#endif
+    
+    // soft reset - check SDCard status
+    f->soft_reset();
+    ASSERT_EQ("Check SDCard status after initialization", 0b10, f->ram_read_byte(SD_STATUS));
+    
+    // write expected to SDCard, check status
+    srandom(time(nullptr));
+    uint8_t diff = random();
+    std::vector<uint8_t> expected; expected.reserve(256);
+    for (size_t i = 0; i < 256; ++i)
+        expected.push_back(i + diff);
+    f->ram_write_buffer(0xae00, expected);
+    t.run_code(R"(
+        include fortuna1.z80      ; contains hardware definitions
+
+        ld  bc, 0x00              ; set SD destination block
+        ld  (SD_BLOCK_LOW), bc
+        ld  bc, 0x01
+        ld  (SD_BLOCK_HIGH), bc
+        
+        ld  bc, 0xAE00            ; set ram origin
+        ld  (SD_RAM), bc
+        
+        ld  a, SD_WRITE
+        out (SD_CARD), a          ; execute the write
+    )", 8);
+    ASSERT_EQ("Check SDCard status after write", 0b1000, f->ram_read_byte(SD_STATUS));
+    
+    auto result = f->sdcard_read(1);
+    ASSERT_EQ("Check that SDCard write was successful", true, std::equal(result.begin(), result.end(), expected.begin()));
+    
+    // read SDCard, check status
+    t.run_code(R"(
+        include fortuna1.z80      ; contains hardware definitions
+
+        ld  bc, 0x00              ; set SD origin block
+        ld  (SD_BLOCK_LOW), bc
+        ld  bc, 0x01
+        ld  (SD_BLOCK_HIGH), bc
+        
+        ld  bc, 0x3400            ; set ram destination
+        ld  (SD_RAM), bc
+        
+        ld  a
+        out (SD_CARD), a          ; execute the read
+    )", 8);
+    ASSERT_EQ("Check SDCard status after read", 0b1000, f->ram_read_byte(SD_STATUS));
+    
+    auto written = f->ram_read_buffer(0x3400, 512);
+    ASSERT_EQ("Check that SDCard read was successful", true, std::equal(written.begin(), written.end(), expected.begin()));
 }

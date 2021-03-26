@@ -26,9 +26,11 @@ public:
     void                 ram_write_buffer(uint16_t addr, std::vector<uint8_t> const& bytes) override;
     std::vector<uint8_t> ram_read_buffer(uint16_t addr, uint16_t sz) const override;
     
+    void                     sdcard_initialize();
     void                     sdcard_set_image(std::string const& filename);
     SDCardStatus             sdcard_status() const override;
     std::array<uint8_t, 512> sdcard_read(uint32_t block) override;
+    void                     sdcard_write(uint32_t block, std::array<uint8_t, 512> const& data);
     
     void keypress(uint16_t key) override;
     

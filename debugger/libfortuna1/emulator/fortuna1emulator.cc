@@ -2,12 +2,24 @@
 
 #include <iostream>
 
+#include "../libf1comm/fortuna1def.hh"
+
 Fortuna1Emulator* emulator = nullptr;
 
 Fortuna1Emulator::Fortuna1Emulator()
 {
     z80_.User = this;
     emulator = this;
+}
+
+void Fortuna1Emulator::basic_reset()
+{
+    sdcard_initialize();
+    ResetZ80(&z80_);
+    cycle_count_ = 0;
+    last_printed_char_ = 0;
+    last_keypress_ = 0;
+    interrupt_ = false;
 }
 
 ResetStatus Fortuna1Emulator::hard_reset()
@@ -29,15 +41,6 @@ ResetStatus Fortuna1Emulator::soft_reset()
         return ResetStatus::Ok;
     else
         return ResetStatus::SDCardInitError;
-}
-
-void Fortuna1Emulator::basic_reset()
-{
-    ResetZ80(&z80_);
-    cycle_count_ = 0;
-    last_printed_char_ = 0;
-    last_keypress_ = 0;
-    interrupt_ = false;
 }
 
 void Fortuna1Emulator::system_reset()
@@ -81,28 +84,6 @@ std::vector<uint8_t> Fortuna1Emulator::ram_read_buffer(uint16_t addr, uint16_t s
     return r;
 }
 
-SDCardStatus Fortuna1Emulator::sdcard_status() const
-{
-    return { sd_card_.last_stage(), sd_card_.last_response() };
-}
-
-void Fortuna1Emulator::sdcard_set_image(std::string const& filename)
-{
-    sd_image_stream_.emplace(filename, std::ios::in | std::ios::out | std::ios::binary);
-    if (!sd_image_stream_->is_open())
-        throw std::runtime_error("The file " + filename + " could not be open.");
-}
-
-std::array<uint8_t, 512> Fortuna1Emulator::sdcard_read(uint32_t block)
-{
-    if (!sd_image_stream_.has_value())
-        throw std::runtime_error("A SD card image is not defined in `sdcard_read`.");
-    sd_image_stream_->seekp(block * 512, std::ios_base::beg);
-    std::array<uint8_t, 512> data {0};
-    sd_image_stream_->read(reinterpret_cast<char*>(data.data()), 512);
-    return data;
-}
-
 Z80_Info Fortuna1Emulator::z80_info() const
 {
     return { cycle_count_, z80_.PC.W, last_printed_char_ };
@@ -129,3 +110,55 @@ void Fortuna1Emulator::keypress(uint16_t key)
     interrupt_ = true;
 }
 
+void Fortuna1Emulator::sdcard_initialize()
+{
+    ram_[SD_STATUS] = 0b10;
+}
+
+SDCardStatus Fortuna1Emulator::sdcard_status() const
+{
+    return { sd_card_.last_stage(), sd_card_.last_response() };
+}
+
+void Fortuna1Emulator::sdcard_set_image(std::string const& filename)
+{
+    sd_image_stream_.emplace(filename, std::ios::in | std::ios::out | std::ios::binary);
+    if (!sd_image_stream_->is_open()) {
+        ram_[SD_STATUS] = 0b11;
+        throw std::runtime_error("The file " + filename + " could not be open.");
+    }
+}
+
+std::array<uint8_t, 512> Fortuna1Emulator::sdcard_read(uint32_t block)
+{
+    if (!sd_image_stream_.has_value()) {
+        ram_[SD_STATUS] = 0b101;
+        throw std::runtime_error("A SD card image is not defined in `sdcard_read`.");
+    }
+    try {
+        std::array<uint8_t, 512> data {0};
+        sd_image_stream_->seekp(block * 512, std::ios_base::beg);
+        sd_image_stream_->read(reinterpret_cast<char*>(data.data()), 512);
+        ram_[SD_STATUS] = 0b100;
+        return data;
+    } catch (std::ios::failure& e) {
+        ram_[SD_STATUS] = 0b101;
+        throw;
+    }
+}
+
+void Fortuna1Emulator::sdcard_write(uint32_t block, std::array<uint8_t, 512> const& data)
+{
+    if (!sd_image_stream_.has_value()) {
+        ram_[SD_STATUS] = 0b1001;
+        throw std::runtime_error("A SD card image is not defined in `sdcard_read`.");
+    }
+    try {
+        sd_image_stream_->seekp(block * 512, std::ios_base::beg);
+        sd_image_stream_->write(reinterpret_cast<const char*>(data.data()), 512);
+        ram_[SD_STATUS] = 0b1000;
+    } catch (std::ios::failure& e) {
+        ram_[SD_STATUS] = 0b1001;
+        throw;
+    }
+}

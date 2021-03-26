@@ -5,6 +5,13 @@ SD_CARD  equ 02h
 
 ; device registers
 
-SD_BLOCK  equ 1B0h
-SD_RAM    equ 1B4h
-SD_STATUS equ 1B5h
+SD_BLOCK      equ 200h
+SD_BLOCK_LOW  equ 200h
+SD_BLOCK_HIGH equ 202h
+SD_RAM        equ 204h
+SD_STATUS     equ 205h
+
+; parameters
+
+SD_READ   equ  0h
+SD_WRITE  equ  1h

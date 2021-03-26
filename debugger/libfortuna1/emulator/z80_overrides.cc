@@ -1,8 +1,8 @@
+#include <algorithm>
 #include "z80/Z80.h"
 
-#define DEVICE_TERMINAL   0x1
-
 #include "fortuna1emulator.hh"
+#include "../libf1comm/fortuna1def.hh"
 
 extern Fortuna1Emulator* emulator;
 
@@ -37,15 +37,33 @@ byte RdZ80(word Addr)
 void OutZ80(word Port, byte Value)
 {
     switch (Port & 0xff) {
-        case DEVICE_TERMINAL:
+        case TERMINAL:
             emulator->set_last_printed_char(Value);
+            break;
+        case SD_CARD: {
+                auto sd = emulator->ram_read_buffer(SD_BLOCK, 6);
+                uint32_t block_addr = sd.at(0) | ((uint32_t) sd.at(1) << 8) | ((uint32_t) sd.at(2) << 16) | ((uint32_t) sd.at(3) << 24);
+                uint16_t ram_addr = sd.at(4) | (uint16_t) sd.at(5) << 8;
+                if (Value == SD_READ) {
+                    auto block = emulator->sdcard_read(block_addr);
+                    std::vector<uint8_t> data_v(block.begin(), block.end());
+                    emulator->ram_write_buffer(ram_addr, data_v);
+                } else if (Value == SD_WRITE) {
+                    auto block = emulator->sdcard_read(block_addr);
+                    std::array<uint8_t, 512> data_a {};
+                    std::copy_n(block.begin(), 512, data_a.begin());
+                    emulator->sdcard_write(block_addr, data_a);
+                } else {
+                    emulator->ram_write_byte(SD_CARD, 0b1);
+                }
+            }
             break;
     }
 }
 
 byte InZ80(word Port)
 {
-    if ((Port & 0xff) == DEVICE_TERMINAL)  // keyboard
+    if ((Port & 0xff) == TERMINAL)  // keyboard
         return emulator->last_keypress();
     return 0;
 }
