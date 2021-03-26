@@ -3,6 +3,7 @@
 
 #include "ram.hh"
 #include "terminal.hh"
+#include "sdcard.hh"
 
 struct Z80Pins {
     // inputs
@@ -20,7 +21,7 @@ struct Z80Pins {
 
 class Z80 {
 public:
-    Z80(RAM& ram, Terminal& terminal);
+    Z80(RAM& ram, Terminal& terminal, SDCard& card, Buffer& buffer);
     
     bool powered() const { return power_; }
     uint32_t cycle_count() const { return cycle_count_; }
@@ -45,6 +46,8 @@ public:
 private:
     RAM&      ram_;
     Terminal& terminal_;
+    SDCard&   sdcard_;
+    Buffer&   buffer_;
     bool      power_ = false;
     uint32_t  cycle_count_ = 0;
     uint16_t  pc_ = 0;
@@ -53,7 +56,7 @@ private:
     
     void    check_iorq();
     
-    void    out(uint16_t addr, uint8_t data);
+    void    out(uint16_t addr, uint8_t value);
     uint8_t in(uint16_t addr);
 };
 

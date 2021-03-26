@@ -7,9 +7,10 @@
 #include "ram.hh"
 
 #include "libf1comm/fortuna1def.hh"
+#include "sdcard.hh"
 
-Z80::Z80(RAM& ram, Terminal& terminal)
-        : ram_(ram), terminal_(terminal)
+Z80::Z80(RAM& ram, Terminal& terminal, SDCard& card, Buffer& buffer)
+        : ram_(ram), terminal_(terminal), sdcard_(card), buffer_(buffer)
 {
     set_BUSREQ(1);
     set_NMI(1);
@@ -188,10 +189,61 @@ again:
 //    return c;
 }
 
-void Z80::out(uint16_t addr, uint8_t data)
+void Z80::out(uint16_t addr, uint8_t value)
 {
-    if ((addr & 0xff) == TERMINAL) {     // video OUT (print char)
-        terminal_.set_last_printed_char(data);
+    switch (addr & 0xff) {
+        case TERMINAL:     // video OUT (print char)
+            terminal_.set_last_printed_char(value);
+            break;
+        case SD_CARD:
+            {
+                uint8_t sd[6];
+                if (!ram_.read_block(SD_BLOCK, 6, [](uint16_t idx, uint8_t data, void* sd) { ((uint8_t *) sd)[idx] = data; }, sd)) {
+                    ram_.write_byte(SD_STATUS, 0b1);
+                    return;
+                }
+                uint32_t block_addr = sd[0] | ((uint32_t) sd[1] << 8) | ((uint32_t) sd[2] << 16) | ((uint32_t) sd[3] << 24);
+                uint16_t ram_addr = sd[4] | (uint16_t) sd[5] << 8;
+                if (value == SD_READ) {
+                    if (!sdcard_.read_page(block_addr, buffer_))
+                        goto read_error;
+                    if (!ram_.write_block(ram_addr, 512, [](uint16_t idx, void* pdata) { return ((uint8_t *)pdata)[idx]; }, buffer_.data))
+                        goto read_error;
+                } else if (value == SD_WRITE) {
+                    if (!ram_.read_block(ram_addr, 512, [](uint16_t idx, uint8_t data, void* b) { ((uint8_t*) b)[idx] = data; }, buffer_.data))
+                        goto write_error;
+                    if (!sdcard_.write_page(block_addr, buffer_))
+                        goto write_error;
+                }
+                return;
+write_error:
+                ram_.write_byte(SD_STATUS, 0b1001);
+                return;
+read_error:
+                ram_.write_byte(SD_STATUS, 0b101);
+                return;
+            }
+            break;
+            /*
+        case SD_CARD: {
+            auto sd = emulator->ram_read_buffer(SD_BLOCK, 6);
+            uint32_t block_addr = sd.at(0) | ((uint32_t) sd.at(1) << 8) | ((uint32_t) sd.at(2) << 16) | ((uint32_t) sd.at(3) << 24);
+            uint16_t ram_addr = sd.at(4) | (uint16_t) sd.at(5) << 8;
+            if (Value == SD_READ) {
+                auto block = emulator->sdcard_read(block_addr);
+                std::vector<uint8_t> data_v(block.begin(), block.end());
+                emulator->ram_write_buffer(ram_addr, data_v);
+            } else if (Value == SD_WRITE) {
+                auto block = emulator->ram_read_buffer(ram_addr, 512);
+                std::array<uint8_t, 512> data_a {};
+                std::copy_n(block.begin(), 512, data_a.begin());
+                emulator->sdcard_write(block_addr, data_a);
+            } else {
+                emulator->ram_write_byte(SD_CARD, 0b1);
+            }
+        }
+            break;
+             */
     }
 }
 

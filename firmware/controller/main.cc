@@ -12,15 +12,17 @@ int main()
 
     Serial serial = Serial::init();
     SPI spi;
-
+    
+    Buffer    buffer { {0}, 0 };
+    
     RAM ram(spi);
     SDCard sdcard(spi, ram);
     Terminal terminal {};
-    Z80 z80(ram, terminal);
+    Z80 z80(ram, terminal, sdcard, buffer);
     terminal.set_z80(z80);
     Fortuna1 fortuna1(ram, sdcard, z80, terminal);
 
-    Repl repl(serial, fortuna1);
+    Repl repl(serial, fortuna1, buffer);
 
     // printf_P(PSTR("System initialized.\n"));
 

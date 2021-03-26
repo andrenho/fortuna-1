@@ -12,8 +12,8 @@
 
 class Repl {
 public:
-    Repl(Serial& serial, Fortuna1& fortuna1)
-        : serial_(serial), fortuna1_(fortuna1), console_(serial_, fortuna1_, buffer_) {}
+    Repl(Serial& serial, Fortuna1& fortuna1, Buffer& buffer)
+        : buffer_(buffer), serial_(serial), fortuna1_(fortuna1), console_(serial_, fortuna1_, buffer) {}
 
     void execute();
 
@@ -24,9 +24,9 @@ private:
     Request recv_request(bool* status);
     Reply   parse_request(Request const& request);
 
+    Buffer&   buffer_;
     Serial&   serial_;
     Fortuna1& fortuna1_;
-    Buffer    buffer_ { {0}, 0 };
     Console   console_;
 };
 
