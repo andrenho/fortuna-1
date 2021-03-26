@@ -1,0 +1,14 @@
+#ifndef LIBFORTUNA1_FORTUNA1DEF_HH
+#define LIBFORTUNA1_FORTUNA1DEF_HH
+
+#define TERMINAL 0x1
+#define SD_CARD  0x2
+
+#define SD_BLOCK  0x200
+#define SD_RAM    0x204
+#define SD_STATUS 0x206
+
+#define SD_READ   0
+#define SD_WRITE  1
+
+#endif //LIBFORTUNA1_FORTUNA1DEF_HH
