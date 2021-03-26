@@ -191,6 +191,8 @@ again:
 
 void Z80::out(uint16_t addr, uint8_t value)
 {
+    if (debug_mode_)
+        printf_P(PSTR("Z80 OUT: port 0x%02X  value 0x%02X"), addr & 0xff, value);
     switch (addr & 0xff) {
         case TERMINAL:     // video OUT (print char)
             terminal_.set_last_printed_char(value);
@@ -205,15 +207,22 @@ void Z80::out(uint16_t addr, uint8_t value)
                 uint32_t block_addr = sd[0] | ((uint32_t) sd[1] << 8) | ((uint32_t) sd[2] << 16) | ((uint32_t) sd[3] << 24);
                 uint16_t ram_addr = sd[4] | (uint16_t) sd[5] << 8;
                 if (value == SD_READ) {
+                    if (debug_mode_)
+                        printf_P("Reading from SDCard block 0x%X into RAM position 0x%04X.\n", block_addr, ram_addr);
                     if (!sdcard_.read_page(block_addr, buffer_))
                         goto read_error;
                     if (!ram_.write_block(ram_addr, 512, [](uint16_t idx, void* pdata) { return ((uint8_t *)pdata)[idx]; }, buffer_.data))
                         goto read_error;
                 } else if (value == SD_WRITE) {
+                    if (debug_mode_)
+                        printf_P("Writing to SDCard block 0x%X from RAM position 0x%04X.\n", block_addr, ram_addr);
                     if (!ram_.read_block(ram_addr, 512, [](uint16_t idx, uint8_t data, void* b) { ((uint8_t*) b)[idx] = data; }, buffer_.data))
                         goto write_error;
                     if (!sdcard_.write_page(block_addr, buffer_))
                         goto write_error;
+                } else {
+                    ram_.write_byte(SD_STATUS, 0b1);
+                    return;
                 }
                 return;
 write_error:
@@ -224,31 +233,13 @@ read_error:
                 return;
             }
             break;
-            /*
-        case SD_CARD: {
-            auto sd = emulator->ram_read_buffer(SD_BLOCK, 6);
-            uint32_t block_addr = sd.at(0) | ((uint32_t) sd.at(1) << 8) | ((uint32_t) sd.at(2) << 16) | ((uint32_t) sd.at(3) << 24);
-            uint16_t ram_addr = sd.at(4) | (uint16_t) sd.at(5) << 8;
-            if (Value == SD_READ) {
-                auto block = emulator->sdcard_read(block_addr);
-                std::vector<uint8_t> data_v(block.begin(), block.end());
-                emulator->ram_write_buffer(ram_addr, data_v);
-            } else if (Value == SD_WRITE) {
-                auto block = emulator->ram_read_buffer(ram_addr, 512);
-                std::array<uint8_t, 512> data_a {};
-                std::copy_n(block.begin(), 512, data_a.begin());
-                emulator->sdcard_write(block_addr, data_a);
-            } else {
-                emulator->ram_write_byte(SD_CARD, 0b1);
-            }
-        }
-            break;
-             */
     }
 }
 
 uint8_t Z80::in(uint16_t addr)
 {
+    if (debug_mode_)
+        printf_P(PSTR("Z80 IN: port 0x%02X\n"), addr & 0xff);
     if ((addr & 0xff) == TERMINAL) {     // keyboard IN (last key pressed)
         return terminal_.last_keypress();
     }
