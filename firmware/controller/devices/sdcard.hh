@@ -35,6 +35,7 @@ private:
     uint8_t if_cond(uint32_t* response);
     uint8_t init_process(uint32_t* response);
     
+    bool    initialize_once();
     void    command(uint8_t cmd, uint32_t args, uint8_t crc);
 };
 

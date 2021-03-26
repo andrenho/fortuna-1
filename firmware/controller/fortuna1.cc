@@ -3,7 +3,7 @@
 ResetStatus Fortuna1::hard_reset(Buffer& buffer)
 {
     bool sdcard_read_ok = false;
-    bool bootable = false;
+    bool bootable;
 
     z80_.powerdown();
 

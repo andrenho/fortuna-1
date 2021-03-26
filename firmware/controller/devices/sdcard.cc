@@ -23,6 +23,17 @@ SDCard::SDCard(SPI& spi, RAM& ram)
 
 bool SDCard::initialize()
 {
+    // will attempt to initialize 10 times
+    for (size_t i = 0; i < 10; ++i) {
+        if (initialize_once())
+            return true;
+        _delay_ms(80);
+    }
+    return false;
+}
+
+bool SDCard::initialize_once()
+{
     ram_.write_byte(SD_STATUS, 0b11);  // start as initialization error
     last_response_ = 0xff;
     last_stage_ = SD_RESET;
