@@ -116,8 +116,8 @@ int main(int argc, char* argv[])
     // write expected to SDCard, check status
     srandom(time(nullptr));
     uint8_t diff = random();
-    std::vector<uint8_t> expected; expected.reserve(256);
-    for (size_t i = 0; i < 256; ++i)
+    std::vector<uint8_t> expected; expected.reserve(512);
+    for (size_t i = 0; i < 512; ++i)
         expected.push_back(i + diff);
     f->ram_write_buffer(0xae00, expected);
     t.run_code(R"(
@@ -151,10 +151,10 @@ int main(int argc, char* argv[])
         ld  bc, 0x3400            ; set ram destination
         ld  (SD_RAM), bc
         
-        ld  a
+        ld  a, SD_READ
         out (SD_CARD), a          ; execute the read
     )", 8);
-    ASSERT_EQ("Check SDCard status after read", 0b1000, f->ram_read_byte(SD_STATUS));
+    ASSERT_EQ("Check SDCard status after read", 0b100, f->ram_read_byte(SD_STATUS));
     
     auto written = f->ram_read_buffer(0x3400, 512);
     ASSERT_EQ("Check that SDCard read was successful", true, std::equal(written.begin(), written.end(), expected.begin()));

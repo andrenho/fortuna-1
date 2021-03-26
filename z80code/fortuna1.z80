@@ -6,8 +6,8 @@ SD_CARD  equ 02h
 ; device registers
 
 SD_BLOCK      equ 200h
-SD_BLOCK_LOW  equ 200h
-SD_BLOCK_HIGH equ 202h
+SD_BLOCK_HIGH equ 200h
+SD_BLOCK_LOW  equ 202h
 SD_RAM        equ 204h
 SD_STATUS     equ 205h
 

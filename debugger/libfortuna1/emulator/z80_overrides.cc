@@ -49,7 +49,7 @@ void OutZ80(word Port, byte Value)
                     std::vector<uint8_t> data_v(block.begin(), block.end());
                     emulator->ram_write_buffer(ram_addr, data_v);
                 } else if (Value == SD_WRITE) {
-                    auto block = emulator->sdcard_read(block_addr);
+                    auto block = emulator->ram_read_buffer(ram_addr, 512);
                     std::array<uint8_t, 512> data_a {};
                     std::copy_n(block.begin(), 512, data_a.begin());
                     emulator->sdcard_write(block_addr, data_a);
