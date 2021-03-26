@@ -14,7 +14,7 @@ int main()
     SPI spi;
 
     RAM ram(spi);
-    SDCard sdcard(spi);
+    SDCard sdcard(spi, ram);
     Terminal terminal {};
     Z80 z80(ram, terminal);
     terminal.set_z80(z80);

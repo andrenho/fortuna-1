@@ -1,5 +1,8 @@
-#include <util/delay.h>
 #include "sdcard.hh"
+
+#include <util/delay.h>
+
+#include "../libf1comm/fortuna1def.hh"
 
 #define CMD0   0
 #define CMD8   8
@@ -12,14 +15,15 @@
 #define MAX_READ_ATTEMPTS 20
 #define MAX_WRITE_ATTEMPTS 100
 
-SDCard::SDCard(SPI& spi)
-    : spi_(spi) 
+SDCard::SDCard(SPI& spi, RAM& ram)
+    : spi_(spi), ram_(ram)
 {
     spi_.deactivate();
 }
 
 bool SDCard::initialize()
 {
+    ram_.write_byte(SD_STATUS, 0b11);  // start as initialization error
     last_response_ = 0xff;
     last_stage_ = SD_RESET;
     reset();
@@ -38,8 +42,10 @@ bool SDCard::initialize()
     last_stage_ = SD_INIT;
     for (int i = 0; i < 16; ++i) {
         last_response_ = init_process(&response);
-        if (last_response_ == 0)
+        if (last_response_ == 0) {
+            ram_.write_byte(SD_STATUS, 0b10);  // initialization success
             return true;
+        }
         _delay_ms(50);
     }
     return false;
@@ -47,6 +53,8 @@ bool SDCard::initialize()
 
 bool SDCard::read_page(uint32_t block, Buffer& buffer)
 {
+    ram_.write_byte(SD_STATUS, 0b101);  // start as read error
+    
     spi_.activate(SPI::SD);
     
     // send read command
@@ -84,11 +92,16 @@ read_data:
 
     last_stage_ = SD_READ_OK;
     spi_.deactivate();
+    
+    ram_.write_byte(SD_STATUS, 0b100);  // read success
+    
     return true;
 }
 
 bool SDCard::write_page(uint32_t block, Buffer const& buffer)
 {
+    ram_.write_byte(SD_STATUS, 0b1001);  // start as write error
+    
     spi_.activate(SPI::SD);
     
     // send read command
@@ -144,6 +157,9 @@ response_received:
 response_data_received:
     last_stage_ = SD_WRITE_OK;
     spi_.deactivate();
+    
+    ram_.write_byte(SD_STATUS, 0b1000);  // write success
+    
     return true;
 }
 

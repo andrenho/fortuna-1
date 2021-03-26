@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 #include "protocol/spi.hh"
+#include "ram.hh"
 
 enum SDCardStage {
     SD_RESET    = 0x1, SD_GO_IDLE = 0x2, SD_IF_COND = 0x3, SD_INIT = 0x4,
@@ -14,7 +15,7 @@ enum SDCardStage {
 
 class SDCard {
 public:
-    explicit SDCard(SPI& spi);
+    explicit SDCard(SPI& spi, RAM& ram);
     
     bool initialize();
     bool read_page(uint32_t block, Buffer& buffer);
@@ -25,6 +26,7 @@ public:
 
 private:
     SPI&        spi_;
+    RAM&        ram_;
     SDCardStage last_stage_ = SD_NOT_INITIALIZED;
     uint8_t     last_response_ = 0xff;
     
