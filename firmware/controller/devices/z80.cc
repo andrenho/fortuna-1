@@ -192,7 +192,7 @@ again:
 void Z80::out(uint16_t addr, uint8_t value)
 {
     if (debug_mode_)
-        printf_P(PSTR("Z80 OUT: port 0x%02X  value 0x%02X"), addr & 0xff, value);
+        printf_P(PSTR("Z80 OUT: port 0x%02X  value 0x%02X\n"), addr & 0xff, value);
     switch (addr & 0xff) {
         case TERMINAL:     // video OUT (print char)
             terminal_.set_last_printed_char(value);

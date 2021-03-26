@@ -134,6 +134,7 @@ int main(int argc, char* argv[])
         ld  a, SD_WRITE
         out (SD_CARD), a          ; execute the write
     )", 8);
+    printf("Diff start: 0x%02X\n", diff);
     ASSERT_EQ("Check SDCard status after write", 0b1000, f->ram_read_byte(SD_STATUS));
     
     auto result = f->sdcard_read(1);
