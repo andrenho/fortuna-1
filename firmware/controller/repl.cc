@@ -89,7 +89,8 @@ Reply Repl::parse_request(Request const& request)
             add_breakpoints_to_buffer(fortuna1_.breakpoints(), buffer_);
             break;
         case MessageType::BreakpointsAdd:
-            fortuna1_.breakpoints().add(request.address);
+            if (!fortuna1_.breakpoints().add(request.address))
+                reply.result = TooManyBreakpoints;
             add_breakpoints_to_buffer(fortuna1_.breakpoints(), buffer_);
             break;
         case MessageType::BreakpointsRemove:

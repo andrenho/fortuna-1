@@ -68,6 +68,7 @@ enum Result : uint8_t {
     WrongChecksumDMA                 = 2,
     DeserializationErrorInController = 3,
     SDCardError                      = 4,
+    TooManyBreakpoints               = 5,
 };
 
 #define RESET_STATUS           \

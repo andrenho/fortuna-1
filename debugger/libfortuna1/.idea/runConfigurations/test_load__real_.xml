@@ -1,0 +1,7 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="test-load (real)" type="CMakeRunConfiguration" factoryName="Application" PROGRAM_PARAMS="-bmr /dev/ttyUSB0" REDIRECT_INPUT="false" ELEVATE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libfortuna1" TARGET_NAME="test-load" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="libfortuna1" RUN_TARGET_NAME="test-load">
+    <method v="2">
+      <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+    </method>
+  </configuration>
+</component>
