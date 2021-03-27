@@ -5,16 +5,22 @@
 #include "protocol/serial.hh"
 #include "devices/sdcard.hh"
 #include "fortuna1.hh"
+#include "breakpoints.hh"
 
 int main()
 {
+    // I/O ports
     io_init();
 
+    // protocols
     Serial serial = Serial::init();
     SPI spi;
     
-    Buffer    buffer { {0}, 0 };
+    // data structures
+    Buffer      buffer { {0}, 0 };
+    Breakpoints breakpoints;
     
+    // devices
     RAM ram(spi);
     SDCard sdcard(spi, ram);
     Terminal terminal {};
@@ -22,14 +28,12 @@ int main()
     Z80 z80(buffer);
     terminal.set_z80(z80);
     
-    Fortuna1 fortuna1(ram, sdcard, z80, terminal);
+    // computer
+    Fortuna1 fortuna1(ram, sdcard, z80, terminal, breakpoints);
     z80.set_fortuna1(&fortuna1);
 
+    // communication
     Repl repl(serial, fortuna1, buffer);
-
-    // printf_P(PSTR("System initialized.\n"));
-
-    // serial.clrscr();
     while (true)
         repl.execute();
 }

@@ -85,6 +85,21 @@ Reply Repl::parse_request(Request const& request)
         case MessageType::Keypress:
             fortuna1_.terminal().keypress(request.keypress);
             break;
+        case MessageType::BreakpointsList:
+            add_breakpoints_to_buffer(fortuna1_.breakpoints(), buffer_);
+            break;
+        case MessageType::BreakpointsAdd:
+            fortuna1_.breakpoints().add(request.address);
+            add_breakpoints_to_buffer(fortuna1_.breakpoints(), buffer_);
+            break;
+        case MessageType::BreakpointsRemove:
+            fortuna1_.breakpoints().remove(request.address);
+            add_breakpoints_to_buffer(fortuna1_.breakpoints(), buffer_);
+            break;
+        case MessageType::BreakpointsRemoveAll:
+            fortuna1_.breakpoints().remove_all();
+            add_breakpoints_to_buffer(fortuna1_.breakpoints(), buffer_);
+            break;
         default:
             reply.result = Result::InvalidRequest;
             break;
@@ -130,5 +145,15 @@ void Repl::execute()
         fortuna1_.system_reset();
     else
         serial_.send(InvalidCommand);
+}
+
+void Repl::add_breakpoints_to_buffer(Breakpoints const& breakpoints, Buffer& buffer)
+{
+    buffer_.sz = MAX_BREAKPOINTS * 2;
+    for (size_t i = 0; i < MAX_BREAKPOINTS; ++i) {
+        uint16_t addr = breakpoints.list()[i];
+        buffer.data[i * 2] = addr & 0xff;
+        buffer.data[i * 2 + 1] = addr >> 8;
+    }
 }
 

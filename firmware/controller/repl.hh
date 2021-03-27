@@ -28,6 +28,8 @@ private:
     Serial&   serial_;
     Fortuna1& fortuna1_;
     Console   console_;
+    
+    void add_breakpoints_to_buffer(Breakpoints const& breakpoints, Buffer& buffer);
 };
 
 #endif
