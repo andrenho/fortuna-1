@@ -10,36 +10,45 @@ enum MessageClass : uint8_t {
     MC_DebugInformation = 0xf2,
 };
 
-#define MESSAGE_TYPES      \
-    X(Nop,           0x00) \
-                           \
-    /* tests */            \
-    X(TestDebug,     0x01) \
-    X(TestDMA,       0x02) \
-                           \
-    /* general */          \
-    X(FreeMem,       0x0a) \
-    X(SoftReset,     0x0b) \
-    X(HardReset,     0x0c) \
-                           \
-    /* RAM */              \
-    X(RamReadByte,   0x10) \
-    X(RamWriteByte,  0x11) \
-    X(RamReadBlock,  0x12) \
-    X(RamWriteBlock, 0x13) \
-                           \
-    /* SDCARD */           \
-    X(SDCard_Status, 0x20) \
-    X(SDCard_Read,   0x21) \
-                           \
-    /* Z80 */              \
-    X(Z80_CpuInfo,   0x30) \
-    X(Z80_Step,      0x31) \
-    X(Z80_NMI,       0x32) \
-                           \
-    /* Terminal */         \
-    X(Keypress,      0x40) \
-                           \
+#define MESSAGE_TYPES             \
+    X(Nop,           0x00)        \
+                                  \
+    /* tests */                   \
+    X(TestDebug,     0x01)        \
+    X(TestDMA,       0x02)        \
+                                  \
+    /* general */                 \
+    X(FreeMem,       0x0a)        \
+    X(SoftReset,     0x0b)        \
+    X(HardReset,     0x0c)        \
+                                  \
+    /* RAM */                     \
+    X(RamReadByte,   0x10)        \
+    X(RamWriteByte,  0x11)        \
+    X(RamReadBlock,  0x12)        \
+    X(RamWriteBlock, 0x13)        \
+                                  \
+    /* SDCARD */                  \
+    X(SDCard_Status, 0x20)        \
+    X(SDCard_Read,   0x21)        \
+                                  \
+    /* Z80 */                     \
+    X(Z80_CpuInfo,   0x30)        \
+    X(Z80_Step,      0x31)        \
+    X(Z80_NMI,       0x32)        \
+    X(Z80_Run,       0x33)        \
+    X(Z80_Next,      0x34)        \
+    X(Z80_Stop,      0x35)        \
+    X(Z80_Events,    0x36)        \
+                                  \
+    /* Terminal */                \
+    X(Keypress,      0x40)        \
+                                  \
+    /* Breakpoints */             \
+    X(BreakpointsAdd, 0x50)       \
+    X(BreakpointsRemove, 0x51)    \
+    X(BreakpointsRemoveAll, 0x52) \
+                                  \
     X(Undefined,     0xff)
 
 enum MessageType : uint8_t {
@@ -47,16 +56,6 @@ enum MessageType : uint8_t {
     MESSAGE_TYPES
 #undef X
 };
-
-#ifndef EMBEDDED
-#include <unordered_map>
-
-inline const std::unordered_map<uint8_t, std::string> message_type_names = {
-#define X(name, value) { value, #name },
-   MESSAGE_TYPES
-#undef X
-};
-#endif
 
 enum class DeserializationError {
     NoErrors, InvalidMessageClass, ChecksumDoesNotMatch, FinalByteNotReceived, BufferDataTooLarge,
@@ -82,13 +81,39 @@ enum ResetStatus : uint8_t {
 #undef X
 };
 
-#ifndef EMBEDDED
+#define EVENTS \
+    X(NoEvents,          0xb0) \
+    X(CharPrinted,       0xb1) \
+    X(Stopped,           0xb2) \
+    X(BreakpointReached, 0xb3)
 
-inline const std::unordered_map<uint8_t, std::string> reset_status_names = {
-#define X(name, value) { value, #name },
-    RESET_STATUS
+enum EventType : uint8_t {
+#define X(name, value) name = value,
+    EVENTS
 #undef X
 };
+
+#ifndef EMBEDDED
+#include <unordered_map>
+
+    inline const std::unordered_map<uint8_t, std::string> message_type_names = {
+    #define X(name, value) { value, #name },
+            MESSAGE_TYPES
+    #undef X
+    };
+
+    inline const std::unordered_map<uint8_t, std::string> reset_status_names = {
+    #define X(name, value) { value, #name },
+            RESET_STATUS
+    #undef X
+    };
+
+    inline const std::unordered_map<uint8_t, std::string> event_names = {
+    #define X(name, value) { value, #name },
+            EVENTS
+    #undef X
+    };
+
 #endif
 
 #define SYSTEM_RESET 0xdd

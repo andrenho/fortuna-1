@@ -4,6 +4,7 @@
 #include "../message.hh"
 #include "../fields/sdcardstatus.hh"
 #include "../fields/z80info.hh"
+#include "../fields/event.hh"
 
 class Reply : public Message {
 public:
@@ -16,6 +17,7 @@ public:
         SDCardStatus sd_status;
         Z80_Info     z80_info;
         ResetStatus  reset_status;
+        Event        event;
     };
     
     void deserialize_detail(DeserializationFunction f, void* data, uint16_t* sum1, uint16_t* sum2) override;

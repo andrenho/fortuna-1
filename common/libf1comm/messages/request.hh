@@ -16,6 +16,7 @@ public:
         RamRequest ram_request { 0, 0, 0 };
         uint32_t   sdcard_block;
         uint16_t   keypress;
+        uint16_t   address;
     };
 
 #ifndef EMBEDDED
