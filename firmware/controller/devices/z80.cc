@@ -7,10 +7,10 @@
 #include "ram.hh"
 
 #include "libf1comm/fortuna1def.hh"
-#include "sdcard.hh"
+#include "fortuna1.hh"
 
-Z80::Z80(RAM& ram, Terminal& terminal, SDCard& card, Buffer& buffer)
-        : ram_(ram), terminal_(terminal), sdcard_(card), buffer_(buffer)
+Z80::Z80(Buffer& buffer)
+        : buffer_(buffer)
 {
     set_BUSREQ(1);
     set_NMI(1);
@@ -90,10 +90,10 @@ Z80Pins Z80::state() const
 void Z80::check_iorq()
 {
     if (get_IORQ() == 0) {
-        uint16_t addr = ram_.addr_bus();
-        auto m = ram_.memory_bus();
+        uint16_t addr = fortuna1_->ram().addr_bus();
+        auto m = fortuna1_->ram().memory_bus();
         if (m.we == 0) {  // OUT
-            uint8_t ldata = ram_.data_bus();
+            uint8_t ldata = fortuna1_->ram().data_bus();
             if (debug_mode_)
                 printf_P(PSTR("Writing to port 0x%04X (data = %02X).\n"), addr, ldata);
             out(addr, ldata);
@@ -101,16 +101,16 @@ void Z80::check_iorq()
             uint8_t data = in(addr);
             if (debug_mode_)
                 printf_P(PSTR("Reading from port 0x%04X (data = %02X).\n"), addr, data);
-            ram_.set_data_bus(data);
+            fortuna1_->ram().set_data_bus(data);
             cycle();
-            ram_.release_bus();
+            fortuna1_->ram().release_bus();
         } else {  // INTERRUPT
             if (debug_mode_)
                 printf_P(PSTR("Interrupt! Data = 0x%02X\n"), next_interrupt_data_);
             if (next_interrupt_data_ != -1) {
-                ram_.set_data_bus(next_interrupt_data_ & 0xff);
+                fortuna1_->ram().set_data_bus(next_interrupt_data_ & 0xff);
                 cycle();
-                ram_.release_bus();
+                fortuna1_->ram().release_bus();
                 next_interrupt_data_ = -1;
                 set_INT(1);
             }
@@ -123,19 +123,19 @@ void Z80::check_iorq()
 
 void Z80::step()
 {
-    terminal_.set_last_printed_char(0);
+    fortuna1_->terminal().set_last_printed_char(0);
     
     bool m1 = 1;
     
 again:
-    uint8_t next_instruction = ram_.read_byte(pc_);
+    uint8_t next_instruction = fortuna1_->ram().read_byte(pc_);
     bool is_extended = (next_instruction == 0xcb || next_instruction == 0xdd || next_instruction == 0xed || next_instruction == 0xfd || next_instruction == 0xfb);
     
     while (m1 == 1) {
         cycle(true);
         m1 = get_M1();
     }
-    pc_ = ram_.addr_bus();
+    pc_ = fortuna1_->ram().addr_bus();
     
     while (m1 == 0) {
         cycle(true);
@@ -195,13 +195,13 @@ void Z80::out(uint16_t addr, uint8_t value)
         printf_P(PSTR("Z80 OUT: port 0x%02X  value 0x%02X\n"), addr & 0xff, value);
     switch (addr & 0xff) {
         case TERMINAL:     // video OUT (print char)
-            terminal_.set_last_printed_char(value);
+            fortuna1_->terminal().set_last_printed_char(value);
             break;
         case SD_CARD:
             {
                 uint8_t sd[6];
-                if (!ram_.read_block(SD_BLOCK, 6, [](uint16_t idx, uint8_t data, void* sd) { ((uint8_t *) sd)[idx] = data; }, sd)) {
-                    ram_.write_byte(SD_STATUS, 0b1);
+                if (!fortuna1_->read_block(SD_BLOCK, 6, [](uint16_t idx, uint8_t data, void* sd) { ((uint8_t *) sd)[idx] = data; }, sd)) {
+                    fortuna1_->write_byte(SD_STATUS, 0b1);
                     return;
                 }
                 uint32_t block_addr = sd[0] | ((uint32_t) sd[1] << 8) | ((uint32_t) sd[2] << 16) | ((uint32_t) sd[3] << 24);
@@ -209,27 +209,27 @@ void Z80::out(uint16_t addr, uint8_t value)
                 if (value == SD_READ) {
                     if (debug_mode_)
                         printf_P("Reading from SDCard block 0x%X into RAM position 0x%04X.\n", block_addr, ram_addr);
-                    if (!sdcard_.read_page(block_addr, buffer_))
+                    if (!fortuna1_->sdcard().read_page(block_addr, buffer_))
                         goto read_error;
-                    if (!ram_.write_block(ram_addr, 512, [](uint16_t idx, void* pdata) { return ((uint8_t *)pdata)[idx]; }, buffer_.data))
+                    if (!fortuna1_->write_block(ram_addr, 512, [](uint16_t idx, void* pdata) { return ((uint8_t *)pdata)[idx]; }, buffer_.data))
                         goto read_error;
                 } else if (value == SD_WRITE) {
                     if (debug_mode_)
                         printf_P("Writing to SDCard block 0x%X from RAM position 0x%04X.\n", block_addr, ram_addr);
-                    if (!ram_.read_block(ram_addr, 512, [](uint16_t idx, uint8_t data, void* b) { ((uint8_t*) b)[idx] = data; }, buffer_.data))
+                    if (!fortuna1_->read_block(ram_addr, 512, [](uint16_t idx, uint8_t data, void* b) { ((uint8_t*) b)[idx] = data; }, buffer_.data))
                         goto write_error;
-                    if (!sdcard_.write_page(block_addr, buffer_))
+                    if (!fortuna1_->sdcard().write_page(block_addr, buffer_))
                         goto write_error;
                 } else {
-                    ram_.write_byte(SD_STATUS, 0b1);
+                    fortuna1_->write_byte(SD_STATUS, 0b1);
                     return;
                 }
                 return;
 write_error:
-                ram_.write_byte(SD_STATUS, 0b1001);
+                fortuna1_->write_byte(SD_STATUS, 0b1001);
                 return;
 read_error:
-                ram_.write_byte(SD_STATUS, 0b101);
+                fortuna1_->write_byte(SD_STATUS, 0b101);
                 return;
             }
             break;
@@ -241,7 +241,7 @@ uint8_t Z80::in(uint16_t addr)
     if (debug_mode_)
         printf_P(PSTR("Z80 IN: port 0x%02X\n"), addr & 0xff);
     if ((addr & 0xff) == TERMINAL) {     // keyboard IN (last key pressed)
-        return terminal_.last_keypress();
+        return fortuna1_->terminal().last_keypress();
     }
     return 0;
 }
@@ -255,9 +255,9 @@ void Z80::interrupt(uint8_t int_value)
 
 void Z80::print_pin_state() const
 {
-    uint8_t data = ram_.data_bus();
-    uint16_t addr = ram_.addr_bus();
-    RAM::MemoryBus mbus = ram_.memory_bus();
+    uint8_t data = fortuna1_->ram().data_bus();
+    uint16_t addr = fortuna1_->ram().addr_bus();
+    RAM::MemoryBus mbus = fortuna1_->ram().memory_bus();
     Z80Pins pins = state();
     char addr_s[5] = { 0 };
     char data_s[3] = { 0 };

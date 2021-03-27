@@ -21,7 +21,7 @@ struct Z80Pins {
 
 class Z80 {
 public:
-    Z80(RAM& ram, Terminal& terminal, SDCard& card, Buffer& buffer);
+    Z80(Buffer& buffer);
     
     bool powered() const { return power_; }
     uint32_t cycle_count() const { return cycle_count_; }
@@ -43,11 +43,11 @@ public:
     void interrupt(uint8_t int_value);
     void nmi();
     
+    void set_fortuna1(class Fortuna1* fortuna1) { fortuna1_ = fortuna1; }
+    
 private:
-    RAM&      ram_;
-    Terminal& terminal_;
-    SDCard&   sdcard_;
     Buffer&   buffer_;
+    Fortuna1* fortuna1_ = nullptr;
     bool      power_ = false;
     uint32_t  cycle_count_ = 0;
     uint16_t  pc_ = 0;
