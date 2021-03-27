@@ -45,9 +45,10 @@ enum MessageClass : uint8_t {
     X(Keypress,      0x40)        \
                                   \
     /* Breakpoints */             \
-    X(BreakpointsAdd, 0x50)       \
-    X(BreakpointsRemove, 0x51)    \
-    X(BreakpointsRemoveAll, 0x52) \
+    X(BreakpointsList,      0x50) \
+    X(BreakpointsAdd,       0x51) \
+    X(BreakpointsRemove,    0x52) \
+    X(BreakpointsRemoveAll, 0x53) \
                                   \
     X(Undefined,     0xff)
 
