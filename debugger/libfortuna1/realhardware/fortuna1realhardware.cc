@@ -141,3 +141,23 @@ void Fortuna1RealHardware::keypress(uint16_t key)
     request.keypress = key;
     serial_.request(request, buffer_);
 }
+
+std::vector<uint16_t> Fortuna1RealHardware::list_breakpoints() const
+{
+    return std::vector<uint16_t>();
+}
+
+std::vector<uint16_t> Fortuna1RealHardware::add_breakpoint(uint16_t address)
+{
+    return std::vector<uint16_t>();
+}
+
+std::vector<uint16_t> Fortuna1RealHardware::remove_breakpoint(uint16_t address)
+{
+    return std::vector<uint16_t>();
+}
+
+std::vector<uint16_t> Fortuna1RealHardware::remove_all_breakpoints(uint16_t address)
+{
+    return std::vector<uint16_t>();
+}

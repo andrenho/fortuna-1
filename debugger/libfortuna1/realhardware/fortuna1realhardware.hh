@@ -35,6 +35,11 @@ public:
     Z80_Info z80_info() const override;
     Z80_Info z80_step() override;
     Z80_Info z80_nmi() override;
+    
+    std::vector<uint16_t> list_breakpoints() const override;
+    std::vector<uint16_t> add_breakpoint(uint16_t address) override;
+    std::vector<uint16_t> remove_breakpoint(uint16_t address) override;
+    std::vector<uint16_t> remove_all_breakpoints(uint16_t address) override;
 
 private:
     mutable Buffer buffer_ { {0}, 0 };

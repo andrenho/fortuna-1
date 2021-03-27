@@ -162,3 +162,26 @@ void Fortuna1Emulator::sdcard_write(uint32_t block, std::array<uint8_t, 512> con
         throw;
     }
 }
+
+std::vector<uint16_t> Fortuna1Emulator::list_breakpoints() const
+{
+    return std::vector<uint16_t>(breakpoints_.begin(), breakpoints_.end());
+}
+
+std::vector<uint16_t> Fortuna1Emulator::add_breakpoint(uint16_t address)
+{
+    breakpoints_.insert(address);
+    return std::vector<uint16_t>(breakpoints_.begin(), breakpoints_.end());
+}
+
+std::vector<uint16_t> Fortuna1Emulator::remove_breakpoint(uint16_t address)
+{
+    breakpoints_.erase(address);
+    return std::vector<uint16_t>(breakpoints_.begin(), breakpoints_.end());
+}
+
+std::vector<uint16_t> Fortuna1Emulator::remove_all_breakpoints(uint16_t address)
+{
+    breakpoints_.clear();
+    return std::vector<uint16_t>(breakpoints_.begin(), breakpoints_.end());
+}

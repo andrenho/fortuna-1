@@ -35,6 +35,11 @@ public:
     
     virtual void                     keypress(uint16_t key) = 0;
     
+    virtual std::vector<uint16_t>    list_breakpoints() const = 0;
+    virtual std::vector<uint16_t>    add_breakpoint(uint16_t address) = 0;
+    virtual std::vector<uint16_t>    remove_breakpoint(uint16_t address) = 0;
+    virtual std::vector<uint16_t>    remove_all_breakpoints(uint16_t address) = 0;
+    
     virtual void set_log_bytes(bool) {}
     virtual void set_log_messages(bool) {}
 

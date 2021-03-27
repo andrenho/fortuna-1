@@ -4,6 +4,7 @@
 #include <cstddef>
 #include <optional>
 #include <fstream>
+#include <unordered_set>
 #include "../fortuna1.hh"
 #include "sdcard_emulated.hh"
 #include "z80/Z80.h"
@@ -48,17 +49,23 @@ public:
     
     bool nmi() const { return nmi_; }
     void set_nmi(bool b) { nmi_ = b; }
+    
+    std::vector<uint16_t> list_breakpoints() const override;
+    std::vector<uint16_t> add_breakpoint(uint16_t address) override;
+    std::vector<uint16_t> remove_breakpoint(uint16_t address) override;
+    std::vector<uint16_t> remove_all_breakpoints(uint16_t address) override;
 
 private:
-    uint8_t                     ram_[64 * 1024] = {0};
-    SDCardEmulated              sd_card_ {};
-    std::optional<std::fstream> sd_image_stream_ {};
-    Z80                         z80_ {};
-    uint32_t                    cycle_count_ = 0;
-    uint8_t                     last_printed_char_ = 0;
-    uint8_t                     last_keypress_ = 0;
-    bool                        interrupt_ = false;
-    bool                        nmi_ = false;
+    uint8_t                      ram_[64 * 1024] = {0};
+    SDCardEmulated               sd_card_ {};
+    std::optional<std::fstream>  sd_image_stream_ {};
+    Z80                          z80_ {};
+    uint32_t                     cycle_count_ = 0;
+    uint8_t                      last_printed_char_ = 0;
+    uint8_t                      last_keypress_ = 0;
+    bool                         interrupt_ = false;
+    bool                         nmi_ = false;
+    std::unordered_set<uint16_t> breakpoints_ {};
     
     void basic_reset();
 };
