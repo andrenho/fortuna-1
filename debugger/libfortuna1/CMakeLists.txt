@@ -20,7 +20,8 @@ set(LIBF1COMM_SOURCES
     libf1comm/defines.hh libf1comm/messages/debuginformation.hh libf1comm/messages/deserialize.hh
     libf1comm/messages/request.hh libf1comm/messages/request.cc libf1comm/messages/reply.hh libf1comm/messages/reply.cc
     libf1comm/fields/ramrequest.hh libf1comm/fields/ramrequest.cc emulator/sdcard_emulated.cc emulator/sdcard_emulated.hh
-    libf1comm/fields/sdcardstatus.hh libf1comm/fields/sdcardstatus.cc libf1comm/fields/z80info.hh libf1comm/fields/z80info.cc compiler/debug.hh compiler/debug.cc)
+    libf1comm/fields/sdcardstatus.hh libf1comm/fields/sdcardstatus.cc libf1comm/fields/z80info.hh libf1comm/fields/z80info.cc
+    libf1comm/fields/event.hh libf1comm/fields/event.cc compiler/debug.hh compiler/debug.cc)
 
 add_library(libfortuna1 ${LIBRARY_SOURCES} ${EMULATOR_SOURCES} ${LIBF1COMM_SOURCES})
 
