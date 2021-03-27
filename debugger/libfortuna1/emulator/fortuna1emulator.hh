@@ -53,7 +53,7 @@ public:
     std::vector<uint16_t> list_breakpoints() const override;
     std::vector<uint16_t> add_breakpoint(uint16_t address) override;
     std::vector<uint16_t> remove_breakpoint(uint16_t address) override;
-    std::vector<uint16_t> remove_all_breakpoints(uint16_t address) override;
+    std::vector<uint16_t> remove_all_breakpoints() override;
 
 private:
     uint8_t                      ram_[64 * 1024] = {0};

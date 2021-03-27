@@ -180,7 +180,7 @@ std::vector<uint16_t> Fortuna1Emulator::remove_breakpoint(uint16_t address)
     return std::vector<uint16_t>(breakpoints_.begin(), breakpoints_.end());
 }
 
-std::vector<uint16_t> Fortuna1Emulator::remove_all_breakpoints(uint16_t address)
+std::vector<uint16_t> Fortuna1Emulator::remove_all_breakpoints()
 {
     breakpoints_.clear();
     return std::vector<uint16_t>(breakpoints_.begin(), breakpoints_.end());

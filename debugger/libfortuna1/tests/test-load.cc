@@ -11,7 +11,7 @@ int main(int argc, char* argv[])
     
     for (int i = 0; i < 500; ++i) {
         printf("%d\n", i);
-        ASSERT_GT("Test memory amount", f->free_mem(), 0);
+        assert_gt("Test memory amount", f->free_mem(), 0);
     }
 }
 

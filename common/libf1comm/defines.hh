@@ -118,5 +118,6 @@ enum EventType : uint8_t {
 #endif
 
 #define SYSTEM_RESET 0xdd
+#define MAX_BREAKPOINTS 32
 
 #endif //LIBF1COMM_DEFINES_HH

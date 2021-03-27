@@ -157,7 +157,7 @@ std::vector<uint16_t> Fortuna1RealHardware::remove_breakpoint(uint16_t address)
     return std::vector<uint16_t>();
 }
 
-std::vector<uint16_t> Fortuna1RealHardware::remove_all_breakpoints(uint16_t address)
+std::vector<uint16_t> Fortuna1RealHardware::remove_all_breakpoints()
 {
     return std::vector<uint16_t>();
 }
