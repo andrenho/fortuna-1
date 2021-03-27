@@ -170,6 +170,8 @@ std::vector<uint16_t> Fortuna1Emulator::list_breakpoints() const
 
 std::vector<uint16_t> Fortuna1Emulator::add_breakpoint(uint16_t address)
 {
+    if (breakpoints_.size() == MAX_BREAKPOINTS)
+        throw std::runtime_error("Max number of breakpoints exceeded.");
     breakpoints_.insert(address);
     return std::vector<uint16_t>(breakpoints_.begin(), breakpoints_.end());
 }

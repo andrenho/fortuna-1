@@ -44,6 +44,8 @@ public:
 private:
     mutable Buffer buffer_ { {0}, 0 };
     Serial serial_;
+    
+    static std::vector<uint16_t> extract_breakpoints_from_buffer(Buffer const& buffer) ;
 };
 
 #endif

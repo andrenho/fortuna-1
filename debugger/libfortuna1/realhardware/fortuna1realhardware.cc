@@ -144,20 +144,47 @@ void Fortuna1RealHardware::keypress(uint16_t key)
 
 std::vector<uint16_t> Fortuna1RealHardware::list_breakpoints() const
 {
-    return std::vector<uint16_t>();
+    buffer_.sz = 0;
+    Request request(MessageType::BreakpointsList, buffer_);
+    serial_.request(request, buffer_);
+    return extract_breakpoints_from_buffer(buffer_);
 }
 
 std::vector<uint16_t> Fortuna1RealHardware::add_breakpoint(uint16_t address)
 {
-    return std::vector<uint16_t>();
+    buffer_.sz = 0;
+    Request request(MessageType::BreakpointsAdd, buffer_);
+    request.address = address;
+    serial_.request(request, buffer_);
+    return extract_breakpoints_from_buffer(buffer_);
 }
 
 std::vector<uint16_t> Fortuna1RealHardware::remove_breakpoint(uint16_t address)
 {
-    return std::vector<uint16_t>();
+    buffer_.sz = 0;
+    Request request(MessageType::BreakpointsRemove, buffer_);
+    request.address = address;
+    serial_.request(request, buffer_);
+    return extract_breakpoints_from_buffer(buffer_);
 }
 
 std::vector<uint16_t> Fortuna1RealHardware::remove_all_breakpoints()
 {
-    return std::vector<uint16_t>();
+    buffer_.sz = 0;
+    Request request(MessageType::BreakpointsRemoveAll, buffer_);
+    serial_.request(request, buffer_);
+    return extract_breakpoints_from_buffer(buffer_);
 }
+
+std::vector<uint16_t> Fortuna1RealHardware::extract_breakpoints_from_buffer(Buffer const& buffer)
+{
+    std::vector<uint16_t> bkps;
+    for (size_t i = 0; i < MAX_BREAKPOINTS; ++i) {
+        uint16_t bkp = buffer.data[i * 2];
+        bkp |= ((uint16_t) buffer.data[i * 2 + 1]) << 8;
+        if (bkp != 0)
+            bkps.push_back(bkp);
+    }
+    return bkps;
+}
+
