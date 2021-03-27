@@ -1,4 +1,5 @@
 #include "z80info.hh"
+
 #include "../serialization.hh"
 
 void Z80_Info::serialize(Message::SerializationFunction f, void* data) const

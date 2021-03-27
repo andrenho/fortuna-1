@@ -16,6 +16,10 @@ void Request::serialize_detail(Message::SerializationFunction f, void* data) con
         case Keypress:
             serialize_u16(keypress, f, data);
             break;
+        case BreakpointsAdd:
+        case BreakpointsRemove:
+            serialize_u16(address, f, data);
+            break;
         default:
             break;
     }
@@ -35,6 +39,10 @@ void Request::deserialize_detail(Message::DeserializationFunction f, void* data,
             break;
         case Keypress:
             keypress = unserialize_u16(f, data, sum1, sum2);
+            break;
+        case BreakpointsAdd:
+        case BreakpointsRemove:
+            address = unserialize_u16(f, data, sum1, sum2);
             break;
         default:
             break;
@@ -64,6 +72,11 @@ bool Request::compare(Message const& message) const
             if (keypress != other.keypress)
                 eq = false;
             break;
+        case BreakpointsAdd:
+        case BreakpointsRemove:
+            if (address != other.address)
+                eq = false;
+            break;
         default:
             break;
     }
@@ -85,6 +98,10 @@ void Request::debug_detail() const
             break;
         case Keypress:
             std::cout << "  keypress: 0x" << keypress << "\n";
+            break;
+        case BreakpointsAdd:
+        case BreakpointsRemove:
+            std::cout << "  address: 0x" << address << "\n";
             break;
         default:
             break;

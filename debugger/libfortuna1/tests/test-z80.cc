@@ -8,7 +8,6 @@ int main(int argc, char* argv[])
     TestArgs t(argc, argv);
     auto f = t.create_fortuna();
 
-#if 0
     // two NOPs, a JP and a RST
     title("NOPs");
     f->ram_write_buffer(0, { 0x0, 0x0, 0xc3, 0xc3, 0xc3 });  // NOP, NOP, JP C3C3H
@@ -107,7 +106,6 @@ int main(int argc, char* argv[])
     } else {
         ASSERT_EQ("NMI executed", 0x67, info.pc);
     }
-#endif
     
     // soft reset - check SDCard status
     f->soft_reset();
