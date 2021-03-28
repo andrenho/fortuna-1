@@ -27,6 +27,6 @@ int main(int argc, char* argv[])
     assert_eq("Empty all breakpoints", true, f->remove_all_breakpoints().empty());
     
     for (size_t i = 0; i < MAX_BREAKPOINTS; ++i)
-        f->add_breakpoint(i);
+        f->add_breakpoint(i + 1);
     assert_throws("Check that we can't add more than the max breakpoints", [&](){ f->add_breakpoint(0xffff); });
 }
