@@ -107,6 +107,7 @@ ram_write_byte(uint16_t addr, uint8_t data)
 {
     uint8_t written, check_again;
     ram_takeover_bus();
+    size_t i = 0;
     do {
         ram_set_addr(addr);
         ram_set_data(data);
@@ -120,8 +121,10 @@ ram_write_byte(uint16_t addr, uint8_t data)
         written = ram_read_byte(addr);
         _delay_us(100);
         check_again = ram_read_byte(addr);
+        if (i++ > 256)
+            return written;
     } while (written != data || data != check_again);
-    return data;
+    return written;
 }
 
 uint8_t ram_read_byte(uint16_t addr)
@@ -171,10 +174,10 @@ uint8_t ram_read_byte_stream(uint16_t addr)
     ram_set_addr(addr);
     PORT_RAM &= ~(1 << MREQ);
     PORT_RAM &= ~(1 << RD);
-    WAIT;
+    WAIT; WAIT; WAIT;
     uint8_t byte = ram_get_data();
     PORT_RAM |= (1 << RD) | (1 << MREQ);
-    WAIT;
+    WAIT; WAIT; WAIT;
     return byte;
 }
 

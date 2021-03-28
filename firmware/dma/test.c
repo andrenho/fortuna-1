@@ -26,11 +26,13 @@ void run_tests()
     printf_P(PSTR("Seed is %d. Next is %d.\n"), seed, next);
     eeprom_write_word((uint16_t*) 0, next);
 
+    /*
     printf_P(PSTR("Writing byte 0x0...\n"));
     ram_write_byte(0x0, 0x42);
     printf_P(PSTR("Writing byte 200x0...\n"));
     ram_write_byte(0x200, 0xfe);
     printf_P(PSTR("0x%02X == 0x42\n"), ram_read_byte(0));
+    */
 
     printf_P(PSTR("Setting data bus..."));
     ram_set_data(0x69);
@@ -50,6 +52,8 @@ void run_tests()
         uint8_t data2 = ram_read_byte(addr);
         printf_P(PSTR("Read  [0x%04X] = "), addr);
         printf_P(PSTR("%s0x%02X\n\e[0m"), data == data2 ? "\e[0;32m" : "\e[0;31m", data2);
+        if (data != data2)
+            for(;;);
     }
 
     // create 512 byte block

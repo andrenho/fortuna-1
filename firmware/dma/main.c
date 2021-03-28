@@ -23,6 +23,8 @@
 
 int main()
 {
+    _delay_ms(100);
+
     spi_init();
     ram_init();
 
