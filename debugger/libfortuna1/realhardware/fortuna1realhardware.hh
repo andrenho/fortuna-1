@@ -40,6 +40,10 @@ public:
     std::vector<uint16_t> add_breakpoint(uint16_t address) override;
     std::vector<uint16_t> remove_breakpoint(uint16_t address) override;
     std::vector<uint16_t> remove_all_breakpoints() override;
+    
+    void run() override;
+    void stop() override;
+    EventType last_event() const override;
 
 private:
     mutable Buffer buffer_ { {0}, 0 };

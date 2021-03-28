@@ -85,10 +85,9 @@ enum ResetStatus : uint8_t {
 
 #define EVENTS \
     X(NoEvents,          0xb0) \
-    X(Paused,            0xb1) \
-    X(CharPrinted,       0xb2) \
-    X(Stopped,           0xb3) \
-    X(BreakpointReached, 0xb4)
+    X(CharPrinted,       0xb1) \
+    X(Stopped,           0xb2) \
+    X(BreakpointReached, 0xb3)
 
 enum EventType : uint8_t {
 #define X(name, value) name = value,

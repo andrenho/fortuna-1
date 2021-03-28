@@ -5,4 +5,5 @@
 ./test-memory "$@" && \
 ./test-sdcard "$@" && \
 ./test-reset "$@" && \
-./test-z80 "$@"
+./test-z80 "$@" && \
+./test-bkps "$@"

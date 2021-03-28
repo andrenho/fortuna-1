@@ -188,3 +188,18 @@ std::vector<uint16_t> Fortuna1RealHardware::extract_breakpoints_from_buffer(Buff
     return bkps;
 }
 
+void Fortuna1RealHardware::run()
+{
+
+}
+
+void Fortuna1RealHardware::stop()
+{
+
+}
+
+EventType Fortuna1RealHardware::last_event() const
+{
+    return NoEvents;
+}
+

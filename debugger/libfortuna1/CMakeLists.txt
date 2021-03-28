@@ -32,7 +32,7 @@ add_custom_target(run_tests.sh DEPENDS ${PROJECT_BINARY_DIR}/run_tests.sh)
 file(CREATE_LINK ${PROJECT_SOURCE_DIR}/fortuna1.z80 ${PROJECT_BINARY_DIR}/fortuna1.z80 SYMBOLIC)
 add_custom_target(fortuna1.z80 DEPENDS ${PROJECT_BINARY_DIR}/fortuna1.z80)
 
-foreach(F IN ITEMS test-basic test-load test-memory test-sdcard test-z80 test-compiler test-reset test-bkps)
+foreach(F IN ITEMS test-basic test-load test-memory test-sdcard test-z80 test-compiler test-reset test-bkps test-run)
     add_executable(${F} EXCLUDE_FROM_ALL tests/${F}.cc tests/tsupport.cc tests/tsupport.hh)
     target_compile_options(${F} PUBLIC -I ..)
     target_link_libraries(${F} libfortuna1 ${Protobuf_LIBRARIES})

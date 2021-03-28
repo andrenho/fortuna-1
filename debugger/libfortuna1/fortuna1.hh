@@ -40,6 +40,10 @@ public:
     virtual std::vector<uint16_t>    remove_breakpoint(uint16_t address) = 0;
     virtual std::vector<uint16_t>    remove_all_breakpoints() = 0;
     
+    virtual void                     run() = 0;
+    virtual void                     stop() = 0;
+    virtual EventType                last_event() const = 0;
+    
     virtual void set_log_bytes(bool) {}
     virtual void set_log_messages(bool) {}
 
