@@ -187,3 +187,18 @@ std::vector<uint16_t> Fortuna1Emulator::remove_all_breakpoints()
     breakpoints_.clear();
     return std::vector<uint16_t>(breakpoints_.begin(), breakpoints_.end());
 }
+
+void Fortuna1Emulator::run()
+{
+
+}
+
+void Fortuna1Emulator::stop()
+{
+
+}
+
+EventType Fortuna1Emulator::last_event() const
+{
+    return NoEvents;
+}

@@ -11,7 +11,7 @@ struct TestArgs {
    TestArgs(int argc, char** argv);
    
    std::unique_ptr<Fortuna1> create_fortuna();
-   Z80_Info run_code(std::string const& code, size_t num_steps);
+   Z80_Info run_code(std::string const& code, size_t num_steps = 0);
    
    bool real_hardware_mode = false;
    std::string serial_port = "";
