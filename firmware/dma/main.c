@@ -133,7 +133,7 @@ int main()
                     spi_done();
 #ifdef DEBUG_UART
                     _delay_ms(1);
-                    printf_P(PSTR("Written block from address 0x%X to 0x%X - data checksum = 0x%04X.\n"), addr, addr + sz, sum1 | (sum2 << 8));
+                    printf_P(PSTR("Written block from address 0x%X to 0x%X (%d bytes) - data checksum = 0x%04X.\n"), addr, addr + sz, sz, sum1 | (sum2 << 8));
                     spi_done();
 #endif
             }

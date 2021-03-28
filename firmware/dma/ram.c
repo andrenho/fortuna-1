@@ -112,7 +112,7 @@ ram_write_byte(uint16_t addr, uint8_t data)
         ram_set_data(data);
         PORT_RAM &= ~(1 << MREQ);
         PORT_RAM &= ~(1 << WE);
-        WAIT;
+        WAIT; WAIT; WAIT;
         PORT_RAM |= (1 << WE) | (1 << MREQ);
         PORTC = 0;
         ram_reset();
@@ -149,9 +149,9 @@ void ram_write_byte_stream(uint16_t addr, uint8_t byte)
     ram_set_data(byte);
     PORT_RAM &= ~(1 << MREQ);
     PORT_RAM &= ~(1 << WE);
-    WAIT;
+    WAIT; WAIT; WAIT;
     PORT_RAM |= (1 << WE) | (1 << MREQ);
-    WAIT;
+    WAIT; WAIT; WAIT;
 }
 
 void ram_write_stream_end()

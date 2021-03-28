@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include <avr/pgmspace.h>
 #include <avr/eeprom.h>
+#include <util/delay.h>
 #include <string.h>
 
 static void create_seed()
@@ -50,9 +51,9 @@ static void run_memory_tests(Fortuna1& fortuna1)
     for (int i = 0; i < 16; ++i) {
         if (sz > 512)
             sz = 512;
-        printf_P(PSTR("%d: "), sz);
-        uint8_t buffer[sz], written[sz];
         uint16_t addr = random() & 0xffff;
+        uint8_t buffer[sz], written[sz];
+        printf_P(PSTR("%d [%04X]: "), sz, addr);
         for (size_t j = 0; j < sz; ++j) {
             buffer[j] = written[j] = rand() & 0xff;
             printf_P(PSTR("%02X"), buffer[j]);
