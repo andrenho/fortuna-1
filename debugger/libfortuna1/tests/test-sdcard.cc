@@ -8,9 +8,9 @@ int main(int argc, char* argv[])
     auto f = test_args.create_fortuna();
     
     auto status = f->sdcard_status();
-    printf("Last SD card stage: 0x%02X, response: 0x%02X\n", status.last_stage, status.last_response);
+    printf("Card status before initialization: 0x%02X, response: 0x%02X\n", status.last_stage, status.last_response);
 
-    f->hard_reset();
+    assert_eq("Test that reset was successful", ResetStatus::Ok, f->hard_reset());
 
     status = f->sdcard_status();
     printf("Last SD card stage after reset: 0x%02X, response: 0x%02X\n", status.last_stage, status.last_response);
